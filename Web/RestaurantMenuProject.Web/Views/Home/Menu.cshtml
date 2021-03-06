@@ -1,0 +1,58 @@
+﻿@model List<MenuItemViewModel>
+<h1>This is menu page!</h1>
+
+<ul id="menu" class="row">
+    @foreach (var item in Model)
+    {
+        <li id="@item.Name" onclick="window.location = '/Menu/@item.Name'" class="col-md-5 h-100">
+            <div id="@item.Name" class="bg"></div>
+            <h1>@item.Name</h1>
+            <br />
+            <br />
+            <span>@item.Description</span>
+            <br />
+            <br />
+        </li>
+    }
+</ul>
+
+
+<style>
+    #menu {
+        list-style-type: none;
+    }
+
+    li {
+        cursor: pointer;
+        border-radius: 100px;
+    }
+
+        li .bg {
+            position: absolute;
+            z-index: -1;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            opacity: .4;
+            width: 100%;
+            height: 100%;
+            background-size: 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+            box-shadow: inset 0px 0px 5px 5px black;
+        }
+
+    #menu li {
+        margin-right: 40px;
+        margin-bottom: 20px;
+    }
+</style>
+@section Scripts
+{
+<script>
+    $('ul li div').each(function (i) {
+        $(this).css('background-image', 'url(/img/' + this.id + ".jpg)");
+    });
+</script>
+}
