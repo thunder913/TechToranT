@@ -38,6 +38,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\img\Drinks\" />
+    <None Include="wwwroot\img\Drinks\Alcohol.jpg" />
   </ItemGroup>
 </Project>
