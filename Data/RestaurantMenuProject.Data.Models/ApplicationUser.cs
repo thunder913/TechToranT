@@ -4,9 +4,8 @@ namespace RestaurantMenuProject.Data.Models
     using System;
     using System.Collections.Generic;
 
-    using RestaurantMenuProject.Data.Common.Models;
-
     using Microsoft.AspNetCore.Identity;
+    using RestaurantMenuProject.Data.Common.Models;
 
     public class ApplicationUser : IdentityUser, IAuditInfo, IDeletableEntity
     {

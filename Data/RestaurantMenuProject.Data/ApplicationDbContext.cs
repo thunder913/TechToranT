@@ -47,6 +47,12 @@
 
         public DbSet<UserDislike> UsersDislikes { get; set; }
 
+        public DbSet<DishType> DishTypes { get; set; }
+
+        public DbSet<DrinkType> DrinkTypes { get; set; }
+
+        public DbSet<PackagingType> PackagingTypes { get; set; }
+
         public override int SaveChanges() => this.SaveChanges(true);
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
@@ -75,26 +81,26 @@
                .HasKey(x => new { x.DrinkId, x.OrderId });
 
             builder.Entity<UserLike>()
-                .HasKey(x => new { x.UserId, x.CommentId });
+               .HasKey(x => new { x.UserId, x.CommentId });
 
             builder.Entity<UserDislike>()
-                .HasKey(x => new { x.UserId, x.CommentId });
+               .HasKey(x => new { x.UserId, x.CommentId });
 
             builder.Entity<UserLike>()
-                .HasOne(x => x.Comment)
-                .WithMany(x => x.Likes);
+               .HasOne(x => x.Comment)
+               .WithMany(x => x.Likes);
 
             builder.Entity<UserLike>()
-                .HasOne(x => x.Comment)
-                .WithMany(x => x.Likes);
+               .HasOne(x => x.Comment)
+               .WithMany(x => x.Likes);
 
             builder.Entity<UserDislike>()
-                .HasOne(x => x.User)
-                .WithMany(x => x.Dislikes);
+               .HasOne(x => x.User)
+               .WithMany(x => x.Dislikes);
 
             builder.Entity<UserDislike>()
-                .HasOne(x => x.User)
-                .WithMany(x => x.Dislikes);
+               .HasOne(x => x.User)
+               .WithMany(x => x.Dislikes);
 
             builder.Entity<Comment>()
                 .HasOne(x => x.CommentedBy)

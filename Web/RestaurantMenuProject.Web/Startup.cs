@@ -17,6 +17,7 @@
     using RestaurantMenuProject.Data.Repositories;
     using RestaurantMenuProject.Data.Seeding;
     using RestaurantMenuProject.Services.Data;
+    using RestaurantMenuProject.Services.Data.Contracts;
     using RestaurantMenuProject.Services.Mapping;
     using RestaurantMenuProject.Services.Messaging;
     using RestaurantMenuProject.Web.ViewModels;
@@ -64,6 +65,8 @@
             // Application services
             services.AddTransient<IEmailSender, NullMessageSender>();
             services.AddTransient<ISettingsService, SettingsService>();
+            services.AddTransient<IDishTypeService, DishTypeService>();
+            services.AddTransient<IDrinkTypeService, DrinkTypeService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

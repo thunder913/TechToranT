@@ -16,8 +16,10 @@
 
         public int UsedTimes { get; set; }
 
-        public PromoCodeType PromoCodeType { get; set; }
-
         public ICollection<Order> Orders { get; set; } = new HashSet<Order>();
+
+        public ICollection<DishType> ValidDishCategories { get; set; } = new HashSet<DishType>();
+
+        public ICollection<DrinkType> ValidDrinkCategories { get; set; } = new HashSet<DrinkType>();
     }
 }
