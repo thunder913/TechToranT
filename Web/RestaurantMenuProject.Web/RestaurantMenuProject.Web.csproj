@@ -36,4 +36,8 @@
     <ProjectReference Include="..\RestaurantMenuProject.Web.Infrastructure\RestaurantMenuProject.Web.Infrastructure.csproj" />
     <ProjectReference Include="..\RestaurantMenuProject.Web.ViewModels\RestaurantMenuProject.Web.ViewModels.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\img\Drinks\" />
+  </ItemGroup>
 </Project>

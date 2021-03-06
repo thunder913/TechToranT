@@ -6,6 +6,7 @@
     using RestaurantMenuProject.Data.Common.Repositories;
     using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Services.Data.Contracts;
+    using RestaurantMenuProject.Web.ViewModels;
 
     public class DrinkTypeService : IDrinkTypeService
     {
@@ -16,9 +17,13 @@
             this.drinkRepository = drinkRepository;
         }
 
-        public ICollection<DrinkType> GetAllDrinkTypes()
+        public ICollection<MenuItemViewModel> GetAllDrinkTypes()
         {
-            return this.drinkRepository.AllAsNoTracking().ToList();
+            return this.drinkRepository.AllAsNoTracking().Select(x=> new MenuItemViewModel()
+            {
+                Description = x.Description,
+                Name = x.Name,
+            }).ToList();
         }
     }
 }

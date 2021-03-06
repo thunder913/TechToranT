@@ -9,10 +9,12 @@
     public class HomeController : BaseController
     {
         private readonly IDishTypeService dishTypeService;
+        private readonly IDrinkTypeService drinkTypeService;
 
-        public HomeController(IDishTypeService dishTypeService)
+        public HomeController(IDishTypeService dishTypeService, IDrinkTypeService drinkTypeService)
         {
             this.dishTypeService = dishTypeService;
+            this.drinkTypeService = drinkTypeService;
         }
 
         public IActionResult Index()
@@ -44,6 +46,7 @@
         {
             return this.View();
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
