@@ -29,12 +29,20 @@
       ]
     },
     {
-      "library": "jquery-validation-unobtrusive@3.2.11",
-      "destination": "wwwroot/lib/jquery-validation-unobtrusive/",
-      "files": [
-        "dist/jquery.validate.unobtrusive.js",
-        "dist/jquery.validate.unobtrusive.min.js"
-      ]
+        "library": "jquery-validation-unobtrusive@3.2.11",
+        "destination": "wwwroot/lib/jquery-validation-unobtrusive/",
+        "files": [
+            "dist/jquery.validate.unobtrusive.js",
+            "dist/jquery.validate.unobtrusive.min.js"
+        ]
+    },
+    {
+        "library": "bootstrap-select@1.13.18",
+        "destination": "wwwroot/lib/bootstrap-select/",
+        "files": [
+            "dist/css/bootstrap-select.min.css",
+            "dist/js/bootstrap-select.js"
+        ]
     }
   ]
 }

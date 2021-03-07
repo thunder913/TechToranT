@@ -8,5 +8,7 @@
     public interface IDishTypeService
     {
         public ICollection<MenuItemViewModel> GetAllDishTypes();
+
+        public ICollection<DishTypeViewModel> GetAllDishTypesWithId();
     }
 }

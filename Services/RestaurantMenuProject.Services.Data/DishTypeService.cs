@@ -26,5 +26,16 @@
             })
                 .ToList();
         }
+
+        public ICollection<DishTypeViewModel> GetAllDishTypesWithId()
+        {
+            return this.dishRepository.AllAsNoTracking().Select(x => new DishTypeViewModel()
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Description = x.Description,
+            })
+            .ToList();
+        }
     }
 }

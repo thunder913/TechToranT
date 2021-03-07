@@ -67,6 +67,7 @@
             services.AddTransient<ISettingsService, SettingsService>();
             services.AddTransient<IDishTypeService, DishTypeService>();
             services.AddTransient<IDrinkTypeService, DrinkTypeService>();
+            services.AddTransient<IIngredientService, IngredientService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

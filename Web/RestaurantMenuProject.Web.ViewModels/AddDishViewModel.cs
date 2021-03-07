@@ -1,13 +1,11 @@
-﻿namespace RestaurantMenuProject.Data.Models
+﻿namespace RestaurantMenuProject.Web.ViewModels
 {
-    using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using RestaurantMenuProject.Data.Models;
 
-    using RestaurantMenuProject.Data.Common.Models;
-    using RestaurantMenuProject.Data.Models.Enums;
-
-    public class Dish : BaseDeletableModel<int>
+    public class AddDishViewModel
     {
         [Required]
         public string Name { get; set; }
@@ -28,10 +26,10 @@
         [MaxLength(255)]
         public string AdditionalInfo { get; set; }
 
-        public DishType DishType { get; set; }
+        public int DishTypeId { get; set; }
 
-        public virtual ICollection<Ingredient> Ingredients { get; set; } = new HashSet<Ingredient>();
+        public List<SelectListItem> DishType { get; set; }
 
-        public virtual ICollection<OrderDish> OrderDishes { get; set; } = new HashSet<OrderDish>();
+        public List<SelectListItem?>? Ingredients { get; set; } = new List<SelectListItem?>();
     }
 }

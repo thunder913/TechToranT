@@ -10,9 +10,6 @@
         [Required]
         public string Name { get; set; }
 
-        [Range(0, 100)]
-        public double? PercentageInDish { get; set; }
-
         public virtual ICollection<Dish> Dishes { get; set; } = new HashSet<Dish>();
 
         public virtual ICollection<Drink> Drinks { get; set; } = new HashSet<Drink>();
