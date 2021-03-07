@@ -1,6 +1,6 @@
 ﻿namespace RestaurantMenuProject.Web.ViewModels
 {
-    public class DishTypeViewModel
+    public class FoodTypeViewModel
     {
         public int Id { get; set; }
 

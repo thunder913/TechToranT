@@ -27,9 +27,9 @@
                 .ToList();
         }
 
-        public ICollection<DishTypeViewModel> GetAllDishTypesWithId()
+        public ICollection<FoodTypeViewModel> GetAllDishTypesWithId()
         {
-            return this.dishRepository.AllAsNoTracking().Select(x => new DishTypeViewModel()
+            return this.dishRepository.AllAsNoTracking().Select(x => new FoodTypeViewModel()
             {
                 Id = x.Id,
                 Name = x.Name,

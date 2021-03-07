@@ -25,5 +25,16 @@
                 Name = x.Name,
             }).ToList();
         }
+
+        public ICollection<FoodTypeViewModel> GetAllDrinkTypesWithId()
+        {
+            return this.drinkRepository.AllAsNoTracking().Select(x => new FoodTypeViewModel()
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Description = x.Description,
+            })
+        .ToList();
+        }
     }
 }

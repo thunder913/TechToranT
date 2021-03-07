@@ -9,6 +9,6 @@
     {
         public ICollection<MenuItemViewModel> GetAllDishTypes();
 
-        public ICollection<DishTypeViewModel> GetAllDishTypesWithId();
+        public ICollection<FoodTypeViewModel> GetAllDishTypesWithId();
     }
 }

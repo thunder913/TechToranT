@@ -11,12 +11,17 @@
         [Required]
         public string Name { get; set; }
 
+        [Range(0,5000)]
         public decimal Price { get; set; }
 
+        [Range(0,5000)]
         public double Weight { get; set; }
 
+        [MinLength(3)]
+        [MaxLength(255)]
         public string AdditionalInfo { get; set; }
 
+        [Range(0,100)]
         public decimal? AlchoholByVolume { get; set; }
 
         public DrinkType DrinkType { get; set; }

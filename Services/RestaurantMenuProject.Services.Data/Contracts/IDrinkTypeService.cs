@@ -8,5 +8,7 @@
     public interface IDrinkTypeService
     {
         public ICollection<MenuItemViewModel> GetAllDrinkTypes();
+
+        public ICollection<FoodTypeViewModel> GetAllDrinkTypesWithId();
     }
 }
