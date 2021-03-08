@@ -894,7 +894,7 @@
     deselectAllText: 'Deselect All',
     doneButton: false,
     doneButtonText: 'Close',
-    multipleSeparator: ' ',
+    multipleSeparator: ', ',
     styleBase: 'btn',
     style: classNames.BUTTONCLASS,
     size: 'auto',
