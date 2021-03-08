@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using RestaurantMenuProject.Data.Models;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-
-namespace RestaurantMenuProject.Web.ViewModels
+﻿namespace RestaurantMenuProject.Web.ViewModels
 {
-    public class AddDrinkViewModel
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using RestaurantMenuProject.Data.Models;
+    using RestaurantMenuProject.Services.Mapping;
+
+    public class AddDrinkViewModel : IMapTo<Drink>
     {
         [Required]
         public string Name { get; set; }

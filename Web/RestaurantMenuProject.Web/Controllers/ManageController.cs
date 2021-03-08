@@ -6,6 +6,8 @@
     using RestaurantMenuProject.Web.ViewModels;
     using System.Linq;
     using RestaurantMenuProject.Services.Mapping;
+    using AutoMapper;
+    using RestaurantMenuProject.Data.Models;
 
     public class ManageController : Controller
     {

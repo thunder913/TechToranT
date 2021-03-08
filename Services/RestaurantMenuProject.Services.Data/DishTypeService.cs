@@ -8,18 +8,38 @@
     using RestaurantMenuProject.Services.Data.Contracts;
     using RestaurantMenuProject.Web.ViewModels;
 
+    // TODO rename the service everywhere to dishService
     public class DishTypeService : IDishTypeService
     {
-        private readonly IDeletableEntityRepository<DishType> dishRepository;
+        private readonly IDeletableEntityRepository<DishType> dishTypeRepository;
+        private readonly IDeletableEntityRepository<Dish> dishRepository;
 
-        public DishTypeService(IDeletableEntityRepository<DishType> dishRepository) 
+        public DishTypeService(IDeletableEntityRepository<DishType> dishTypeRepository, IDeletableEntityRepository<Dish> dishRepository) 
         {
+            this.dishTypeRepository = dishTypeRepository;
             this.dishRepository = dishRepository;
+        }
+
+        public ICollection<FoodItemViewModel> GetAllDisheshWithDishType(string dishType)
+        {
+            return this.dishRepository
+                        .AllAsNoTracking()
+                        .Where(x => x.DishType.Name == dishType)
+                        .Select(x => new FoodItemViewModel()
+                        {
+                            Id = x.Id,
+                            DishType = x.DishType,
+                            Name = x.Name,
+                            PrepareTime = x.PrepareTime,
+                            Price = x.Price,
+                            Weight = x.Weight,
+                        })
+                        .ToList();
         }
 
         public ICollection<MenuItemViewModel> GetAllDishTypes()
         {
-            return this.dishRepository.AllAsNoTracking().Select(x => new MenuItemViewModel() 
+            return this.dishTypeRepository.AllAsNoTracking().Select(x => new MenuItemViewModel() 
             {
                 Description = x.Description,
                 Name = x.Name,
@@ -29,7 +49,7 @@
 
         public ICollection<FoodTypeViewModel> GetAllDishTypesWithId()
         {
-            return this.dishRepository.AllAsNoTracking().Select(x => new FoodTypeViewModel()
+            return this.dishTypeRepository.AllAsNoTracking().Select(x => new FoodTypeViewModel()
             {
                 Id = x.Id,
                 Name = x.Name,

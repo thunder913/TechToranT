@@ -4,7 +4,7 @@
 <ul id="menu" class="row">
     @foreach (var item in Model)
     {
-        <li id="@item.Name" onclick="window.location = '/Menu/@item.Name'" class="col-md-5 h-100">
+        <li id="@item.Name" onclick="window.location = '/Menu/Drinks/@item.Name'" class="col-md-5 h-100">
             <div id="@item.Name" class="bg"></div>
             <h1>@item.Name</h1>
             <br />
