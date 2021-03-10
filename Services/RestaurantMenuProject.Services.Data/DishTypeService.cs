@@ -57,5 +57,33 @@
             })
             .ToList();
         }
+
+        public FoodItemViewModel GetDishWithId(int id)
+        {
+            return this.dishRepository
+                    .AllAsNoTracking()
+                    .Where(x => x.Id == id)
+                    .Select(x => new FoodItemViewModel()
+                    {
+                        Id = x.Id,
+                        DishType = x.DishType,
+                        Name = x.Name,
+                        PrepareTime = x.PrepareTime,
+                        Price = x.Price,
+                        Weight = x.Weight,
+                        AdditionalInfo = x.AdditionalInfo,
+                        Ingredients = x.Ingredients.Select(i => new IngredientViewModel()
+                        {
+                            Name = i.Name,
+                            Allergens = i.Allergens.Select(a => new AllergenViewModel()
+                            {
+                                Id = a.Id,
+                                Name = a.Name,
+                            })
+                            .ToList(),
+                        }).ToList(),
+                    })
+                    .FirstOrDefault();
+        }
     }
 }

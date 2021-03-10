@@ -14,10 +14,19 @@
             this.dishTypeService = dishTypeService;
         }
 
-        public IActionResult DisplayFood(string type, string id)
+        public IActionResult DisplayFood(string type, int id)
         {
-            var dishes = this.dishTypeService.GetAllDisheshWithDishType(type);
-            return this.View(dishes);
+            if (id == 0)
+            {
+                var dishes = this.dishTypeService.GetAllDisheshWithDishType(type);
+                return this.View("DisplayFoodType", dishes);
+            }
+            else
+            {
+                var dish = this.dishTypeService.GetDishWithId(id);
+                return this.View("DisplayFood", dish);
+            }
+
         }
 
         public IActionResult Index()

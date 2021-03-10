@@ -1,0 +1,80 @@
+﻿@model FoodItemViewModel
+@*TODO List all the allergens, maybe wihtout the viewbag*@
+@foreach (var ingr in Model.Ingredients)
+{
+    var allergens = new List<AllergenViewModel>();
+    allergens.AddRange(ingr.Allergens);
+    this.ViewBag["allergens"] = allergens.Select(x=>x.Name).ToList();
+}
+<link rel="stylesheet" runat="server" media="screen" href="~/css/menu.css" />
+<h1>This is the Food menu!</h1>
+
+<div id="@Model.Id" class="bg">
+    <h1 class="foodName">@Model.Name</h1>
+    <br />
+    <br />
+    <span class="left gray-bg">@Model.Weight grams</span>
+    <span class="right gray-bg">@Model.Price$</span>
+
+    @*TODO make it actually work and add it to a basket (probably in browser memory)*@
+    <form class="right">
+        <input type="hidden" name="Id" value="@Model.Id" />
+        <input type="text" style="width: 50px" placeholder="Count" />
+        <button type="submit" class="btn btn-success">Add</button>
+    </form>
+</div>
+<h1>@Model.AdditionalInfo</h1>
+<span>Ingredients: @string.Join(", ", Model.Ingredients.Select(x => x.Name))</span>
+<br />
+<span>
+    Allergens: @string.Join(", ", this.ViewBag["allergens"]);
+</span>
+
+<style>
+    .bg {
+        height: 700px;
+        background-size: 1100px;
+        background-repeat: no-repeat;
+        border: 5px solid turquoise;
+        border-radius: 3%;
+    }
+
+    .right {
+        margin-top: 45%;
+        float: right;
+    }
+
+    .gray-bg {
+        background-color: gainsboro;
+        border: 1px solid black;
+        line-height: 35px;
+    }
+
+    .left {
+        margin-top: 45%;
+    }
+
+    .foodName {
+        background-color: turquoise;
+        text-align: -webkit-center;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+    }
+</style>
+
+
+@section Scripts
+{
+    <script>
+        $('.bg').each(function (i) {
+            var controllerName = '@ViewContext.RouteData.Values["Controller"].ToString()';
+            var dishType = '@ViewContext.RouteData.Values["Type"].ToString()';
+            $(this).css('background-image', 'url(/img/' + controllerName + '/' + dishType + '/' + this.id + ".jpg)");
+        });
+
+        $("li form").click(function (e) {
+            // Do something
+            e.stopPropagation();
+        });
+    </script>
+}
