@@ -28,6 +28,7 @@
         [MaxLength(255)]
         public string AdditionalInfo { get; set; }
 
+        [Required]
         public IFormFile Image { get; set; }
 
         public int DishTypeId { get; set; }

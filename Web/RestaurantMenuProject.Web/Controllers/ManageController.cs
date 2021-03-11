@@ -67,9 +67,9 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddDish(AddDishViewModel dish, IFormFile file)
+        public async Task<IActionResult> AddDish(AddDishViewModel dish)
         {
-            if (!this.ModelState.IsValid || dish.IngredientsId.Count() == 0)
+            if (!this.ModelState.IsValid)
             {
                 this.SetValuesToDishViewModel(dish);
                 return this.View(dish);
@@ -86,13 +86,13 @@
                 Weight = dish.Weight,
                 Name = dish.Name,
                 Ingredients = this.ingredientService.GetAllIngredientsByIds(dish.IngredientsId.ToArray()).ToArray(),
-            // TODO Fix so that the ingredients save properly (now they throw EXCEPTION!!!!)
             };
 
             await this.dishService.AddDish(dishToAdd);
 
             // TODO USE AUTOMAPPER AND MAKE IT ADD TO THE DATABASE, + ADD MORE CHECKS AND BETTER ERROR MESSAGES
             // TODO Check if the file is the right format
+            // TODO Send it into the Service
             await this.SaveImage("Menu", dishType.Name, dishToAdd.Id, dish.Image);
 
             return this.RedirectToAction("Index");
