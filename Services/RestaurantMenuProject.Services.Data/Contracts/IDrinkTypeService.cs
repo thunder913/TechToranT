@@ -10,5 +10,9 @@
         public ICollection<MenuItemViewModel> GetAllDrinkTypes();
 
         public ICollection<FoodTypeViewModel> GetAllDrinkTypesWithId();
+
+        public ICollection<DrinkItemViewModel> GetAllDrinksByType(string drinkType);
+
+        public DrinkItemViewModel GetDrinkById(int id);
     }
 }

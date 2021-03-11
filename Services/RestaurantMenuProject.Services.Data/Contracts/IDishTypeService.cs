@@ -14,5 +14,7 @@
         public ICollection<FoodItemViewModel> GetAllDisheshWithDishType(string dishType);
 
         public FoodItemViewModel GetDishWithId(int id);
+
+        public DishType GetDishTypeById(int id);
     }
 }

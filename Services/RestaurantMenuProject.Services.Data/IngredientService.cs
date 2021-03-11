@@ -25,5 +25,10 @@ namespace RestaurantMenuProject.Services.Data
             })
             .ToList();
         }
+
+        public ICollection<Ingredient> GetAllIngredientsByIds(int[] ids)
+        {
+            return this.ingredientRepository.AllAsNoTracking().Where(x => ids.Contains(x.Id)).ToList();
+        }
     }
 }

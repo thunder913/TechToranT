@@ -1,13 +1,18 @@
 ﻿namespace RestaurantMenuProject.Web.Controllers
 {
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using AutoMapper;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
-    using RestaurantMenuProject.Services.Data.Contracts;
-    using RestaurantMenuProject.Web.ViewModels;
-    using System.Linq;
-    using RestaurantMenuProject.Services.Mapping;
-    using AutoMapper;
     using RestaurantMenuProject.Data.Models;
+    using RestaurantMenuProject.Services.Data.Contracts;
+    using RestaurantMenuProject.Services.Mapping;
+    using RestaurantMenuProject.Web.ViewModels;
 
     public class ManageController : Controller
     {
@@ -17,10 +22,11 @@
         private readonly IDrinkTypeService drinkTypeService;
         private readonly IPackagingService packagingService;
         private readonly IAllergenService allergenService;
+        private readonly IWebHostEnvironment webHostEnvironment;
 
         public ManageController(IDishTypeService dishTypeService, IIngredientService ingredientService, 
             IDishService dishService, IDrinkTypeService drinkTypeService, IPackagingService packagingService,
-            IAllergenService allergenService)
+            IAllergenService allergenService, IWebHostEnvironment webHostEnvironment)
         {
             this.dishTypeService = dishTypeService;
             this.ingredientService = ingredientService;
@@ -28,6 +34,7 @@
             this.drinkTypeService = drinkTypeService;
             this.packagingService = packagingService;
             this.allergenService = allergenService;
+            this.webHostEnvironment = webHostEnvironment;
         }
 
         public IActionResult Index()
@@ -60,7 +67,7 @@
         }
 
         [HttpPost]
-        public IActionResult AddDish(AddDishViewModel dish)
+        public async Task<IActionResult> AddDish(AddDishViewModel dish, IFormFile file)
         {
             if (!this.ModelState.IsValid || dish.IngredientsId.Count() == 0)
             {
@@ -68,7 +75,26 @@
                 return this.View(dish);
             }
 
+            var dishType = this.dishTypeService.GetDishTypeById(dish.DishTypeId);
+
+            var dishToAdd = new Dish()
+            {
+                AdditionalInfo = dish.AdditionalInfo,
+                DishTypeId = dishType.Id,
+                PrepareTime = dish.PrepareTime,
+                Price = dish.Price,
+                Weight = dish.Weight,
+                Name = dish.Name,
+                Ingredients = this.ingredientService.GetAllIngredientsByIds(dish.IngredientsId.ToArray()).ToArray(),
+            // TODO Fix so that the ingredients save properly (now they throw EXCEPTION!!!!)
+            };
+
+            await this.dishService.AddDish(dishToAdd);
+
             // TODO USE AUTOMAPPER AND MAKE IT ADD TO THE DATABASE, + ADD MORE CHECKS AND BETTER ERROR MESSAGES
+            // TODO Check if the file is the right format
+            await this.SaveImage("Menu", dishType.Name, dishToAdd.Id, dish.Image);
+
             return this.RedirectToAction("Index");
         }
 
@@ -128,6 +154,19 @@
         private void SetValuesToIngredientViewModel(AddIngredientViewModel addIngredientViewModel)
         {
             addIngredientViewModel.Allergens = this.allergenService.GetAllergensWithId().Select(x=> new SelectListItem(x.Name, x.Id.ToString())).ToList();
+        }
+
+        private async Task SaveImage(string itemCategory, string type, int id, IFormFile formFile)
+        {
+            var path = $"{this.webHostEnvironment.WebRootPath}/img/{itemCategory}/{type}";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            using (FileStream fs = new FileStream(path + $"/{id}.jpg", FileMode.Create))
+            {
+                await formFile.CopyToAsync(fs);
+            }
         }
     }
 }

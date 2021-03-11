@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Services.Mapping;
@@ -26,6 +27,8 @@
         [MinLength(3)]
         [MaxLength(255)]
         public string AdditionalInfo { get; set; }
+
+        public IFormFile Image { get; set; }
 
         public int DishTypeId { get; set; }
 

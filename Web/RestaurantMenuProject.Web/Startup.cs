@@ -111,6 +111,7 @@
                 endpoints =>
                     {
                         endpoints.MapControllerRoute("areaRoute", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                        endpoints.MapControllerRoute("drinkRoute", "Menu/Drinks/{type}/{id?}", new { controller = "Menu", action = "DisplayDrink" });
                         endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                         endpoints.MapControllerRoute("menuRoute", "Menu/{type}/{id?}", new { controller = "Menu", action = "DisplayFood", });
                         endpoints.MapRazorPages();

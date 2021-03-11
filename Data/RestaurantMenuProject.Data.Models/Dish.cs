@@ -28,6 +28,8 @@
         [MaxLength(255)]
         public string AdditionalInfo { get; set; }
 
+        public int DishTypeId { get; set; }
+
         public DishType DishType { get; set; }
 
         public virtual ICollection<Ingredient> Ingredients { get; set; } = new HashSet<Ingredient>();

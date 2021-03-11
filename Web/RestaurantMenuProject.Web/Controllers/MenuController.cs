@@ -26,7 +26,21 @@
                 var dish = this.dishTypeService.GetDishWithId(id);
                 return this.View("DisplayFood", dish);
             }
+        }
 
+        //[Route("Menu/Drinks/{type}/{id?}")]
+        public IActionResult DisplayDrink(string type, int id)
+        {
+            if (id == 0)
+            {
+                var drinks = this.drinkTypeService.GetAllDrinksByType(type);
+                return this.View("DisplayDrinkType", drinks);
+            }
+            else
+            {
+                var drink = this.drinkTypeService.GetDrinkById(id);
+                return this.View("DisplayDrink", drink);
+            }
         }
 
         public IActionResult Index()

@@ -1,7 +1,7 @@
-﻿@model FoodItemViewModel
+﻿@model DrinkItemViewModel
 
 <link rel="stylesheet" runat="server" media="screen" href="~/css/menu.css" />
-<div id="@Model.Id" class="bg" >
+<div id="@Model.Id" class="bg">
     <h1 class="foodName">@Model.Name</h1>
     <br />
     <br />
@@ -25,7 +25,7 @@
         {
             allergens.AddRange(ingr.Allergens);
         }
-    @string.Join(", ", allergens.Select(x=>x.Name));
+        @string.Join(", ", allergens.Select(x => x.Name));
     }
 </span>
 
@@ -37,7 +37,7 @@
         background-repeat: no-repeat;
         border: 5px solid turquoise;
         border-radius: 3%;
-        background-image: url("/img/Menu/@Model.DishType.Name/@(Model.Id).jpg");
+        background-image: url("/img/Drinks/@Model.DrinkType.Name/@(Model.Id).jpg");
     }
 
     .right {

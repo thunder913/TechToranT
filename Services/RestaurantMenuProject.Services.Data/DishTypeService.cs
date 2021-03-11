@@ -58,6 +58,11 @@
             .ToList();
         }
 
+        public DishType GetDishTypeById(int id)
+        {
+            return this.dishTypeRepository.AllAsNoTracking().First(x => x.Id == id);
+        }
+
         public FoodItemViewModel GetDishWithId(int id)
         {
             return this.dishRepository
