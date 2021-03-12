@@ -7,28 +7,29 @@
     {
         private readonly IDrinkTypeService drinkTypeService;
         private readonly IDishTypeService dishTypeService;
+        private readonly IDishService dishService;
 
-        public MenuController(IDrinkTypeService drinkTypeService, IDishTypeService dishTypeService)
+        public MenuController(IDrinkTypeService drinkTypeService, IDishTypeService dishTypeService, IDishService dishService)
         {
             this.drinkTypeService = drinkTypeService;
             this.dishTypeService = dishTypeService;
+            this.dishService = dishService;
         }
 
         public IActionResult DisplayFood(string type, int id)
         {
             if (id == 0)
             {
-                var dishes = this.dishTypeService.GetAllDisheshWithDishType(type);
+                var dishes = this.dishService.GetAllDisheshWithDishTypeAsFoodItem(type);
                 return this.View("DisplayFoodType", dishes);
             }
             else
             {
-                var dish = this.dishTypeService.GetDishWithId(id);
+                var dish = this.dishService.GetDishAsFoodItemById(id);
                 return this.View("DisplayFood", dish);
             }
         }
 
-        //[Route("Menu/Drinks/{type}/{id?}")]
         public IActionResult DisplayDrink(string type, int id)
         {
             if (id == 0)
@@ -51,12 +52,6 @@
         public IActionResult Drinks()
         {
             return this.View(this.drinkTypeService.GetAllDrinkTypes());
-        }
-
-        public IActionResult Drink(int id)
-        {
-            // GET THE DRINK AND DISPLAY IT, PASS IT TO THE VIEW
-            return this.View();
         }
     }
 }

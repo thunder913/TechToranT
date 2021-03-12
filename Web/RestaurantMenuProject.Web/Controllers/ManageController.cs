@@ -25,9 +25,15 @@
         private readonly IWebHostEnvironment webHostEnvironment;
         private readonly IDrinkService drinkService;
 
-        public ManageController(IDishTypeService dishTypeService, IIngredientService ingredientService, 
-            IDishService dishService, IDrinkTypeService drinkTypeService, IPackagingService packagingService,
-            IAllergenService allergenService, IWebHostEnvironment webHostEnvironment, IDrinkService drinkService)
+        public ManageController(
+            IDishTypeService dishTypeService,
+            IIngredientService ingredientService,
+            IDishService dishService,
+            IDrinkTypeService drinkTypeService,
+            IPackagingService packagingService,
+            IAllergenService allergenService,
+            IWebHostEnvironment webHostEnvironment,
+            IDrinkService drinkService)
         {
             this.dishTypeService = dishTypeService;
             this.ingredientService = ingredientService;
@@ -109,27 +115,11 @@
                 return this.View(drink);
             }
 
-            var drinkType = this.drinkTypeService.GetDrinkTypeById(drink.DrinkTypeId);
-
-            var drinkToAdd = new Drink()
-            {
-                AdditionalInfo = drink.AdditionalInfo,
-                AlchoholByVolume = drink.AlchoholByVolume,
-                Name = drink.Name,
-                Weight = drink.Weight,
-                Price = drink.Price,
-                DrinkTypeId = drinkType.Id,
-                PackagingTypeId = drink.PackaginTypeId,
-                Ingredients = this.ingredientService.GetAllIngredientsByIds(drink.IngredientsId.ToArray()).ToArray(),
-            };
-
             // TODO USE AUTOMAPPER AND MAKE IT ADD TO THE DATABASE, + ADD MORE CHECKS AND BETTER ERROR MESSAGES
             // TODO Check if the file is the right format
-            // TODO Send it into the Service
+            var addedDrink = await this.drinkService.AddDrink(drink);
 
-            await this.drinkService.AddDrink(drinkToAdd);
-
-            await this.SaveImage("Drinks", drinkType.Name, drinkToAdd.Id, drink.Image);
+            await this.SaveImage("Drinks", addedDrink.DrinkType.Name, addedDrink.Id, drink.Image);
 
             return this.RedirectToAction("Index");
         }
@@ -192,7 +182,7 @@
 
         private void SetValuesToIngredientViewModel(AddIngredientViewModel addIngredientViewModel)
         {
-            addIngredientViewModel.Allergens = this.allergenService.GetAllergensWithId().Select(x=> new SelectListItem(x.Name, x.Id.ToString())).ToList();
+            addIngredientViewModel.Allergens = this.allergenService.GetAllergensWithId().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
         }
 
         private async Task SaveImage(string itemCategory, string type, int id, IFormFile formFile)
@@ -202,6 +192,7 @@
             {
                 Directory.CreateDirectory(path);
             }
+
             using (FileStream fs = new FileStream(path + $"/{id}.jpg", FileMode.Create))
             {
                 await formFile.CopyToAsync(fs);
