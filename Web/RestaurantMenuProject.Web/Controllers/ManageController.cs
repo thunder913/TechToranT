@@ -23,10 +23,11 @@
         private readonly IPackagingService packagingService;
         private readonly IAllergenService allergenService;
         private readonly IWebHostEnvironment webHostEnvironment;
+        private readonly IDrinkService drinkService;
 
         public ManageController(IDishTypeService dishTypeService, IIngredientService ingredientService, 
             IDishService dishService, IDrinkTypeService drinkTypeService, IPackagingService packagingService,
-            IAllergenService allergenService, IWebHostEnvironment webHostEnvironment)
+            IAllergenService allergenService, IWebHostEnvironment webHostEnvironment, IDrinkService drinkService)
         {
             this.dishTypeService = dishTypeService;
             this.ingredientService = ingredientService;
@@ -35,6 +36,7 @@
             this.packagingService = packagingService;
             this.allergenService = allergenService;
             this.webHostEnvironment = webHostEnvironment;
+            this.drinkService = drinkService;
         }
 
         public IActionResult Index()
@@ -99,7 +101,7 @@
         }
 
         [HttpPost]
-        public IActionResult AddDrink(AddDrinkViewModel drink)
+        public async Task<IActionResult> AddDrink(AddDrinkViewModel drink)
         {
             if (!this.ModelState.IsValid)
             {
@@ -107,11 +109,33 @@
                 return this.View(drink);
             }
 
+            var drinkType = this.drinkTypeService.GetDrinkTypeById(drink.DrinkTypeId);
+
+            var drinkToAdd = new Drink()
+            {
+                AdditionalInfo = drink.AdditionalInfo,
+                AlchoholByVolume = drink.AlchoholByVolume,
+                Name = drink.Name,
+                Weight = drink.Weight,
+                Price = drink.Price,
+                DrinkTypeId = drinkType.Id,
+                PackagingTypeId = drink.PackaginTypeId,
+                Ingredients = this.ingredientService.GetAllIngredientsByIds(drink.IngredientsId.ToArray()).ToArray(),
+            };
+
+            // TODO USE AUTOMAPPER AND MAKE IT ADD TO THE DATABASE, + ADD MORE CHECKS AND BETTER ERROR MESSAGES
+            // TODO Check if the file is the right format
+            // TODO Send it into the Service
+
+            await this.drinkService.AddDrink(drinkToAdd);
+
+            await this.SaveImage("Drinks", drinkType.Name, drinkToAdd.Id, drink.Image);
+
             return this.RedirectToAction("Index");
         }
 
         [HttpPost]
-        public IActionResult AddIngredient(AddIngredientViewModel ingredient)
+        public async Task<IActionResult> AddIngredient(AddIngredientViewModel ingredient)
         {
             if (!this.ModelState.IsValid)
             {
@@ -119,16 +143,31 @@
                 return this.View(ingredient);
             }
 
+            var ingredientToAdd = new Ingredient()
+            {
+                Name = ingredient.Name,
+                Allergens = this.allergenService.GetAllergensWithIds(ingredient.AllergensId.ToList()).ToList(),
+            };
+
+            await this.ingredientService.AddIngredient(ingredientToAdd);
+
             return this.RedirectToAction("Index");
         }
 
         [HttpPost]
-        public IActionResult AddAllergen(AllergenViewModel allergen)
+        public async Task<IActionResult> AddAllergen(AllergenViewModel allergen)
         {
             if (!this.ModelState.IsValid)
             {
                 return this.View(allergen);
             }
+
+            var allergenToAdd = new Allergen()
+            {
+                Name = allergen.Name,
+            };
+
+            await this.allergenService.AddAllergen(allergenToAdd);
 
             return this.RedirectToAction("Index");
         }

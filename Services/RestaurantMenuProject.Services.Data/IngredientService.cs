@@ -4,6 +4,7 @@ using RestaurantMenuProject.Services.Data.Contracts;
 using RestaurantMenuProject.Web.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace RestaurantMenuProject.Services.Data
 {
@@ -14,6 +15,12 @@ namespace RestaurantMenuProject.Services.Data
         public IngredientService(IDeletableEntityRepository<Ingredient> ingredientRepository)
         {
             this.ingredientRepository = ingredientRepository;
+        }
+
+        public async Task AddIngredient(Ingredient ingredient)
+        {
+            await this.ingredientRepository.AddAsync(ingredient);
+            await this.ingredientRepository.SaveChangesAsync();
         }
 
         public ICollection<DishIngredientViewModel> GetAllAsDishIngredientViewModel()

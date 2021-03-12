@@ -1,10 +1,17 @@
 ﻿namespace RestaurantMenuProject.Services.Data.Contracts
 {
-    using RestaurantMenuProject.Web.ViewModels;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
+
+    using RestaurantMenuProject.Data.Models;
+    using RestaurantMenuProject.Web.ViewModels;
 
     public interface IAllergenService
     {
         public ICollection<AllergenViewModel> GetAllergensWithId();
+
+        public Task AddAllergen(Allergen allergen);
+
+        public ICollection<Allergen> GetAllergensWithIds(List<int> ids);
     }
 }

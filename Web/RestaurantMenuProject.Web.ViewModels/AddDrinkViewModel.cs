@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Services.Mapping;
@@ -28,6 +28,9 @@
         public int DrinkTypeId { get; set; }
 
         public List<SelectListItem> DrinkType { get; set; }
+
+        [Required]
+        public IFormFile Image { get; set; }
 
         public int PackaginTypeId { get; set; }
 

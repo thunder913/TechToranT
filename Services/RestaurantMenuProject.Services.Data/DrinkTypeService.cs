@@ -94,6 +94,14 @@
                     })
                     .First();
         }
+
+        public DrinkType GetDrinkTypeById(int id)
+        {
+            return this.drinkTypeRepository
+                    .All()
+                    .Where(x => x.Id == id)
+                    .First();
+        }
     }
 }
 

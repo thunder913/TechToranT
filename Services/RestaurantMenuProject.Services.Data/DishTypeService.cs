@@ -60,7 +60,7 @@
 
         public DishType GetDishTypeById(int id)
         {
-            return this.dishTypeRepository.AllAsNoTracking().First(x => x.Id == id);
+            return this.dishTypeRepository.All().First(x => x.Id == id);
         }
 
         public FoodItemViewModel GetDishWithId(int id)

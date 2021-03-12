@@ -24,9 +24,13 @@
         [Range(0,100)]
         public decimal? AlchoholByVolume { get; set; }
 
+        public int DrinkTypeId { get; set; }
+
         public DrinkType DrinkType { get; set; }
 
         public PackagingType PackagingType { get; set; }
+
+        public int PackagingTypeId { get; set; }
 
         public virtual ICollection<Ingredient> Ingredients { get; set; } = new HashSet<Ingredient>();
 
