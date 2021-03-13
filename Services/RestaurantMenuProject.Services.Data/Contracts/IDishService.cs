@@ -8,12 +8,12 @@
 
     public interface IDishService
     {
-        public Task AddDish(Dish dish);
+        public Task AddDish(AddDishViewModel dish, string wwwroot);
 
         public void RemoveDish(Dish dish);
 
         public Dish GetDishById(int id);
-        
+
         public FoodItemViewModel GetDishAsFoodItemById(int id);
 
         public ICollection<FoodItemViewModel> GetAllDisheshWithDishTypeAsFoodItem(string dishType);

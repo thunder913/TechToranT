@@ -2,6 +2,8 @@
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+
+    using AutoMapper;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using RestaurantMenuProject.Data.Models;
@@ -32,7 +34,7 @@
         [Required]
         public IFormFile Image { get; set; }
 
-        public int PackaginTypeId { get; set; }
+        public int PackagingTypeId { get; set; }
 
         public List<SelectListItem> PackagingType { get; set; }
 

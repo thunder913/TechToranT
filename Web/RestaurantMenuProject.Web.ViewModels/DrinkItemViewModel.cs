@@ -1,11 +1,13 @@
 ﻿using RestaurantMenuProject.Data.Models;
+using RestaurantMenuProject.Services.Mapping;
 using System.Collections.Generic;
 
 namespace RestaurantMenuProject.Web.ViewModels
 {
-    public class DrinkItemViewModel
+    public class DrinkItemViewModel : IMapFrom<Drink>
     {
         public int Id { get; set; }
+
         public string Name { get; set; }
 
         public decimal Price { get; set; }

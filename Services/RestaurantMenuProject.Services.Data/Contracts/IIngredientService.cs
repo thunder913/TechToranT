@@ -12,6 +12,6 @@
 
         public ICollection<Ingredient> GetAllIngredientsByIds(int[] ids);
 
-        public Task AddIngredient(Ingredient ingredient);
+        public Task AddIngredient(AddIngredientViewModel ingredient);
     }
 }

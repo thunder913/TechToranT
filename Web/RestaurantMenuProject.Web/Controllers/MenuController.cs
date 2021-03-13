@@ -8,12 +8,18 @@
         private readonly IDrinkTypeService drinkTypeService;
         private readonly IDishTypeService dishTypeService;
         private readonly IDishService dishService;
+        private readonly IDrinkService drinkService;
 
-        public MenuController(IDrinkTypeService drinkTypeService, IDishTypeService dishTypeService, IDishService dishService)
+        public MenuController(
+            IDrinkTypeService drinkTypeService,
+            IDishTypeService dishTypeService,
+            IDishService dishService,
+            IDrinkService drinkService)
         {
             this.drinkTypeService = drinkTypeService;
             this.dishTypeService = dishTypeService;
             this.dishService = dishService;
+            this.drinkService = drinkService;
         }
 
         public IActionResult DisplayFood(string type, int id)
@@ -34,12 +40,12 @@
         {
             if (id == 0)
             {
-                var drinks = this.drinkTypeService.GetAllDrinksByType(type);
+                var drinks = this.drinkService.GetAllDrinksByType(type);
                 return this.View("DisplayDrinkType", drinks);
             }
             else
             {
-                var drink = this.drinkTypeService.GetDrinkById(id);
+                var drink = this.drinkService.GetDrinkById(id);
                 return this.View("DisplayDrink", drink);
             }
         }

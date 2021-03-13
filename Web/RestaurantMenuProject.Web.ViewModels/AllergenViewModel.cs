@@ -1,8 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace RestaurantMenuProject.Web.ViewModels
+﻿namespace RestaurantMenuProject.Web.ViewModels
 {
-    public class AllergenViewModel
+    using System.ComponentModel.DataAnnotations;
+
+    using RestaurantMenuProject.Data.Models;
+    using RestaurantMenuProject.Services.Mapping;
+
+    public class AllergenViewModel : IMapFrom<Allergen>
     {
         public int Id { get; set; }
 

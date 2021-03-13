@@ -1,6 +1,9 @@
 ﻿namespace RestaurantMenuProject.Web.ViewModels
 {
-    public class DishIngredientViewModel
+    using RestaurantMenuProject.Data.Models;
+    using RestaurantMenuProject.Services.Mapping;
+
+    public class DishIngredientViewModel : IMapFrom<Ingredient>
     {
         public int Id { get; set; }
 

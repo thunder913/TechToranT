@@ -1,5 +1,6 @@
 ﻿namespace RestaurantMenuProject.Services.Data.Contracts
 {
+    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     using RestaurantMenuProject.Data.Models;
@@ -7,6 +8,10 @@
 
     public interface IDrinkService
     {
-        public Task<Drink> AddDrink(AddDrinkViewModel drink);
+        public Task<Drink> AddDrink(AddDrinkViewModel drink, string wwwroot);
+
+        public DrinkItemViewModel GetDrinkById(int id);
+
+        public ICollection<DrinkItemViewModel> GetAllDrinksByType(string drinkType);
     }
 }

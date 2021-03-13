@@ -7,21 +7,39 @@
     using RestaurantMenuProject.Data.Common.Repositories;
     using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Services.Data.Contracts;
+    using RestaurantMenuProject.Services.Mapping;
     using RestaurantMenuProject.Web.ViewModels;
 
     public class DishService : IDishService
     {
         private readonly IDeletableEntityRepository<Dish> dishRepository;
+        private readonly IIngredientService ingredientService;
+        private readonly IFileService fileService;
+        private readonly IDishTypeService dishTypeService;
 
-        public DishService(IDeletableEntityRepository<Dish> dishRepository)
+        public DishService(
+            IDeletableEntityRepository<Dish> dishRepository,
+            IIngredientService ingredientService,
+            IFileService fileService,
+            IDishTypeService dishTypeService)
         {
             this.dishRepository = dishRepository;
+            this.ingredientService = ingredientService;
+            this.fileService = fileService;
+            this.dishTypeService = dishTypeService;
         }
 
-        public async Task AddDish(Dish dish)
+        public async Task AddDish(AddDishViewModel dish, string wwwroot)
         {
-            await this.dishRepository.AddAsync(dish);
+            var mapper = AutoMapperConfig.MapperInstance;
+
+            var dishToAdd = mapper.Map<Dish>(dish);
+            dishToAdd.Ingredients = this.ingredientService.GetAllIngredientsByIds(dish.IngredientsId.ToArray()).ToArray();
+            var dishType = this.dishTypeService.GetDishTypeById(dishToAdd.DishTypeId);
+            await this.dishRepository.AddAsync(dishToAdd);
             await this.dishRepository.SaveChangesAsync();
+            await this.fileService.SaveImage("Menu", dishType.Name, dishToAdd.Id, dish.Image, wwwroot);
+
         }
 
         public void RemoveDish(Dish dish)
@@ -39,26 +57,7 @@
             return this.dishRepository
                     .AllAsNoTracking()
                     .Where(x => x.Id == id)
-                    .Select(x => new FoodItemViewModel()
-                    {
-                        Id = x.Id,
-                        DishType = x.DishType,
-                        Name = x.Name,
-                        PrepareTime = x.PrepareTime,
-                        Price = x.Price,
-                        Weight = x.Weight,
-                        AdditionalInfo = x.AdditionalInfo,
-                        Ingredients = x.Ingredients.Select(i => new IngredientViewModel()
-                        {
-                            Name = i.Name,
-                            Allergens = i.Allergens.Select(a => new AllergenViewModel()
-                            {
-                                Id = a.Id,
-                                Name = a.Name,
-                            })
-                            .ToList(),
-                        }).ToList(),
-                    })
+                    .To<FoodItemViewModel>()
                     .FirstOrDefault();
         }
 
@@ -67,15 +66,7 @@
             return this.dishRepository
                         .AllAsNoTracking()
                         .Where(x => x.DishType.Name == dishType)
-                        .Select(x => new FoodItemViewModel()
-                        {
-                            Id = x.Id,
-                            DishType = x.DishType,
-                            Name = x.Name,
-                            PrepareTime = x.PrepareTime,
-                            Price = x.Price,
-                            Weight = x.Weight,
-                        })
+                        .To<FoodItemViewModel>()
                         .ToList();
         }
     }

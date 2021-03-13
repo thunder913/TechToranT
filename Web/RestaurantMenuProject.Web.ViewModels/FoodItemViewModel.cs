@@ -1,10 +1,11 @@
 ﻿namespace RestaurantMenuProject.Web.ViewModels
 {
     using System.Collections.Generic;
-
+    using AutoMapper;
     using RestaurantMenuProject.Data.Models;
+    using RestaurantMenuProject.Services.Mapping;
 
-    public class FoodItemViewModel
+    public class FoodItemViewModel : IMapFrom<Dish>
     {
         public int Id { get; set; }
 

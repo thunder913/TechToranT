@@ -83,25 +83,10 @@
                 return this.View(dish);
             }
 
-            var dishType = this.dishTypeService.GetDishTypeById(dish.DishTypeId);
+            await this.dishService.AddDish(dish, this.webHostEnvironment.WebRootPath);
 
-            var dishToAdd = new Dish()
-            {
-                AdditionalInfo = dish.AdditionalInfo,
-                DishTypeId = dishType.Id,
-                PrepareTime = dish.PrepareTime,
-                Price = dish.Price,
-                Weight = dish.Weight,
-                Name = dish.Name,
-                Ingredients = this.ingredientService.GetAllIngredientsByIds(dish.IngredientsId.ToArray()).ToArray(),
-            };
-
-            await this.dishService.AddDish(dishToAdd);
-
-            // TODO USE AUTOMAPPER AND MAKE IT ADD TO THE DATABASE, + ADD MORE CHECKS AND BETTER ERROR MESSAGES
+            // TODO ADD MORE CHECKS AND BETTER ERROR MESSAGES
             // TODO Check if the file is the right format
-            // TODO Send it into the Service
-            await this.SaveImage("Menu", dishType.Name, dishToAdd.Id, dish.Image);
 
             return this.RedirectToAction("Index");
         }
@@ -115,12 +100,9 @@
                 return this.View(drink);
             }
 
-            // TODO USE AUTOMAPPER AND MAKE IT ADD TO THE DATABASE, + ADD MORE CHECKS AND BETTER ERROR MESSAGES
+            // TODO ADD MORE CHECKS AND BETTER ERROR MESSAGES
             // TODO Check if the file is the right format
-            var addedDrink = await this.drinkService.AddDrink(drink);
-
-            await this.SaveImage("Drinks", addedDrink.DrinkType.Name, addedDrink.Id, drink.Image);
-
+            await this.drinkService.AddDrink(drink, this.webHostEnvironment.WebRootPath);
             return this.RedirectToAction("Index");
         }
 
@@ -133,13 +115,7 @@
                 return this.View(ingredient);
             }
 
-            var ingredientToAdd = new Ingredient()
-            {
-                Name = ingredient.Name,
-                Allergens = this.allergenService.GetAllergensWithIds(ingredient.AllergensId.ToList()).ToList(),
-            };
-
-            await this.ingredientService.AddIngredient(ingredientToAdd);
+            await this.ingredientService.AddIngredient(ingredient);
 
             return this.RedirectToAction("Index");
         }
@@ -152,12 +128,7 @@
                 return this.View(allergen);
             }
 
-            var allergenToAdd = new Allergen()
-            {
-                Name = allergen.Name,
-            };
-
-            await this.allergenService.AddAllergen(allergenToAdd);
+            await this.allergenService.AddAllergen(allergen);
 
             return this.RedirectToAction("Index");
         }
@@ -184,22 +155,5 @@
         {
             addIngredientViewModel.Allergens = this.allergenService.GetAllergensWithId().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
         }
-
-        private async Task SaveImage(string itemCategory, string type, int id, IFormFile formFile)
-        {
-            var path = $"{this.webHostEnvironment.WebRootPath}/img/{itemCategory}/{type}";
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-
-            using (FileStream fs = new FileStream(path + $"/{id}.jpg", FileMode.Create))
-            {
-                await formFile.CopyToAsync(fs);
-            }
-        }
     }
 }
-
-// TODO MAKE SERVICE FOR PACKAGING TYPE (SAME AS DRINKTYPESERVICE) AND FOR INGREDIENTS(WE ALREADT HAVE, JUST ADD IT TO THE VALUE)
-// SEND THE ITEM TO THE VIEW
