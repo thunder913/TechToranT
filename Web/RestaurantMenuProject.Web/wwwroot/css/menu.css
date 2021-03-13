@@ -7,7 +7,7 @@ li {
     border-radius: 100px;
 }
 
-    li .bg {
+    li {
         position: absolute;
         z-index: -1;
         top: 0;

@@ -1,0 +1,42 @@
+﻿.right {
+    right: -30px;
+    height: 50px;
+    width: 50px;
+    text-align: center;
+}
+#weight {
+    position: absolute;
+    top: 110px;
+    left: 10px;
+}
+#add {
+    position: absolute;
+    top: 45px;
+}
+
+#count {
+    position: absolute;
+    top: -5px;
+}
+
+#price {
+    position: absolute;
+    top: -55px;
+    min-height: 25px;
+    display: flex;
+    align-items: center;
+}
+
+.menuItem {
+    height: 152px;
+}
+
+.gray-bg {
+    background-color: gainsboro;
+    line-height: 35px;
+    position: absolute;
+    z-index: -1;
+    opacity: 1;
+    box-shadow: inset 0px 0px 3px 3px gray;
+}
+

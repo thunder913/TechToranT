@@ -1,41 +1,28 @@
 ﻿@model ICollection<FoodItemViewModel>
-
+    <link href="~/css/displayFoodItem.css" rel="stylesheet" />
 <link rel="stylesheet" runat="server" media="screen" href="~/css/menu.css" />
-<h1>This is the Food menu!</h1>
 <ul id="menu" class="row">
     @foreach (var item in Model)
     {
-        <li id="@item.Id" onclick="window.location = '/Menu/@item.Name/@item.Id'" class="col-md-5 h-100">
-            <div id="@item.Id" class="bg"></div>
-            <h1>@item.Name</h1>
-            <br />
-            <br />
-            <span class="left gray-bg">@item.Weight grams</span>
-            <span class="right gray-bg">@item.Price$</span>
-
-            @*TODO make it actually work and add it to a basket (probably in browser memory)*@
-            <form class="right">
+    <li id="@item.Id" onclick="window.location = '/Menu/@item.Name/@item.Id'" class="col-md-5 menuItem">
+        <h1>@item.Name</h1>
+        <div id="@item.Id" class="bg h-100 col-md-12"></div>
+        <div class="float-left">
+            <span id="weight" class="left gray-bg">@item.Weight grams</span>
+        </div>
+        <div class="float-right col-md-5">
+            <span id="price" class="float-right right gray-bg">@item.Price$</span>
+            <form>
                 <input type="hidden" name="Id" value="@item.Id" />
-                <input type="text" style="width: 50px" placeholder="Count" />
-                <button type="submit" class="btn btn-success">Add</button>
+                <input id="count" type="text" class="right" placeholder="Count" />
+                <button id="add" type="submit" class="btn btn-success right">Add</button>
             </form>
-            <br />
-            <br />
-        </li>
+        </div>
+        @*TODO make it actually work and add it to a basket (probably in browser memory)*@
+    </li>
     }
 </ul>
 @* TODO move the scripts and styles to another file*@
-<style>
-    .right {
-        float: right;
-    }
-
-    .gray-bg {
-        background-color: gainsboro;
-        border: 1px solid black;
-        line-height: 35px;
-    }
-</style>
 
 
 @section Scripts
