@@ -8,33 +8,13 @@
     using RestaurantMenuProject.Services.Data.Contracts;
     using RestaurantMenuProject.Web.ViewModels;
 
-    // TODO rename the service everywhere to dishService
     public class DishTypeService : IDishTypeService
     {
         private readonly IDeletableEntityRepository<DishType> dishTypeRepository;
-        private readonly IDeletableEntityRepository<Dish> dishRepository;
 
-        public DishTypeService(IDeletableEntityRepository<DishType> dishTypeRepository, IDeletableEntityRepository<Dish> dishRepository) 
+        public DishTypeService(IDeletableEntityRepository<DishType> dishTypeRepository) 
         {
             this.dishTypeRepository = dishTypeRepository;
-            this.dishRepository = dishRepository;
-        }
-
-        public ICollection<FoodItemViewModel> GetAllDisheshWithDishType(string dishType)
-        {
-            return this.dishRepository
-                        .AllAsNoTracking()
-                        .Where(x => x.DishType.Name == dishType)
-                        .Select(x => new FoodItemViewModel()
-                        {
-                            Id = x.Id,
-                            DishType = x.DishType,
-                            Name = x.Name,
-                            PrepareTime = x.PrepareTime,
-                            Price = x.Price,
-                            Weight = x.Weight,
-                        })
-                        .ToList();
         }
 
         public ICollection<MenuItemViewModel> GetAllDishTypes()
@@ -61,34 +41,6 @@
         public DishType GetDishTypeById(int id)
         {
             return this.dishTypeRepository.All().First(x => x.Id == id);
-        }
-
-        public FoodItemViewModel GetDishWithId(int id)
-        {
-            return this.dishRepository
-                    .AllAsNoTracking()
-                    .Where(x => x.Id == id)
-                    .Select(x => new FoodItemViewModel()
-                    {
-                        Id = x.Id,
-                        DishType = x.DishType,
-                        Name = x.Name,
-                        PrepareTime = x.PrepareTime,
-                        Price = x.Price,
-                        Weight = x.Weight,
-                        AdditionalInfo = x.AdditionalInfo,
-                        Ingredients = x.Ingredients.Select(i => new IngredientViewModel()
-                        {
-                            Name = i.Name,
-                            Allergens = i.Allergens.Select(a => new AllergenViewModel()
-                            {
-                                Id = a.Id,
-                                Name = a.Name,
-                            })
-                            .ToList(),
-                        }).ToList(),
-                    })
-                    .FirstOrDefault();
         }
     }
 }

@@ -1,7 +1,8 @@
 ﻿namespace RestaurantMenuProject.Web.ViewModels
 {
-    using RestaurantMenuProject.Data.Models;
     using System.Collections.Generic;
+
+    using RestaurantMenuProject.Data.Models;
 
     public class FoodItemViewModel
     {

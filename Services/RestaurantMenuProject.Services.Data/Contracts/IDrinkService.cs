@@ -3,9 +3,10 @@
     using System.Threading.Tasks;
 
     using RestaurantMenuProject.Data.Models;
+    using RestaurantMenuProject.Web.ViewModels;
 
     public interface IDrinkService
     {
-        public Task AddDrink(Drink drink);
+        public Task<Drink> AddDrink(AddDrinkViewModel drink);
     }
 }
