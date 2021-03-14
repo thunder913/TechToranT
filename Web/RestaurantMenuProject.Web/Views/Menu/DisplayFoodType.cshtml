@@ -28,7 +28,7 @@
 @section Scripts
 {
     <script>
-        $('ul li div').each(function (i) {
+        $('.bg').each(function (i) {
             var controllerName = '@ViewContext.RouteData.Values["Controller"].ToString()';
             var dishType = '@ViewContext.RouteData.Values["Type"].ToString()';
             $(this).css('background-image', 'url(/img/' + controllerName + '/' + dishType + '/' + this.id + ".jpg)");
