@@ -5,7 +5,7 @@
 <ul id="menu" class="row">
     @foreach (var item in Model)
     {
-    <li id="@item.Id" onclick="window.location = '/Menu/Drinks/@item.Name/@item.Id';e.stopPropagation();" class="col-md-5 menuItem">
+    <li id="@item.Id" onclick="window.location = '/Menu/Drinks/@item.Name/@item.Id';" class="col-md-5 menuItem">
         <h1>@item.Name</h1>
         <div id="@item.Id" class="bg h-100 col-md-12"></div>
         <div class="float-left">
@@ -15,8 +15,9 @@
             <span id="price" class="float-right right gray-bg">@item.Price$</span>
             <form>
                 <input type="hidden" name="Id" value="@item.Id" />
-                <input id="count" type="text" class="right" placeholder="Count" />
-                <button id="add" type="submit" class="btn btn-success right">Add</button>
+                <input type="hidden" name="Type" value="Drink" />
+                <input id="count" type="text" name="Count" class="right" placeholder="Count" />
+                <button id="add" type="button" class="btn btn-success right">Add</button>
             </form>
         </div>
         @*TODO make it actually work and add it to a basket (probably in browser memory)*@
@@ -35,8 +36,25 @@
             $(this).css('background-image', 'url(/img/Drinks/' + dishType + '/' + this.id + ".jpg)");
         });
 
+
+
         $("li form").click(function (e) {
             e.stopPropagation();
         });
+    </script>
+
+    <script>
+        $('button').click(function (e) {
+
+            var form = e.target.parentElement;
+
+            var formdata = {
+                'id': $('input[name=Id]').val(),
+                'count': form.querySelector('input[name=Count]').value,
+                'type': $('input[name=Type]').val()
+            }
+
+            console.log(formdata);
+        })
     </script>
 }

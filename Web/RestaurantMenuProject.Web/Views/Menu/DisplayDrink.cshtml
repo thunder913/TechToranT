@@ -9,7 +9,7 @@
     <span class="right gray-bg">@Model.Price$</span>
 
     @*TODO make it actually work and add it to a basket (probably in browser memory)*@
-    <form class="right">
+    <form class="right" method="post">
         <input type="hidden" name="Id" value="@Model.Id" />
         <input type="text" style="width: 50px" placeholder="Count" />
         <button type="submit" class="btn btn-success">Add</button>
