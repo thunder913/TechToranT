@@ -6,23 +6,24 @@
 <ul id="menu" class="row">
     @foreach (var item in Model)
     {
-<li id="@item.Id" onclick="window.location = '/Menu/Drinks/@item.Name/@item.Id';" class="col-md-5 menuItem">
-    <h1>@item.Name</h1>
-    <div id="@item.Id" class="bg h-100 col-md-12"></div>
-    <div class="float-left">
-        <span id="weight" class="left gray-bg">@item.Weight mililitres</span>
-    </div>
-    <div class="float-right col-md-5">
-        <span id="price" class="float-right right gray-bg">@item.Price$</span>
-        <form>
-            <input type="hidden" name="Id" value="@item.Id" />
-            <input type="hidden" name="Type" value="Drink" />
-            <input id="count" type="text" name="Count" class="right" placeholder="Count" />
-            <button id="add" type="button" class="btn btn-success right">Add</button>
-        </form>
-    </div>
-    @*TODO make it actually work and add it to a basket (probably in browser memory)*@
-</li>}
+        <li id="@item.Id" onclick="window.location = '/Menu/Drinks/@item.Name/@item.Id';" class="col-md-5 menuItem">
+            <h1>@item.Name</h1>
+            <div id="@item.Id" class="bg h-100 col-md-12"></div>
+            <div class="float-left">
+                <span id="weight" class="left gray-bg">@item.Weight mililitres</span>
+            </div>
+            <div class="float-right col-md-5">
+                <span id="price" class="float-right right gray-bg">@item.Price$</span>
+                <form method="post">
+                    <input type="hidden" name="Id" value="@item.Id" />
+                    <input type="hidden" name="Type" value="Drink" />
+                    <input id="count" type="text" name="Count" class="right" placeholder="Count" />
+                    <button type="button" class="btn btn-success right add">Add</button>
+                </form>
+            </div>
+            TODO make it actually work and add it to a basket (probably in browser memory)
+        </li>
+}
 </ul>
 
 
@@ -43,15 +44,17 @@
     </script>
 
     <script>
-        $('button').click(function (e) {
+        $('.add').click(function (e) {
 
             var form = e.target.parentElement;
-
+            console.log(form);
             var formdata = {
-                'id': $('input[name=Id]').val(),
+                'id': form.querySelector('input[name=Id]').value,
                 'count': form.querySelector('input[name=Count]').value,
-                'type': $('input[name=Type]').val()
+                'type': form.querySelector('input[name=Type]').value
             }
+
+            var antiForgeryToken = $('input[name=__RequestVerificationToken]').val();
 
             var notificationSettings = {
                 placement: {
@@ -63,21 +66,31 @@
                 offset: 50,
                 delay: 3000
             };
+            $.ajax({
+                type: 'POST',
+                url: '/api/Basket/',
+                data: JSON.stringify(formdata),
+                headers: {
+                    'X-CSRF-TOKEN': antiForgeryToken
+                },
+                contentType: 'application/json',
+                success: function (res) {
+                    var liElement = form.parentElement.parentElement;
+                    var productName = liElement.querySelector('h1').textContent;
 
-            if (formdata.count <= 0) {
+                    $.notify({
+                        message: 'Added ' + productName + ' to the basket! (' + formdata.count + ')'
+                    }, notificationSettings);
+                },
+                error: function (res) {
+                    console.log(res);
+                    notificationSettings.type = 'danger';
+                    $.notify({
+                        message: 'Something went wrong, try again and check the count!'
+                    }, notificationSettings);
 
-                notificationSettings.type = 'danger';
-                $.notify({
-                    message: 'You must enter an amount.'
-                }, notificationSettings)
-            } else {
-                var liElement = form.parentElement.parentElement;
-                var productName = liElement.querySelector('h1').textContent;
-
-                $.notify({
-                    message: 'Added ' + productName + ' to the basket! (' + formdata.count + ')'
-                }, notificationSettings)
-            }
+                }
+            });
         })
     </script>
 }

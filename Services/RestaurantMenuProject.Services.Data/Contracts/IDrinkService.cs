@@ -10,7 +10,9 @@
     {
         public Task<Drink> AddDrink(AddDrinkViewModel drink, string wwwroot);
 
-        public DrinkItemViewModel GetDrinkById(int id);
+        public DrinkItemViewModel GetDrinkItemViewModelById(int id);
+
+        public Drink GetDrinkById(int id);
 
         public ICollection<DrinkItemViewModel> GetAllDrinksByType(string drinkType);
     }

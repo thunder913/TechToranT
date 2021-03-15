@@ -42,13 +42,20 @@
             return drinkToAdd;
         }
 
-        public DrinkItemViewModel GetDrinkById(int id)
+        public DrinkItemViewModel GetDrinkItemViewModelById(int id)
         {
             return this.drinkRepository
                     .AllAsNoTracking()
                     .Where(x => x.Id == id)
                     .To<DrinkItemViewModel>()
                     .First();
+        }
+
+        public Drink GetDrinkById(int id)
+        {
+            return this.drinkRepository
+                .All()
+                .FirstOrDefault(x => x.Id == id);
         }
 
         public ICollection<DrinkItemViewModel> GetAllDrinksByType(string drinkType)

@@ -1,26 +1,26 @@
 ﻿@model ICollection<FoodItemViewModel>
-    <link href="~/css/displayFoodItem.css" rel="stylesheet" />
+<link href="~/css/displayFoodItem.css" rel="stylesheet" />
 <link rel="stylesheet" runat="server" media="screen" href="~/css/menu.css" />
 <ul id="menu" class="row">
     @foreach (var item in Model)
     {
-    <li id="@item.Id" onclick="window.location = '/Menu/@item.Name/@item.Id'" class="col-md-5 menuItem">
-        <h1>@item.Name</h1>
-        <div id="@item.Id" class="bg h-100 col-md-12"></div>
-        <div class="float-left">
-            <span id="weight" class="left gray-bg">@item.Weight grams</span>
-        </div>
-        <div class="float-right col-md-5">
-            <span id="price" class="float-right right gray-bg">@item.Price$</span>
-            <form>
-                <input type="hidden" name="Id" value="@item.Id" />
-                <input id="count" type="text" class="right" placeholder="Count" />
-                <button id="add" type="submit" class="btn btn-success right">Add</button>
-            </form>
-        </div>
-        @*TODO make it actually work and add it to a basket (probably in browser memory)*@
-    </li>
-    }
+<li id="@item.Id" onclick="window.location = '/Menu/@item.Name/@item.Id'" class="col-md-5 menuItem">
+    <h1>@item.Name</h1>
+    <div id="@item.Id" class="bg h-100 col-md-12"></div>
+    <div class="float-left">
+        <span id="weight" class="left gray-bg">@item.Weight grams</span>
+    </div>
+    <div class="float-right col-md-5">
+        <span id="price" class="float-right right gray-bg">@item.Price$</span>
+        <form method="post">
+            <input type="hidden" name="Id" value="@item.Id" />
+            <input type="hidden" name="Type" value="Dish" />
+            <input id="count" type="text" name="Count" class="right" placeholder="Count" />
+            <button type="button" class="btn btn-success right add">Add</button>
+        </form>
+    </div>
+    TODO make it actually work and add it to a basket (probably in browser memory)
+</li>}
 </ul>
 @* TODO move the scripts and styles to another file*@
 
@@ -34,8 +34,57 @@
             $(this).css('background-image', 'url(/img/' + controllerName + '/' + dishType + '/' + this.id + ".jpg)");
         });
         $("li form").click(function (e) {
-            // Do something
             e.stopPropagation();
         });
+    </script>
+
+    <script>
+        $('.add').click(function (e) {
+
+            var form = e.target.parentElement;
+            var formdata = {
+                'id': form.querySelector('input[name=Id]').value,
+                'count': form.querySelector('input[name=Count]').value,
+                'type': form.querySelector('input[name=Type]').value
+            }
+
+            var antiForgeryToken = $('input[name=__RequestVerificationToken]').val();
+
+            var notificationSettings = {
+                placement: {
+                    from: 'top',
+                    align: 'center'
+                },
+                mouse_over: 'pause',
+                type: 'success',
+                offset: 50,
+                delay: 3000
+            };
+            $.ajax({
+                type: 'POST',
+                url: '/api/Basket/',
+                data: JSON.stringify(formdata),
+                headers: {
+                    'X-CSRF-TOKEN': antiForgeryToken
+                },
+                contentType: 'application/json',
+                success: function (res) {
+                    var liElement = form.parentElement.parentElement;
+                    var productName = liElement.querySelector('h1').textContent;
+
+                    $.notify({
+                        message: 'Added ' + productName + ' to the basket! (' + formdata.count + ')'
+                    }, notificationSettings);
+                },
+                error: function (res) {
+                    console.log(res);
+                    notificationSettings.type = 'danger';
+                    $.notify({
+                        message: 'Something went wrong, try again and check the count!'
+                    }, notificationSettings);
+
+                }
+            });
+        })
     </script>
 }

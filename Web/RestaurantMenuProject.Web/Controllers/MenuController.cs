@@ -45,7 +45,7 @@
             }
             else
             {
-                var drink = this.drinkService.GetDrinkById(id);
+                var drink = this.drinkService.GetDrinkItemViewModelById(id);
                 return this.View("DisplayDrink", drink);
             }
         }
