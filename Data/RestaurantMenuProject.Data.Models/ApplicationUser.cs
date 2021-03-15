@@ -41,5 +41,8 @@ namespace RestaurantMenuProject.Data.Models
 
         public virtual ICollection<UserDislike> Dislikes { get; set; } = new HashSet<UserDislike>();
 
+        public virtual Basket Basket { get; set; }
+
+        public string BasketId { get; set; }
     }
 }

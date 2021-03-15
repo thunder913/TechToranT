@@ -277,6 +277,9 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("BasketId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -335,6 +338,10 @@ namespace RestaurantMenuProject.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BasketId")
+                        .IsUnique()
+                        .HasFilter("[BasketId] IS NOT NULL");
+
                     b.HasIndex("IsDeleted");
 
                     b.HasIndex("NormalizedEmail")
@@ -346,6 +353,100 @@ namespace RestaurantMenuProject.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("RestaurantMenuProject.Data.Models.Basket", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("Baskets");
+                });
+
+            modelBuilder.Entity("RestaurantMenuProject.Data.Models.BasketDish", b =>
+                {
+                    b.Property<string>("BasketId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("DishId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("BasketId", "DishId");
+
+                    b.HasIndex("DishId");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("BasketsDishes");
+                });
+
+            modelBuilder.Entity("RestaurantMenuProject.Data.Models.BasketDrink", b =>
+                {
+                    b.Property<string>("BasketId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("DrinkId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("BasketId", "DrinkId");
+
+                    b.HasIndex("DrinkId");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("BasketsDrinks");
                 });
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.Comment", b =>
@@ -402,7 +503,7 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.Property<DateTime?>("DeletedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("DishTypeId")
+                    b.Property<int>("DishTypeId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
@@ -488,7 +589,7 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.Property<DateTime?>("DeletedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("DrinkTypeId")
+                    b.Property<int>("DrinkTypeId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
@@ -501,7 +602,7 @@ namespace RestaurantMenuProject.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PackagingTypeId")
+                    b.Property<int>("PackagingTypeId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
@@ -780,40 +881,30 @@ namespace RestaurantMenuProject.Data.Migrations
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.UserDislike", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("CommentId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("UserId", "CommentId");
 
                     b.HasIndex("CommentId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("UsersDislikes");
                 });
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.UserLike", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("CommentId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("UserId", "CommentId");
 
                     b.HasIndex("CommentId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("UsersLikes");
                 });
@@ -944,6 +1035,53 @@ namespace RestaurantMenuProject.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RestaurantMenuProject.Data.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("RestaurantMenuProject.Data.Models.Basket", "Basket")
+                        .WithOne("User")
+                        .HasForeignKey("RestaurantMenuProject.Data.Models.ApplicationUser", "BasketId");
+
+                    b.Navigation("Basket");
+                });
+
+            modelBuilder.Entity("RestaurantMenuProject.Data.Models.BasketDish", b =>
+                {
+                    b.HasOne("RestaurantMenuProject.Data.Models.Basket", "Basket")
+                        .WithMany("Dishes")
+                        .HasForeignKey("BasketId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RestaurantMenuProject.Data.Models.Dish", "Dish")
+                        .WithMany()
+                        .HasForeignKey("DishId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Basket");
+
+                    b.Navigation("Dish");
+                });
+
+            modelBuilder.Entity("RestaurantMenuProject.Data.Models.BasketDrink", b =>
+                {
+                    b.HasOne("RestaurantMenuProject.Data.Models.Basket", "Basket")
+                        .WithMany("Drinks")
+                        .HasForeignKey("BasketId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RestaurantMenuProject.Data.Models.Drink", "Drink")
+                        .WithMany()
+                        .HasForeignKey("DrinkId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Basket");
+
+                    b.Navigation("Drink");
+                });
+
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.Comment", b =>
                 {
                     b.HasOne("RestaurantMenuProject.Data.Models.ApplicationUser", "CommentedBy")
@@ -957,7 +1095,9 @@ namespace RestaurantMenuProject.Data.Migrations
                 {
                     b.HasOne("RestaurantMenuProject.Data.Models.DishType", "DishType")
                         .WithMany("Dishes")
-                        .HasForeignKey("DishTypeId");
+                        .HasForeignKey("DishTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("DishType");
                 });
@@ -966,11 +1106,15 @@ namespace RestaurantMenuProject.Data.Migrations
                 {
                     b.HasOne("RestaurantMenuProject.Data.Models.DrinkType", "DrinkType")
                         .WithMany("Drinks")
-                        .HasForeignKey("DrinkTypeId");
+                        .HasForeignKey("DrinkTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("RestaurantMenuProject.Data.Models.PackagingType", "PackagingType")
                         .WithMany()
-                        .HasForeignKey("PackagingTypeId");
+                        .HasForeignKey("PackagingTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("DrinkType");
 
@@ -1040,7 +1184,9 @@ namespace RestaurantMenuProject.Data.Migrations
 
                     b.HasOne("RestaurantMenuProject.Data.Models.ApplicationUser", "User")
                         .WithMany("Dislikes")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Comment");
 
@@ -1057,7 +1203,9 @@ namespace RestaurantMenuProject.Data.Migrations
 
                     b.HasOne("RestaurantMenuProject.Data.Models.ApplicationUser", "User")
                         .WithMany("Likes")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Comment");
 
@@ -1079,6 +1227,15 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.Navigation("Orders");
 
                     b.Navigation("Roles");
+                });
+
+            modelBuilder.Entity("RestaurantMenuProject.Data.Models.Basket", b =>
+                {
+                    b.Navigation("Dishes");
+
+                    b.Navigation("Drinks");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.Comment", b =>

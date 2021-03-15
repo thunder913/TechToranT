@@ -43,15 +43,19 @@
 
         public DbSet<Setting> Settings { get; set; }
 
-        public DbSet<UserLike> UsersLikes { get; set; }
-
-        public DbSet<UserDislike> UsersDislikes { get; set; }
-
         public DbSet<DishType> DishTypes { get; set; }
 
         public DbSet<DrinkType> DrinkTypes { get; set; }
 
         public DbSet<PackagingType> PackagingTypes { get; set; }
+
+        public DbSet<Basket> Baskets { get; set; }
+
+        public DbSet<BasketDrink> BasketsDrinks { get; set; }
+        public DbSet<UserLike> UsersLikes { get; set; }
+
+        public DbSet<UserDislike> UsersDislikes { get; set; }
+        public DbSet<BasketDish> BasketsDishes { get; set; }
 
         public override int SaveChanges() => this.SaveChanges(true);
 
@@ -109,6 +113,24 @@
             builder.Entity<Order>()
                 .HasOne(x => x.Client)
                 .WithMany(x => x.Orders);
+
+            builder.Entity<BasketDish>()
+                .HasKey(x => new { x.BasketId, x.DishId });
+
+            builder.Entity<BasketDrink>()
+                .HasKey(x => new { x.BasketId, x.DrinkId });
+
+            builder.Entity<Basket>()
+                .HasOne(x => x.User)
+                .WithOne(x => x.Basket);
+
+            builder.Entity<BasketDish>()
+                .HasOne(x => x.Basket)
+                .WithMany(x => x.Dishes);
+
+            builder.Entity<BasketDrink>()
+                .HasOne(x => x.Basket)
+                .WithMany(x => x.Drinks);
 
             // Needed for Identity models configuration
             base.OnModelCreating(builder);

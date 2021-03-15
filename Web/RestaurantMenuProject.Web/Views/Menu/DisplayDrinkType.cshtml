@@ -1,29 +1,28 @@
 ﻿@model ICollection<DrinkItemViewModel>
+
 <link rel="stylesheet" runat="server" media="screen" href="~/css/menu.css" />
 <link href="~/css/displayFoodItem.css" rel="stylesheet" />
 <h1>This is the Food menu!</h1>
 <ul id="menu" class="row">
     @foreach (var item in Model)
     {
-    <li id="@item.Id" onclick="window.location = '/Menu/Drinks/@item.Name/@item.Id';" class="col-md-5 menuItem">
-        <h1>@item.Name</h1>
-        <div id="@item.Id" class="bg h-100 col-md-12"></div>
-        <div class="float-left">
-            <span id="weight" class="left gray-bg">@item.Weight mililitres</span>
-        </div>
-        <div class="float-right col-md-5">
-            <span id="price" class="float-right right gray-bg">@item.Price$</span>
-            <form>
-                <input type="hidden" name="Id" value="@item.Id" />
-                <input type="hidden" name="Type" value="Drink" />
-                <input id="count" type="text" name="Count" class="right" placeholder="Count" />
-                <button id="add" type="button" class="btn btn-success right">Add</button>
-            </form>
-        </div>
-        @*TODO make it actually work and add it to a basket (probably in browser memory)*@
-    </li>
-
-    }
+<li id="@item.Id" onclick="window.location = '/Menu/Drinks/@item.Name/@item.Id';" class="col-md-5 menuItem">
+    <h1>@item.Name</h1>
+    <div id="@item.Id" class="bg h-100 col-md-12"></div>
+    <div class="float-left">
+        <span id="weight" class="left gray-bg">@item.Weight mililitres</span>
+    </div>
+    <div class="float-right col-md-5">
+        <span id="price" class="float-right right gray-bg">@item.Price$</span>
+        <form>
+            <input type="hidden" name="Id" value="@item.Id" />
+            <input type="hidden" name="Type" value="Drink" />
+            <input id="count" type="text" name="Count" class="right" placeholder="Count" />
+            <button id="add" type="button" class="btn btn-success right">Add</button>
+        </form>
+    </div>
+    @*TODO make it actually work and add it to a basket (probably in browser memory)*@
+</li>}
 </ul>
 
 
@@ -54,7 +53,31 @@
                 'type': $('input[name=Type]').val()
             }
 
-            console.log(formdata);
+            var notificationSettings = {
+                placement: {
+                    from: 'top',
+                    align: 'center'
+                },
+                mouse_over: 'pause',
+                type: 'success',
+                offset: 50,
+                delay: 3000
+            };
+
+            if (formdata.count <= 0) {
+
+                notificationSettings.type = 'danger';
+                $.notify({
+                    message: 'You must enter an amount.'
+                }, notificationSettings)
+            } else {
+                var liElement = form.parentElement.parentElement;
+                var productName = liElement.querySelector('h1').textContent;
+
+                $.notify({
+                    message: 'Added ' + productName + ' to the basket! (' + formdata.count + ')'
+                }, notificationSettings)
+            }
         })
     </script>
 }

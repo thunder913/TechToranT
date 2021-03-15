@@ -775,46 +775,6 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.ToTable("Settings");
                 });
 
-            modelBuilder.Entity("RestaurantMenuProject.Data.Models.UserDislike", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CommentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId1")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("UserId", "CommentId");
-
-                    b.HasIndex("CommentId");
-
-                    b.HasIndex("UserId1");
-
-                    b.ToTable("UsersDislikes");
-                });
-
-            modelBuilder.Entity("RestaurantMenuProject.Data.Models.UserLike", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CommentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId1")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("UserId", "CommentId");
-
-                    b.HasIndex("CommentId");
-
-                    b.HasIndex("UserId1");
-
-                    b.ToTable("UsersLikes");
-                });
-
             modelBuilder.Entity("AllergenIngredient", b =>
                 {
                     b.HasOne("RestaurantMenuProject.Data.Models.Allergen", null)
@@ -1027,49 +987,13 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("RestaurantMenuProject.Data.Models.UserDislike", b =>
-                {
-                    b.HasOne("RestaurantMenuProject.Data.Models.Comment", "Comment")
-                        .WithMany("Dislikes")
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
 
-                    b.HasOne("RestaurantMenuProject.Data.Models.ApplicationUser", "User")
-                        .WithMany("Dislikes")
-                        .HasForeignKey("UserId1");
-
-                    b.Navigation("Comment");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("RestaurantMenuProject.Data.Models.UserLike", b =>
-                {
-                    b.HasOne("RestaurantMenuProject.Data.Models.Comment", "Comment")
-                        .WithMany("Likes")
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("RestaurantMenuProject.Data.Models.ApplicationUser", "User")
-                        .WithMany("Likes")
-                        .HasForeignKey("UserId1");
-
-                    b.Navigation("Comment");
-
-                    b.Navigation("User");
-                });
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Claims");
 
                     b.Navigation("Comments");
-
-                    b.Navigation("Dislikes");
-
-                    b.Navigation("Likes");
 
                     b.Navigation("Logins");
 
@@ -1078,12 +1002,6 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.Navigation("Roles");
                 });
 
-            modelBuilder.Entity("RestaurantMenuProject.Data.Models.Comment", b =>
-                {
-                    b.Navigation("Dislikes");
-
-                    b.Navigation("Likes");
-                });
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.Dish", b =>
                 {
