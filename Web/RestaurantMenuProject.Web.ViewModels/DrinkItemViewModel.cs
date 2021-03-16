@@ -1,9 +1,10 @@
-﻿using RestaurantMenuProject.Data.Models;
-using RestaurantMenuProject.Services.Mapping;
-using System.Collections.Generic;
-
-namespace RestaurantMenuProject.Web.ViewModels
+﻿namespace RestaurantMenuProject.Web.ViewModels
 {
+    using System.Collections.Generic;
+
+    using RestaurantMenuProject.Data.Models;
+    using RestaurantMenuProject.Services.Mapping;
+
     public class DrinkItemViewModel : IMapFrom<Drink>
     {
         public int Id { get; set; }
