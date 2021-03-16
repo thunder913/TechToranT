@@ -133,6 +133,13 @@
             return this.RedirectToAction("Index");
         }
 
+        public IActionResult Edit(string type, int id)
+        {
+            var dish = this.dishService.GetAddDishViewModelById(id);
+            return this.View("AddDish", dish);
+            // TODO make a switch case and mapping to the addviewmodels
+        }
+
         public IActionResult Remove()
         {
             return this.View();

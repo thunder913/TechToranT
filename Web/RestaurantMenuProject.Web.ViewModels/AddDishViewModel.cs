@@ -8,7 +8,7 @@
     using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Services.Mapping;
 
-    public class AddDishViewModel : IMapTo<Dish>
+    public class AddDishViewModel : IMapTo<Dish>, IMapFrom<Dish>
     {
         [Required]
         public string Name { get; set; }

@@ -10,6 +10,8 @@
     {
         public Task AddDish(AddDishViewModel dish, string wwwroot);
 
+        public AddDishViewModel GetAddDishViewModelById(int id);
+
         public void RemoveDish(Dish dish);
 
         public Dish GetDishById(int id);

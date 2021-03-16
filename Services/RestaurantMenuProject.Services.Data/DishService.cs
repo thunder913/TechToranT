@@ -69,5 +69,14 @@
                         .To<FoodItemViewModel>()
                         .ToList();
         }
+
+        public AddDishViewModel GetAddDishViewModelById(int id)
+        {
+            return this.dishRepository
+                        .AllAsNoTracking()
+                        .Where(x => x.Id == id)
+                        .To<AddDishViewModel>()
+                        .FirstOrDefault();
+        }
     }
 }
