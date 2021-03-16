@@ -38,7 +38,7 @@
             var dishType = this.dishTypeService.GetDishTypeById(dishToAdd.DishTypeId);
             await this.dishRepository.AddAsync(dishToAdd);
             await this.dishRepository.SaveChangesAsync();
-            await this.fileService.SaveImage("Menu", dishType.Name, dishToAdd.Id, dish.Image, wwwroot);
+            await this.fileService.SaveImage("Dishes", dishType.Name, dishToAdd.Id, dish.Image, wwwroot);
 
         }
 

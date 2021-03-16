@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RestaurantMenuProject.Data;
 
 namespace RestaurantMenuProject.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210315134511_RemovedLikesAndDislikes")]
+    partial class RemovedLikesAndDislikes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -390,8 +392,14 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("Id")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
@@ -402,6 +410,8 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.HasKey("BasketId", "DishId");
 
                     b.HasIndex("DishId");
+
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("BasketsDishes");
                 });
@@ -417,8 +427,14 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("Id")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
@@ -429,6 +445,8 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.HasKey("BasketId", "DrinkId");
 
                     b.HasIndex("DrinkId");
+
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("BasketsDrinks");
                 });
@@ -863,36 +881,6 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.ToTable("Settings");
                 });
 
-            modelBuilder.Entity("RestaurantMenuProject.Data.Models.UserDislike", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("CommentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "CommentId");
-
-                    b.HasIndex("CommentId");
-
-                    b.ToTable("UsersDislikes");
-                });
-
-            modelBuilder.Entity("RestaurantMenuProject.Data.Models.UserLike", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("CommentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "CommentId");
-
-                    b.HasIndex("CommentId");
-
-                    b.ToTable("UsersLikes");
-                });
-
             modelBuilder.Entity("AllergenIngredient", b =>
                 {
                     b.HasOne("RestaurantMenuProject.Data.Models.Allergen", null)
@@ -1158,53 +1146,11 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("RestaurantMenuProject.Data.Models.UserDislike", b =>
-                {
-                    b.HasOne("RestaurantMenuProject.Data.Models.Comment", "Comment")
-                        .WithMany("Dislikes")
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("RestaurantMenuProject.Data.Models.ApplicationUser", "User")
-                        .WithMany("Dislikes")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Comment");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("RestaurantMenuProject.Data.Models.UserLike", b =>
-                {
-                    b.HasOne("RestaurantMenuProject.Data.Models.Comment", "Comment")
-                        .WithMany("Likes")
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("RestaurantMenuProject.Data.Models.ApplicationUser", "User")
-                        .WithMany("Likes")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Comment");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Claims");
 
                     b.Navigation("Comments");
-
-                    b.Navigation("Dislikes");
-
-                    b.Navigation("Likes");
 
                     b.Navigation("Logins");
 
@@ -1220,13 +1166,6 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.Navigation("Drinks");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("RestaurantMenuProject.Data.Models.Comment", b =>
-                {
-                    b.Navigation("Dislikes");
-
-                    b.Navigation("Likes");
                 });
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.Dish", b =>

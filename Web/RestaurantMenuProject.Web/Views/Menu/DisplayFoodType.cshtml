@@ -19,8 +19,8 @@
             <button type="button" class="btn btn-success right add">Add</button>
         </form>
     </div>
-    TODO make it actually work and add it to a basket (probably in browser memory)
-</li>}
+</li>
+}
 </ul>
 @* TODO move the scripts and styles to another file*@
 
@@ -29,62 +29,17 @@
 {
     <script>
         $('.bg').each(function (i) {
-            var controllerName = '@ViewContext.RouteData.Values["Controller"].ToString()';
             var dishType = '@ViewContext.RouteData.Values["Type"].ToString()';
-            $(this).css('background-image', 'url(/img/' + controllerName + '/' + dishType + '/' + this.id + ".jpg)");
-        });
-        $("li form").click(function (e) {
-            e.stopPropagation();
+            $(this).css('background-image', 'url(/img/Dishes/' + dishType + '/' + this.id + ".jpg)");
         });
     </script>
 
     <script>
-        $('.add').click(function (e) {
-
-            var form = e.target.parentElement;
-            var formdata = {
-                'id': form.querySelector('input[name=Id]').value,
-                'count': form.querySelector('input[name=Count]').value,
-                'type': form.querySelector('input[name=Type]').value
-            }
-
-            var antiForgeryToken = $('input[name=__RequestVerificationToken]').val();
-
-            var notificationSettings = {
-                placement: {
-                    from: 'top',
-                    align: 'center'
-                },
-                mouse_over: 'pause',
-                type: 'success',
-                offset: 50,
-                delay: 3000
-            };
-            $.ajax({
-                type: 'POST',
-                url: '/api/Basket/',
-                data: JSON.stringify(formdata),
-                headers: {
-                    'X-CSRF-TOKEN': antiForgeryToken
-                },
-                contentType: 'application/json',
-                success: function (res) {
-                    var liElement = form.parentElement.parentElement;
-                    var productName = liElement.querySelector('h1').textContent;
-
-                    $.notify({
-                        message: 'Added ' + productName + ' to the basket! (' + formdata.count + ')'
-                    }, notificationSettings);
-                },
-                error: function (res) {
-                    console.log(res);
-                    notificationSettings.type = 'danger';
-                    $.notify({
-                        message: 'Something went wrong, try again and check the count!'
-                    }, notificationSettings);
-
-                }
-            });
-        })
+        $("li form").click(function (e) {
+            // Do something
+            e.stopPropagation();
+        });
     </script>
+
+    <script src="~/js/addToBasket.js"></script>
 }

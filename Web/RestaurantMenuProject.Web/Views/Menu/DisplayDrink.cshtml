@@ -1,35 +1,4 @@
 ﻿@model DrinkItemViewModel
-
-<link rel="stylesheet" runat="server" media="screen" href="~/css/menu.css" />
-<div id="@Model.Id" class="bg">
-    <h1 class="foodName">@Model.Name</h1>
-    <br />
-    <br />
-    <span class="left gray-bg">@Model.Weight grams</span>
-    <span class="right gray-bg">@Model.Price$</span>
-
-    @*TODO make it actually work and add it to a basket (probably in browser memory)*@
-    <form class="right" method="post">
-        <input type="hidden" name="Id" value="@Model.Id" />
-        <input type="text" style="width: 50px" placeholder="Count" />
-        <button type="submit" class="btn btn-success">Add</button>
-    </form>
-</div>
-<h1>@Model.AdditionalInfo</h1>
-<span>Ingredients: @string.Join(", ", Model.Ingredients.Select(x => x.Name))</span>
-<br />
-<span>
-    Allergens: @{
-        var allergens = new List<AllergenViewModel>();
-        foreach (var ingr in Model.Ingredients)
-        {
-            allergens.AddRange(ingr.Allergens);
-        }
-        @string.Join(", ", allergens.Select(x => x.Name));
-    }
-</span>
-
-@* TODO move the styles and scripts in different files*@
 <style>
     .bg {
         height: 700px;
@@ -66,6 +35,36 @@
     }
 </style>
 
+<link rel="stylesheet" runat="server" media="screen" href="~/css/menu.css" />
+<div id="@Model.Id" class="bg">
+    <h1 class="foodName">@Model.Name</h1>
+    <br />
+    <br />
+    <span class="left gray-bg">@Model.Weight grams</span>
+    <span class="right gray-bg">@Model.Price$</span>
+
+    @*TODO make it actually work and add it to a basket (probably in browser memory)*@
+    <form class="right" method="post">
+        <input type="hidden" name="Id" value="@Model.Id" />
+        <input type="hidden" name="Type" value="Drink" />
+        <input id="count" name="Count" type="text" style="width: 50px" placeholder="Count" />
+        <button type="button" class="btn btn-success add">Add</button>
+    </form>
+</div>
+<h1>@Model.AdditionalInfo</h1>
+<span>Ingredients: @string.Join(", ", Model.Ingredients.Select(x => x.Name))</span>
+<br />
+<span>
+    Allergens: @{ var allergens = new List<AllergenViewModel>();
+        foreach (var ingr in Model.Ingredients)
+        {
+            allergens.AddRange(ingr.Allergens);
+        }
+@string.Join(", ", allergens.Select(x => x.Name)); }
+</span>
+
+@* TODO move the styles and scripts in different files*@
+
 
 @section Scripts
 {
@@ -74,5 +73,8 @@
             // Do something
             e.stopPropagation();
         });
+
     </script>
+    <script src="~/js/addToBasket.js"></script>
+
 }

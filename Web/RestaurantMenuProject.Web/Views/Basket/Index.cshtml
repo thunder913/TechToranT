@@ -1,0 +1,66 @@
+﻿@model ICollection<BasketItemViewModel>
+
+<style>
+    img{
+        width: 50px;
+    }
+</style>
+
+<table class="table table-striped table-bordered table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">Image</th>
+            <th scope="col">Name</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Price for one</th>
+            <th scope="col">Total price</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr data-id="@item.Id" data-type="@item.FoodType.ToString()">
+                <td>
+                    @{
+                        var foodFolder = item.FoodType.ToString().ToLower() == "drink" ? "Drinks" : "Dishes";
+                        <img src="~/img/@(foodFolder)/@item.FoodCategory/@(item.Id).jpg" class="img-fluid" />
+
+                    }
+                </td>
+                <td class="name">@item.Name</td>
+                <td class="quantity">@item.Quantity</td>
+                <td class="price">@(item.Price)$</td>
+                <td class="totalPrice">@(item.Price*item.Quantity)$</td>
+                <td style="width: 17%">
+                    <form method="post" class="hide">
+                    </form>
+                    <button type="button" class="btn btn-success add">➕</button>
+                    <button type="button" class="btn btn-primary remove">➖</button>
+                    <button type="button" class="btn btn-danger removeAll">&#10060;</button>
+                </td>
+            </tr>
+        }
+
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>
+            <span class="price">
+            </span>
+        </td>
+        <td>
+            <form method="post">
+                <button type="submit" class="btn btn-info">ORDER</button>
+            </form>
+        </td>
+
+    </tr>
+    </tbody>
+</table>
+
+@section Scripts{
+    <script src="~/js/basket.js"></script>
+}
