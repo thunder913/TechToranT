@@ -70,13 +70,29 @@
                         .ToList();
         }
 
-        public AddDishViewModel GetAddDishViewModelById(int id)
+        public EditDishViewModel GetEditDishViewModelById(int id)
         {
             return this.dishRepository
                         .AllAsNoTracking()
                         .Where(x => x.Id == id)
-                        .To<AddDishViewModel>()
+                        .To<EditDishViewModel>()
                         .FirstOrDefault();
+        }
+
+        public void EditDish(EditDishViewModel editDish)
+        {
+            var dish = this.GetDishById(editDish.Id);
+
+            dish.Name = editDish.Name;
+            dish.Price = editDish.Price;
+            dish.Weight = editDish.Weight;
+            dish.PrepareTime = editDish.PrepareTime;
+            dish.AdditionalInfo = editDish.AdditionalInfo;
+            dish.DishTypeId = editDish.DishTypeId;
+            dish.Ingredients = this.ingredientService.GetAllIngredientsByIds(editDish.IngredientsId.ToArray()).ToArray();
+            
+            this.dishRepository.Update(dish);
+            this.dishRepository.SaveChangesAsync();
         }
     }
 }

@@ -52,7 +52,7 @@
     {
         "library": "animate.css@3.5.2",
         "destination": "wwwroot/css/animatecss",
-        "files": [ "animate.css"]
+        "files": [ "animate.css" ]
     }
   ]
 }

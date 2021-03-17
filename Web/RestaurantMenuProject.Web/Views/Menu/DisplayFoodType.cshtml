@@ -19,7 +19,7 @@
                 <button type="button" class="btn btn-success right add">Add</button>
             </form>
         </div>
-        <form asp-controller="Manage" asp-action="Edit">
+        <form asp-controller="Manage" asp-action="EditDish" method="get">
             <input type="hidden" name="type" value="Dish"/>
             <input type="hidden" name="id" value="@item.Id"/>
             <button type="submit" class="btn btn-info edit" >Edit</button>

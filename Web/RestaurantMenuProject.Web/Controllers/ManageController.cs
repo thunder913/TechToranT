@@ -133,11 +133,18 @@
             return this.RedirectToAction("Index");
         }
 
-        public IActionResult Edit(string type, int id)
+        public IActionResult EditDish(string type, int id)
         {
-            var dish = this.dishService.GetAddDishViewModelById(id);
-            return this.View("AddDish", dish);
-            // TODO make a switch case and mapping to the addviewmodels
+            var dish = this.dishService.GetEditDishViewModelById(id);
+            this.SetValuesToDishViewModel(dish);
+            return this.View(dish);
+        }
+
+        [HttpPost]
+        public IActionResult EditDish(EditDishViewModel editDish)
+        {
+            this.dishService.EditDish(editDish);
+            return this.View();
         }
 
         public IActionResult Remove()
@@ -145,7 +152,7 @@
             return this.View();
         }
 
-        private void SetValuesToDishViewModel(AddDishViewModel addDishViewModel)
+        private void SetValuesToDishViewModel(dynamic addDishViewModel)
         {
             addDishViewModel.Ingredients = this.ingredientService.GetAllAsDishIngredientViewModel().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
             addDishViewModel.DishType = this.dishTypeService.GetAllDishTypesWithId().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
