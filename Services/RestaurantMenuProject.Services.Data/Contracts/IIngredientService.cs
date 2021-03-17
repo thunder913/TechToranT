@@ -13,5 +13,7 @@
         public ICollection<Ingredient> GetAllIngredientsByIds(int[] ids);
 
         public Task AddIngredient(AddIngredientViewModel ingredient);
+
+        public Ingredient GetIngredientById(int id);
     }
 }

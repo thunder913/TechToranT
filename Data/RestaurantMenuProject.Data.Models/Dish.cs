@@ -3,12 +3,17 @@
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-
+    using System.ComponentModel.DataAnnotations.Schema;
     using RestaurantMenuProject.Data.Common.Models;
     using RestaurantMenuProject.Data.Models.Enums;
 
-    public class Dish : BaseDeletableModel<int>
+    public class Dish : BaseDeletableModel<string>
     {
+        public Dish()
+        {
+            this.Id = Guid.NewGuid().ToString();
+        }
+
         [Required]
         public string Name { get; set; }
 
@@ -23,6 +28,10 @@
         // In Minutes
         [Range(0, 3 * 60)]
         public int? PrepareTime { get; set; }
+
+        public string ImageId { get; set; }
+
+        public Image Image { get; set; }
 
         [MinLength(3)]
         [MaxLength(255)]

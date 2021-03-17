@@ -7,7 +7,7 @@
 
     public class DrinkItemViewModel : IMapFrom<Drink>
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         public string Name { get; set; }
 
@@ -16,6 +16,8 @@
         public double Weight { get; set; }
 
         public string AdditionalInfo { get; set; }
+
+        public Image Image { get; set; }
 
         public decimal? AlchoholByVolume { get; set; }
 

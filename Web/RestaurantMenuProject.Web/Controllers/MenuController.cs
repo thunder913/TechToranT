@@ -22,9 +22,9 @@
             this.drinkService = drinkService;
         }
 
-        public IActionResult DisplayFood(string type, int id)
+        public IActionResult DisplayFood(string type, string id)
         {
-            if (id == 0)
+            if (id == null)
             {
                 var dishes = this.dishService.GetAllDisheshWithDishTypeAsFoodItem(type);
                 return this.View("DisplayFoodType", dishes);
@@ -36,9 +36,9 @@
             }
         }
 
-        public IActionResult DisplayDrink(string type, int id)
+        public IActionResult DisplayDrink(string type, string id)
         {
-            if (id == 0)
+            if (id == null)
             {
                 var drinks = this.drinkService.GetAllDrinksByType(type);
                 return this.View("DisplayDrinkType", drinks);

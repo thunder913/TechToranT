@@ -42,7 +42,7 @@
     </div>
 
     <div class="form-group col-md-6">
-        <label asp-for="PackagingTypeId">Dish type:</label>
+        <label asp-for="PackagingTypeId"></label>
         <select asp-for="PackagingTypeId" class="form-control selectpicker" data-dropup-auto="false" asp-items="@Model.PackagingType" data-live-search="true">
         </select>
         <span asp-validation-for="PackagingTypeId" class="text-danger"></span>

@@ -49,5 +49,10 @@ namespace RestaurantMenuProject.Services.Data
                 .Where(x => ids.Contains(x.Id))
                 .ToList();
         }
+
+        public Ingredient GetIngredientById(int id)
+        {
+            return this.ingredientRepository.All().First(x => x.Id == id);
+        }
     }
 }

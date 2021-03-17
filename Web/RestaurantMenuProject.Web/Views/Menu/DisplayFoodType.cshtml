@@ -6,7 +6,7 @@
     {
     <li id="@item.Id" onclick="window.location = '/Menu/@item.Name/@item.Id'" class="col-md-5 menuItem">
         <h1>@item.Name</h1>
-        <div id="@item.Id" class="bg h-100 col-md-12"></div>
+        <div id="@item.Id" class="bg h-100 col-md-12" style="background-image: url(/img/Dishes/@(item.Image.Id).@(item.Image.Extension))"></div>
         <div class="float-left">
             <span id="weight" class="left gray-bg">@item.Weight grams</span>
         </div>
@@ -32,12 +32,6 @@
 
 @section Scripts
 {
-    <script>
-        $('.bg').each(function (i) {
-            var dishType = '@ViewContext.RouteData.Values["Type"].ToString()';
-            $(this).css('background-image', 'url(/img/Dishes/' + dishType + '/' + this.id + ".jpg)");
-        });
-    </script>
 
     <script>
         $("li form").click(function (e) {

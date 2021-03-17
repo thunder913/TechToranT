@@ -10,16 +10,16 @@
     {
         public Task AddDish(AddDishViewModel dish, string wwwroot);
 
-        public EditDishViewModel GetEditDishViewModelById(int id);
+        public EditDishViewModel GetEditDishViewModelById(string id);
 
         public void RemoveDish(Dish dish);
 
-        public Dish GetDishById(int id);
+        public Dish GetDishById(string id);
 
-        public FoodItemViewModel GetDishAsFoodItemById(int id);
+        public FoodItemViewModel GetDishAsFoodItemById(string id);
 
         public ICollection<FoodItemViewModel> GetAllDisheshWithDishTypeAsFoodItem(string dishType);
 
-        public void EditDish(EditDishViewModel editDish);
+        public void EditDish(EditDishViewModel editDish, string wwwroot);
     }
 }

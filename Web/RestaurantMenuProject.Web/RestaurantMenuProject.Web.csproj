@@ -36,8 +36,4 @@
     <ProjectReference Include="..\RestaurantMenuProject.Web.Infrastructure\RestaurantMenuProject.Web.Infrastructure.csproj" />
     <ProjectReference Include="..\RestaurantMenuProject.Web.ViewModels\RestaurantMenuProject.Web.ViewModels.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\img\Drinks\Alcohol.jpg" />
-  </ItemGroup>
 </Project>

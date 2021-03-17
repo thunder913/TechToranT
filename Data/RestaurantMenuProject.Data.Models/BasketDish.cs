@@ -6,7 +6,7 @@
     {
         public string BasketId { get; set; }
 
-        public int DishId { get; set; }
+        public string DishId { get; set; }
 
         public virtual Basket Basket { get; set; }
 

@@ -8,12 +8,16 @@
 
     public interface IDrinkService
     {
-        public Task<Drink> AddDrink(AddDrinkViewModel drink, string wwwroot);
+        public Task AddDrink(AddDrinkViewModel drink, string wwwroot);
 
-        public DrinkItemViewModel GetDrinkItemViewModelById(int id);
+        public DrinkItemViewModel GetDrinkItemViewModelById(string id);
 
-        public Drink GetDrinkById(int id);
+        public Drink GetDrinkById(string id);
 
         public ICollection<DrinkItemViewModel> GetAllDrinksByType(string drinkType);
+
+        public EditDrinkViewModel GetEditDrinkViewModelById(string id);
+
+        public void EditDrink(EditDrinkViewModel editDrink, string wwwroot);
     }
 }

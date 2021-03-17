@@ -36,8 +36,8 @@ namespace RestaurantMenuProject.Data.Migrations
 
             modelBuilder.Entity("DishIngredient", b =>
                 {
-                    b.Property<int>("DishesId")
-                        .HasColumnType("int");
+                    b.Property<string>("DishesId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("IngredientsId")
                         .HasColumnType("int");
@@ -66,8 +66,8 @@ namespace RestaurantMenuProject.Data.Migrations
 
             modelBuilder.Entity("DrinkIngredient", b =>
                 {
-                    b.Property<int>("DrinksId")
-                        .HasColumnType("int");
+                    b.Property<string>("DrinksId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("IngredientsId")
                         .HasColumnType("int");
@@ -384,8 +384,8 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.Property<string>("BasketId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("DishId")
-                        .HasColumnType("int");
+                    b.Property<string>("DishId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -411,8 +411,8 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.Property<string>("BasketId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("DrinkId")
-                        .HasColumnType("int");
+                    b.Property<string>("DrinkId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -472,10 +472,8 @@ namespace RestaurantMenuProject.Data.Migrations
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.Dish", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("AdditionalInfo")
                         .HasMaxLength(255)
@@ -489,6 +487,9 @@ namespace RestaurantMenuProject.Data.Migrations
 
                     b.Property<int>("DishTypeId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ImageId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -513,6 +514,8 @@ namespace RestaurantMenuProject.Data.Migrations
 
                     b.HasIndex("DishTypeId");
 
+                    b.HasIndex("ImageId");
+
                     b.HasIndex("IsDeleted");
 
                     b.ToTable("Dishes");
@@ -534,8 +537,8 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ImageId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -548,6 +551,8 @@ namespace RestaurantMenuProject.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ImageId");
+
                     b.HasIndex("IsDeleted");
 
                     b.ToTable("DishTypes");
@@ -555,10 +560,8 @@ namespace RestaurantMenuProject.Data.Migrations
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.Drink", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("AdditionalInfo")
                         .HasMaxLength(255)
@@ -575,6 +578,9 @@ namespace RestaurantMenuProject.Data.Migrations
 
                     b.Property<int>("DrinkTypeId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ImageId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -599,6 +605,8 @@ namespace RestaurantMenuProject.Data.Migrations
 
                     b.HasIndex("DrinkTypeId");
 
+                    b.HasIndex("ImageId");
+
                     b.HasIndex("IsDeleted");
 
                     b.HasIndex("PackagingTypeId");
@@ -622,8 +630,8 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ImageId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -636,9 +644,38 @@ namespace RestaurantMenuProject.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ImageId");
+
                     b.HasIndex("IsDeleted");
 
                     b.ToTable("DrinkTypes");
+                });
+
+            modelBuilder.Entity("RestaurantMenuProject.Data.Models.Image", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Extension")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.Ingredient", b =>
@@ -678,10 +715,7 @@ namespace RestaurantMenuProject.Data.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("ClientId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ClientId1")
+                    b.Property<string>("ClientId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedOn")
@@ -713,7 +747,7 @@ namespace RestaurantMenuProject.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClientId1");
+                    b.HasIndex("ClientId");
 
                     b.HasIndex("IsDeleted");
 
@@ -724,8 +758,8 @@ namespace RestaurantMenuProject.Data.Migrations
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.OrderDish", b =>
                 {
-                    b.Property<int>("DishId")
-                        .HasColumnType("int");
+                    b.Property<string>("DishId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
@@ -742,8 +776,8 @@ namespace RestaurantMenuProject.Data.Migrations
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.OrderDrink", b =>
                 {
-                    b.Property<int>("DrinkId")
-                        .HasColumnType("int");
+                    b.Property<string>("DrinkId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
@@ -1083,7 +1117,22 @@ namespace RestaurantMenuProject.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("RestaurantMenuProject.Data.Models.Image", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageId");
+
                     b.Navigation("DishType");
+
+                    b.Navigation("Image");
+                });
+
+            modelBuilder.Entity("RestaurantMenuProject.Data.Models.DishType", b =>
+                {
+                    b.HasOne("RestaurantMenuProject.Data.Models.Image", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageId");
+
+                    b.Navigation("Image");
                 });
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.Drink", b =>
@@ -1094,6 +1143,10 @@ namespace RestaurantMenuProject.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("RestaurantMenuProject.Data.Models.Image", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageId");
+
                     b.HasOne("RestaurantMenuProject.Data.Models.PackagingType", "PackagingType")
                         .WithMany()
                         .HasForeignKey("PackagingTypeId")
@@ -1102,14 +1155,25 @@ namespace RestaurantMenuProject.Data.Migrations
 
                     b.Navigation("DrinkType");
 
+                    b.Navigation("Image");
+
                     b.Navigation("PackagingType");
+                });
+
+            modelBuilder.Entity("RestaurantMenuProject.Data.Models.DrinkType", b =>
+                {
+                    b.HasOne("RestaurantMenuProject.Data.Models.Image", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageId");
+
+                    b.Navigation("Image");
                 });
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.Order", b =>
                 {
                     b.HasOne("RestaurantMenuProject.Data.Models.ApplicationUser", "Client")
                         .WithMany("Orders")
-                        .HasForeignKey("ClientId1");
+                        .HasForeignKey("ClientId");
 
                     b.HasOne("RestaurantMenuProject.Data.Models.PromoCode", "PromoCode")
                         .WithMany("Orders")

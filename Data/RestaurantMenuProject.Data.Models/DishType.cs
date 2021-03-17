@@ -1,7 +1,7 @@
 ﻿namespace RestaurantMenuProject.Data.Models
 {
     using System.Collections.Generic;
-
+    using System.ComponentModel.DataAnnotations;
     using RestaurantMenuProject.Data.Common.Models;
 
     public class DishType : BaseDeletableModel<int>
@@ -10,7 +10,8 @@
 
         public string Description { get; set; }
 
-        public string Image { get; set; }
+        [Required]
+        public Image Image { get; set; }
 
         public ICollection<Dish> Dishes { get; set; } = new HashSet<Dish>();
 

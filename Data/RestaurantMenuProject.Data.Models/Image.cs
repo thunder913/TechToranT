@@ -1,11 +1,18 @@
 ﻿namespace RestaurantMenuProject.Data.Models
 {
-    public class Image
+    using System;
+    using System.ComponentModel.DataAnnotations;
+
+    using RestaurantMenuProject.Data.Common.Models;
+    using RestaurantMenuProject.Data.Models.Enums;
+
+    public class Image : BaseDeletableModel<string>
     {
-        public int Id { get; set; }
+        public Image()
+        {
+            this.Id = Guid.NewGuid().ToString();
+        }
 
-        public string Extension { get; set; }
-
-
+        public ImageExtension Extension { get; set; }
     }
 }

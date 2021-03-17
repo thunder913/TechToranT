@@ -8,7 +8,7 @@
     {
     <li id="@item.Id" onclick="window.location = '/Menu/Drinks/@item.Name/@item.Id';" class="col-md-5 menuItem">
         <h1>@item.Name</h1>
-        <div id="@item.Id" class="bg h-100 col-md-12"></div>
+        <div id="@item.Id" class="bg h-100 col-md-12" style="background-image: url(/img/Drinks/@(item.Image.Id).@(item.Image.Extension))"></div>
         <div class="float-left">
             <span id="weight" class="left gray-bg">@item.Weight mililitres</span>
         </div>
@@ -21,8 +21,10 @@
                 <button type="button" class="btn btn-success right add">Add</button>
             </form>
         </div>
-        <form>
-            <button type="button" class="btn btn-info edit">Edit</button>
+        <form asp-controller="Manage" asp-action="EditDrink" method="get">
+            <input type="hidden" name="type" value="Drink" />
+            <input type="hidden" name="id" value="@item.Id" />
+            <button type="submit" class="btn btn-info edit">Edit</button>
         </form>
     </li>
     }
@@ -31,13 +33,6 @@
 
 @section Scripts
 {
-    <script>
-        $('.bg').each(function (i) {
-            var controllerName = '@ViewContext.RouteData.Values["Controller"].ToString()';
-            var dishType = '@ViewContext.RouteData.Values["Type"].ToString()';
-            $(this).css('background-image', 'url(/img/Drinks/' + dishType + '/' + this.id + ".jpg)");
-        });
-    </script>
 
     <script>
         $("li form").click(function (e) {

@@ -133,7 +133,7 @@
             return this.RedirectToAction("Index");
         }
 
-        public IActionResult EditDish(string type, int id)
+        public IActionResult EditDish(string type, string id)
         {
             var dish = this.dishService.GetEditDishViewModelById(id);
             this.SetValuesToDishViewModel(dish);
@@ -143,8 +143,22 @@
         [HttpPost]
         public IActionResult EditDish(EditDishViewModel editDish)
         {
-            this.dishService.EditDish(editDish);
-            return this.View();
+            this.dishService.EditDish(editDish, this.webHostEnvironment.WebRootPath);
+            return this.RedirectToAction("Index", "Menu");
+        }
+
+        public IActionResult EditDrink(string type, string id)
+        {
+            var drink = this.drinkService.GetEditDrinkViewModelById(id);
+            this.SetValuesToDrinkViewModel(drink);
+            return this.View(drink);
+        }
+
+        [HttpPost]
+        public IActionResult EditDrink(EditDrinkViewModel editDrink)
+        {
+            this.drinkService.EditDrink(editDrink, this.webHostEnvironment.WebRootPath);
+            return this.RedirectToAction("Index", "Menu");
         }
 
         public IActionResult Remove()
@@ -152,13 +166,14 @@
             return this.View();
         }
 
+        // TODO REMOVE DYNAMIC SOMEHOW
         private void SetValuesToDishViewModel(dynamic addDishViewModel)
         {
             addDishViewModel.Ingredients = this.ingredientService.GetAllAsDishIngredientViewModel().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
             addDishViewModel.DishType = this.dishTypeService.GetAllDishTypesWithId().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
         }
 
-        private void SetValuesToDrinkViewModel(AddDrinkViewModel addDrinkViewModel)
+        private void SetValuesToDrinkViewModel(dynamic addDrinkViewModel)
         {
             addDrinkViewModel.DrinkType = this.drinkTypeService.GetAllDrinkTypesWithId().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
             addDrinkViewModel.PackagingType = this.packagingService.GetAllPackagingTypes().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();

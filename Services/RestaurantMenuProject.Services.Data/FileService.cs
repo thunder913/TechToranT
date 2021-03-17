@@ -8,15 +8,23 @@
 
     public class FileService : IFileService
     {
-        public async Task SaveImage(string itemCategory, string type, int id, IFormFile formFile, string wwwroot)
+        public async Task SaveImage(string itemCategory, string id, IFormFile formFile, string wwwroot, string extension)
         {
-            var path = $"{wwwroot}/img/{itemCategory}/{type}";
+            var path = $"{wwwroot}/img/{itemCategory}";
 
             Directory.CreateDirectory(path);
 
-            using (FileStream fs = new FileStream(path + $"/{id}.jpg", FileMode.Create))
+            using (FileStream fs = new FileStream(path + $"/{id}.{extension}", FileMode.Create))
             {
                 await formFile.CopyToAsync(fs);
+            }
+        }
+
+        public void DeleteImage(string path)
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
             }
         }
     }

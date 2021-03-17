@@ -75,7 +75,7 @@
 
         // TODO research why it breaks when async task
         // Adding Drink Item to basket
-        public Task AddBasketDrinkItemAsync(string basketId, int quantity, int drinkId)
+        public Task AddBasketDrinkItemAsync(string basketId, int quantity, string drinkId)
         {
             var basketDrink = new BasketDrink()
             {
@@ -91,7 +91,7 @@
         }
 
         // Adding dish item to BasketDishes
-        public Task AddBasketDishItemAsync(string basketId, int quantity, int dishId)
+        public Task AddBasketDishItemAsync(string basketId, int quantity, string dishId)
         {
             var basketDish = new BasketDish()
             {
@@ -107,7 +107,7 @@
         }
 
         // Getting drink item by ids
-        public BasketDrink GetBasketDrinkInBasketById(string basketId, int drinkId)
+        public BasketDrink GetBasketDrinkInBasketById(string basketId, string drinkId)
         {
             return this.basketDrinkRepository
                     .All()
@@ -123,7 +123,7 @@
         }
 
         // Get dish item by ids
-        public BasketDish GetBasketDishInBasketById(string basketId, int dishId)
+        public BasketDish GetBasketDishInBasketById(string basketId, string dishId)
         {
             return this.basketDishRepository
                 .All()
@@ -175,7 +175,7 @@
         }
 
         // Getting a basketDishItem with ids
-        public BasketItemViewModel GetBasketDishItemById(int dishId, string userId)
+        public BasketItemViewModel GetBasketDishItemById(string dishId, string userId)
         {
             return this.basketDishRepository
             .AllAsNoTracking()
@@ -193,7 +193,7 @@
         }
 
         // getting a basketDrinkItem by ids
-        public BasketItemViewModel GetBasketDrinkItemById(int drinkId, string userId)
+        public BasketItemViewModel GetBasketDrinkItemById(string drinkId, string userId)
         {
             return this.basketDrinkRepository
              .AllAsNoTracking()
@@ -211,7 +211,7 @@
         }
 
         // Adding quantity to drink (by given ids)
-        public BasketItemViewModel AddQuantityToDrink(int drinkId, string userId, int quantity)
+        public BasketItemViewModel AddQuantityToDrink(string drinkId, string userId, int quantity)
         {
             var drink = this.basketDrinkRepository
                         .All()
@@ -228,7 +228,7 @@
         }
 
         // Adding quantity to dish
-        public BasketItemViewModel AddQuantityToDish(int dishId, string userId, int quantity)
+        public BasketItemViewModel AddQuantityToDish(string dishId, string userId, int quantity)
         {
             var dish =
                        this.basketDishRepository
@@ -246,7 +246,7 @@
         }
 
         // Removing a dish from the basket
-        public BasketItemViewModel RemoveDish(int dishIId, string userId, int quantity = 0)
+        public BasketItemViewModel RemoveDish(string dishIId, string userId, int quantity = 0)
         {
             var dish = this.basketDishRepository
                    .All()
@@ -264,7 +264,7 @@
         }
 
         // Removing a drink from the basket
-        public BasketItemViewModel RemoveDrink(int drinkId, string userId, int quantity = 0)
+        public BasketItemViewModel RemoveDrink(string drinkId, string userId, int quantity = 0)
         {
             var drink = this.basketDrinkRepository
                    .All()

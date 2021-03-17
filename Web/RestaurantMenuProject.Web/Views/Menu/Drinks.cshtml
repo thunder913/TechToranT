@@ -5,7 +5,7 @@
     @foreach (var item in Model)
     {
         <li id="@item.Name" onclick="window.location = '/Menu/Drinks/@item.Name'" class="col-md-5 h-100">
-            <div id="@item.Name" class="bg"></div>
+            <div id="@item.Name" class="bg" style="background-image: url(/img/Menu/@item.Image.Id.@item.Image.Extension)"></div>
             <h1>@item.Name</h1>
             <br />
             <br />
@@ -16,13 +16,3 @@
     }
 </ul>
 
-
-@section Scripts
-{
-<script>
-        $('ul li div').each(function (i) {
-        var controllerName = '@ViewContext.RouteData.Values["Action"].ToString()';
-        $(this).css('background-image', 'url(/img/' + controllerName +'/' + this.id + ".jpg)");
-        });
-</script>
-}

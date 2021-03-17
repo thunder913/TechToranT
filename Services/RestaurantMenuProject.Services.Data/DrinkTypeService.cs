@@ -21,7 +21,7 @@
         public ICollection<MenuItemViewModel> GetAllDrinkTypes()
         {
             return this.drinkTypeRepository
-                .AllAsNoTracking()
+                .All()
                 .To<MenuItemViewModel>()
                 .ToList();
         }

@@ -6,7 +6,7 @@
 
         public Order Order { get; set; }
 
-        public int DrinkId { get; set; }
+        public string DrinkId { get; set; }
 
         public Drink Drink { get; set; }
 

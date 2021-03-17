@@ -1,5 +1,6 @@
 ﻿using RestaurantMenuProject.Data.Common.Models;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace RestaurantMenuProject.Data.Models
 {
@@ -9,7 +10,8 @@ namespace RestaurantMenuProject.Data.Models
 
         public string Description { get; set; }
 
-        public string Image { get; set; }
+        [Required]
+        public Image Image { get; set; }
 
         public ICollection<Drink> Drinks { get; set; } = new HashSet<Drink>();
 

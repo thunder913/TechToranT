@@ -6,6 +6,8 @@
 
     public interface IFileService
     {
-        public Task SaveImage(string itemCategory, string type, int id, IFormFile formFile, string wwwroot);
+        public Task SaveImage(string itemCategory, string id, IFormFile formFile, string wwwroot, string extension);
+
+        public void DeleteImage(string path);
     }
 }

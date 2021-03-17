@@ -5,7 +5,7 @@
     public class AddItemToBasketViewModel
     {
         [Required]
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [Range(1, 1000)]
         public int Count { get; set; }

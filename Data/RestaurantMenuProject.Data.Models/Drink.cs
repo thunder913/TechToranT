@@ -1,13 +1,19 @@
 ﻿namespace RestaurantMenuProject.Data.Models
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
     using RestaurantMenuProject.Data.Common.Models;
     using RestaurantMenuProject.Data.Models.Enums;
 
-    public class Drink : BaseDeletableModel<int>
+    public class Drink : BaseDeletableModel<string>
     {
+        public Drink()
+        {
+            this.Id = Guid.NewGuid().ToString();
+        }
+
         [Required]
         public string Name { get; set; }
 
@@ -16,6 +22,10 @@
 
         [Range(0,5000)]
         public double Weight { get; set; }
+
+        public string ImageId { get; set; }
+
+        public Image Image { get; set; }
 
         [MinLength(3)]
         [MaxLength(255)]
