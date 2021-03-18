@@ -1,0 +1,91 @@
+﻿@model EditDishViewModel
+
+
+<form asp-controller="Manage" asp-action="EditDish" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group col-md-6" hidden>
+        <label asp-for="Id"></label>
+        <input asp-for="Id" value="@Model.Id" class="form-control" />
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="Price"></label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="Weight"></label>
+        <input asp-for="Weight" class="form-control" />
+        <span asp-validation-for="Weight" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="PrepareTime"></label>
+        <input asp-for="PrepareTime" class="form-control" />
+        <span asp-validation-for="PrepareTime" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="AdditionalInfo"></label>
+        <textarea rows="4" asp-for="AdditionalInfo" class="form-control"></textarea>
+        <span asp-validation-for="AdditionalInfo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="DishTypeId">Dish type:</label>
+        <select asp-for="DishTypeId" class="form-control selectpicker" data-dropup-auto="false" asp-items="@Model.DishType" data-live-search="true">
+        </select>
+        <span asp-validation-for="DishTypeId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="IngredientsId"></label>
+        <select id="ingredients" asp-for="IngredientsId" class="form-control selectpicker" multiple asp-items="@Model.Ingredients">
+            <option disabled selected hidden>--- SELECT ---</option>
+        </select>
+        <span asp-validation-for="Ingredients" class="text-danger"></span>
+    </div>
+
+
+    <div class="form-group col-md-6">
+        <label asp-for="NewImage"></label>
+        <br />
+        <img class="img-fluid" src="~/img/Dishes/@Model.Image.Id.@Model.Image.Extension" />
+        <input id="image" rows="4" asp-for="NewImage" class="form-control" />
+        <label id="imageInfo">If you like the currently selected file, do not upload a new one.</label>
+        <span asp-validation-for="NewImage" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-info col-md-2">Edit</button>
+</form>
+
+
+<style>
+    button {
+        margin-left: 2%;
+    }
+
+    img {
+        width: 200px;
+        border: 5px solid turquoise;
+        border-radius: 3%;
+    }
+
+    #imageInfo{
+        font-style: italic;
+    }
+</style>
+
+@section Scripts{
+    <script>
+        $('#ingredients').selectpicker('val', [@(string.Join(", ", Model.IngredientsId))]);
+    </script>
+} 

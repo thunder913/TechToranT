@@ -152,6 +152,7 @@
                             FoodType = FoodType.Drink,
                             Id = x.DrinkId,
                             FoodCategory = x.Drink.DrinkType.Name,
+                            Image = x.Drink.Image,
                         })
                         .ToList();
         }
@@ -170,6 +171,7 @@
                             FoodType = FoodType.Dish,
                             Id = x.DishId,
                             FoodCategory = x.Dish.DishType.Name,
+                            Image = x.Dish.Image,
                         })
                         .ToList();
         }

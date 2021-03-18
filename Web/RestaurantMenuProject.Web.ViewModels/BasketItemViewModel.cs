@@ -1,5 +1,6 @@
 ﻿namespace RestaurantMenuProject.Web.ViewModels
 {
+    using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Data.Models.Enums;
 
     public class BasketItemViewModel
@@ -15,5 +16,7 @@
         public FoodType FoodType { get; set; }
 
         public string FoodCategory { get; set; }
+
+        public Image Image { get; set; }
     }
 }
