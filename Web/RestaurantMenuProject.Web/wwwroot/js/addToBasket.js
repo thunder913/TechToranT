@@ -9,16 +9,6 @@
 
     var antiForgeryToken = $('input[name=__RequestVerificationToken]').val();
 
-    var notificationSettings = {
-        placement: {
-            from: 'top',
-            align: 'center'
-        },
-        mouse_over: 'pause',
-        type: 'success',
-        offset: 50,
-        delay: 3000
-    };
     $.ajax({
         type: 'POST',
         url: '/api/Basket/',
@@ -30,17 +20,11 @@
         success: function (res) {
             var liElement = form.parentElement.parentElement;
             var productName = liElement.querySelector('h1').textContent;
+            successNotification('Added ' + productName + ' to the basket! (' + formdata.count + ')');
 
-            $.notify({
-                message: 'Added ' + productName + ' to the basket! (' + formdata.count + ')'
-            }, notificationSettings);
         },
         error: function (res) {
-            console.log(res);
-            notificationSettings.type = 'danger';
-            $.notify({
-                message: 'Something went wrong, try again and check the count!'
-            }, notificationSettings);
+            dangerNotification('Something went wrong, try again and check the count!');
         }
     });
 })

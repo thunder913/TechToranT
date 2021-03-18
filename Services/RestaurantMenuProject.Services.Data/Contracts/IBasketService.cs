@@ -2,6 +2,8 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+
+    using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Data.Models.Dtos;
     using RestaurantMenuProject.Web.ViewModels;
 
@@ -28,5 +30,9 @@
         public BasketItemViewModel RemoveDrink(string drinkId, string userId, int quantity = 0);
 
         public decimal GetTotalPrice(string userId);
+
+        public BasketDto GetBasket(string userId);
+
+        public Task RemoveBasketItems(string userId);
     }
 }

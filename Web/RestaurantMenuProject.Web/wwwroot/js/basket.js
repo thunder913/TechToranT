@@ -18,6 +18,7 @@
             trElement.querySelector('td[class=price]').textContent = Number.parseFloat(res.price).toFixed(2) + '$';
             trElement.querySelector('td[class=totalPrice]').textContent = Number.parseFloat(res.price * res.quantity).toFixed(2) + '$';
             finalPriceElement.textContent = getTotalPrice();
+            successNotification(`Successfully added one more "${res.name}"!`);
         }
     });
 })
@@ -37,6 +38,7 @@ $('.removeAll').click(function (e) {
         success: function (res) {
             trElement.remove();
             finalPriceElement.textContent = getTotalPrice();
+            successNotification(`Successfully removed "${res.name}" from the basket!`);
         }
     });
 })
@@ -57,6 +59,7 @@ $('.remove').click(function (e) {
         success: function (res) {
             if (!res) {
                 trElement.remove();
+                successNotification(`Successfully removed "${res.name}" from the basket!`);
             }
             else {
                 trElement.querySelector('td[class=name]').textContent = res.name;
@@ -65,6 +68,7 @@ $('.remove').click(function (e) {
                 trElement.querySelector('td[class=totalPrice]').textContent = Number.parseFloat(res.price * res.quantity).toFixed(2) + '$';
             }
             finalPriceElement.textContent = getTotalPrice();
+            successNotification(`Successfully removed one "${res.name}"!`);
         }
     });
 })

@@ -5,11 +5,14 @@
     using System.Collections.Generic;
     using RestaurantMenuProject.Data.Common.Models;
     using RestaurantMenuProject.Data.Models.Enums;
+    using RestaurantMenuProject.Services.Mapping;
 
-    public class Order : BaseDeletableModel<int>
+    public class Order : BaseDeletableModel<string>, IMapFrom<Basket>
     {
-        public decimal TotalPrice { get; set; }
-
+        public Order()
+        {
+            this.Id = Guid.NewGuid().ToString();
+        }
         public ProcessType ProcessType { get; set; }
 
         public DateTime? DeliveredOn { get; set; }

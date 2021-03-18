@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Services\RestaurantMenuProject.Services.Mapping\RestaurantMenuProject.Services.Mapping.csproj" />
     <ProjectReference Include="..\RestaurantMenuProject.Data.Common\RestaurantMenuProject.Data.Common.csproj" />
   </ItemGroup>
   

@@ -2,8 +2,9 @@
 {
     public enum ProcessType
     {
-        InProcess,
-        Delivered,
-        Paid,
+        Pending = 0,
+        InProcess = 1,
+        Paid = 2,
+        Completed = 3,
     }
 }

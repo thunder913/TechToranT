@@ -1,7 +1,7 @@
 ﻿@model ICollection<BasketItemViewModel>
 
 <style>
-    img{
+    img {
         width: 50px;
     }
 </style>
@@ -42,25 +42,26 @@
             </tr>
         }
 
-    <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td>
-            <span class="price">
-            </span>
-        </td>
-        <td>
-            <form method="post">
-                <button type="submit" class="btn btn-info">ORDER</button>
-            </form>
-        </td>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+                <span class="price">
+                </span>
+            </td>
+            <td>
+                <form method="post" asp-controller="Order" asp-action="MakeOrder">
+                    <button type="submit" class="btn btn-info">ORDER</button>
+                </form>
+            </td>
 
-    </tr>
+        </tr>
     </tbody>
 </table>
 
 @section Scripts{
+    <script src="~/js/notifications.js"></script>
     <script src="~/js/basket.js"></script>
 }

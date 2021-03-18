@@ -7,8 +7,10 @@
 
     using RestaurantMenuProject.Data.Common.Repositories;
     using RestaurantMenuProject.Data.Models;
+    using RestaurantMenuProject.Data.Models.Dtos;
     using RestaurantMenuProject.Data.Models.Enums;
     using RestaurantMenuProject.Services.Data.Contracts;
+    using RestaurantMenuProject.Services.Mapping;
     using RestaurantMenuProject.Web.ViewModels;
 
     public class BasketService : IBasketService
@@ -299,6 +301,46 @@
                 .Sum(x => x.Quantity * x.Drink.Price);
 
             return dishPrice + drinkPrice;
+        }
+
+        public BasketDto GetBasket(string userId)
+        {
+            return this.basketRepository
+                        .All()
+                        .Where(x => x.User.Id == userId)
+                        .Select(b => new BasketDto()
+                        {
+                            Id = b.User.Id,
+                            Dishes = b.Dishes.Select(d => new FoodCountDto()
+                            {
+                                Id = d.DishId,
+                                Quantity = d.Quantity,
+                            }).ToList(),
+                            Drinks = b.Drinks.Select(d => new FoodCountDto()
+                            {
+                                Id = d.DrinkId,
+                                Quantity = d.Quantity,
+                            }).ToList(),
+                        })
+                        .First(); // TODO use automapper
+        }
+
+        public async Task RemoveBasketItems(string userId)
+        {
+            var basketDishes = this.basketDishRepository.All().Where(x => x.Basket.User.Id == userId);
+            var basketDrinks = this.basketDrinkRepository.All().Where(x => x.Basket.User.Id == userId);
+
+            foreach (var item in basketDishes)
+            {
+                this.basketDishRepository.Delete(item);
+            }
+            foreach (var item in basketDrinks)
+            {
+                this.basketDrinkRepository.Delete(item);
+            }
+
+            await this.basketDishRepository.SaveChangesAsync();
+            await this.basketDrinkRepository.SaveChangesAsync();
         }
     }
 }

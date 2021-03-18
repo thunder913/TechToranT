@@ -2,7 +2,6 @@
 
 <link rel="stylesheet" runat="server" media="screen" href="~/css/menu.css" />
 <link href="~/css/displayFoodItem.css" rel="stylesheet" />
-<h1>This is the Food menu!</h1>
 <ul id="menu" class="row">
     @foreach (var item in Model)
     {
@@ -40,6 +39,6 @@
             e.stopPropagation();
         });
     </script>
-
+    <script src="~/js/notifications.js"></script>
     <script src="~/js/addToBasket.js"></script>
 }
