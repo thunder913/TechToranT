@@ -8,6 +8,7 @@
     using RestaurantMenuProject.Data.Common.Repositories;
     using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Data.Models.Dtos;
+    using RestaurantMenuProject.Data.Models.Enums;
     using RestaurantMenuProject.Services.Data.Contracts;
     using RestaurantMenuProject.Services.Mapping;
     using RestaurantMenuProject.Web.ViewModels;
@@ -66,6 +67,20 @@
             this.basketService.RemoveBasketItems(userId).GetAwaiter().GetResult();
 
             return Task.CompletedTask;
+        }
+
+        public async Task<bool> DeleteById(string orderId)
+        {
+            var order = this.orderRepository.All().FirstOrDefault(x => x.Id == orderId);
+
+            if (order.ProcessType == ProcessType.Pending)
+            {
+                this.orderRepository.Delete(order);
+                await this.orderRepository.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
         }
     }
 }

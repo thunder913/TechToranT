@@ -19,10 +19,17 @@
                 <td>@Math.Round(item.Price, 2)$</td>
                 <td>@item.Status</td>
                 <td>
-                    <form method="post">
+                    <form method="post" asp-controller="Order" asp-action="Edit">
                         <input hidden name="orderId" value="@item.Id" />
-                        <button type="button" class="btn btn-danger remove"> Delete</button>
-                        <button type="button" class="btn btn-info edit"> Edit</button>
+                        @if (item.Status == RestaurantMenuProject.Data.Models.Enums.ProcessType.Pending)
+                        {
+                            <button type="button" class="btn btn-danger remove">Delete</button>
+                            <button type="submit" class="btn btn-info edit">Edit</button>
+                        }
+                        else
+                        {
+                            <span>No actions available!</span>
+                        }
                     </form>
                 </td>
             </tr>
@@ -39,22 +46,28 @@
 
             var orderId = form.querySelector('input[name=orderId]').value;
             var antiForgeryToken = $('input[name=__RequestVerificationToken]').val();
+            var orderDto = { orderId };
+            var data = JSON.stringify(orderDto);
 
             $.ajax({
                 type: 'POST',
-                url: '/api/Order/Remove',
-                data: JSON.stringify(orderId),
+                url: '/api/Order/Delete',
+                data: data,
                 headers: {
                     'X-CSRF-TOKEN': antiForgeryToken
                 },
                 contentType: 'application/json',
                 success: function (res) {
-                    successNotification(res);
+                    if (res) {
+                        form.parentElement.parentElement.remove();
+                        successNotification('You successfully removed your order!');
+                    } else {
+                        dangerNotification("The order must be pending!");
+                    }
 
                 },
                 error: function (res) {
-                    console.log(res);
-                    dangerNotification(res);
+                    dangerNotification('Something went wrong, try again!');
                 }
             });
         })

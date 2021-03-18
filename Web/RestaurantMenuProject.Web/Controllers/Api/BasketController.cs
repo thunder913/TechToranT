@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using RestaurantMenuProject.Data.Models.Dtos;
-using RestaurantMenuProject.Services.Data.Contracts;
-using RestaurantMenuProject.Web.ViewModels;
-using System.Security.Claims;
-
-namespace RestaurantMenuProject.Web.Controllers.Api
+﻿namespace RestaurantMenuProject.Web.Controllers.Api
 {
+    using System.Security.Claims;
+
+    using Microsoft.AspNetCore.Mvc;
+    using RestaurantMenuProject.Data.Models.Dtos;
+    using RestaurantMenuProject.Services.Data.Contracts;
+    using RestaurantMenuProject.Web.ViewModels;
+
     [Route("api/[Controller]")]
     [ApiController]
     public class BasketController : ControllerBase
@@ -25,7 +26,7 @@ namespace RestaurantMenuProject.Web.Controllers.Api
         }
 
         [HttpPost("Add")]
-        public BasketItemViewModel AddItem(BasketItemDto basketItem)
+        public ActionResult<BasketItemViewModel> AddItem(BasketItemDto basketItem)
         {
             var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             switch (basketItem.Type.ToLower())
@@ -40,7 +41,7 @@ namespace RestaurantMenuProject.Web.Controllers.Api
         }
 
         [HttpPost("RemoveAll")]
-        public bool RemoveItem(BasketItemDto basketItem)
+        public ActionResult<bool> RemoveItem(BasketItemDto basketItem)
         {
             var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             switch (basketItem.Type.ToLower())
@@ -55,7 +56,7 @@ namespace RestaurantMenuProject.Web.Controllers.Api
         }
 
         [HttpPost("RemoveOne")]
-        public BasketItemViewModel RemoveOneItem(BasketItemDto basketItem)
+        public ActionResult<BasketItemViewModel> RemoveOneItem(BasketItemDto basketItem)
         {
             var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             switch (basketItem.Type.ToLower())

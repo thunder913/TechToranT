@@ -2,17 +2,24 @@
 {
     using Microsoft.AspNetCore.Mvc;
     using RestaurantMenuProject.Data.Models.Dtos;
+    using RestaurantMenuProject.Services.Data.Contracts;
 
-    [IgnoreAntiforgeryToken]
     [Route("api/[Controller]")]
     [ApiController]
     public class OrderController : BaseController
     {
-        // TODO make order actions works
-        [HttpPost("Delete")]
-        public string Delete(string orderId)
+        private readonly IOrderService orderService;
+
+        public OrderController(
+            IOrderService orderService)
         {
-            return orderId;
+            this.orderService = orderService;
+        }
+
+        [HttpPost("Delete")]
+        public ActionResult<bool> Delete(OrderIdDto orderDto)
+        {
+            return this.orderService.DeleteById(orderDto.OrderId).Result;
         }
     }
 }

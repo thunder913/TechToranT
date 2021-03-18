@@ -10,5 +10,7 @@
         public ICollection<OrderViewModel> GetOrderViewModelsByUserId(string userId);
 
         public Task MakeOrder(string userId);
+
+        public Task<bool> DeleteById(string orderId);
     }
 }
