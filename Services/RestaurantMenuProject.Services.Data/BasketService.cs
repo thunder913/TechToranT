@@ -141,12 +141,12 @@
         }
 
         // Getting all the drinks from the user basket
-        public ICollection<BasketItemViewModel> GetDrinksInUserBasket(string userId)
+        public ICollection<FoodItemViewModel> GetDrinksInUserBasket(string userId)
         {
             return this.basketDrinkRepository
                         .AllAsNoTracking()
                         .Where(x => x.Basket.User.Id == userId)
-                        .Select(x => new BasketItemViewModel()
+                        .Select(x => new FoodItemViewModel()
                         {
                             Name = x.Drink.Name,
                             Price = x.Drink.Price,
@@ -160,12 +160,12 @@
         }
 
         // Getting all the dishes from the user basket
-        public ICollection<BasketItemViewModel> GetDishesInUserBasket(string userId)
+        public ICollection<FoodItemViewModel> GetDishesInUserBasket(string userId)
         {
             return this.basketDishRepository
                         .AllAsNoTracking()
                         .Where(x => x.Basket.User.Id == userId)
-                        .Select(x => new BasketItemViewModel()
+                        .Select(x => new FoodItemViewModel()
                         {
                             Name = x.Dish.Name,
                             Price = x.Dish.Price,
@@ -179,12 +179,12 @@
         }
 
         // Getting a basketDishItem with ids
-        public BasketItemViewModel GetBasketDishItemById(string dishId, string userId)
+        public FoodItemViewModel GetBasketDishItemById(string dishId, string userId)
         {
             return this.basketDishRepository
             .AllAsNoTracking()
             .Where(x => x.Basket.User.Id == userId && x.DishId == dishId)
-            .Select(x => new BasketItemViewModel()
+            .Select(x => new FoodItemViewModel()
             {
                 Name = x.Dish.Name,
                 Price = x.Dish.Price,
@@ -197,12 +197,12 @@
         }
 
         // getting a basketDrinkItem by ids
-        public BasketItemViewModel GetBasketDrinkItemById(string drinkId, string userId)
+        public FoodItemViewModel GetBasketDrinkItemById(string drinkId, string userId)
         {
             return this.basketDrinkRepository
              .AllAsNoTracking()
              .Where(x => x.Basket.User.Id == userId && x.DrinkId == drinkId)
-             .Select(x => new BasketItemViewModel()
+             .Select(x => new FoodItemViewModel()
              {
                  Name = x.Drink.Name,
                  Price = x.Drink.Price,
@@ -215,7 +215,7 @@
         }
 
         // Adding quantity to drink (by given ids)
-        public BasketItemViewModel AddQuantityToDrink(string drinkId, string userId, int quantity)
+        public FoodItemViewModel AddQuantityToDrink(string drinkId, string userId, int quantity)
         {
             var drink = this.basketDrinkRepository
                         .All()
@@ -232,7 +232,7 @@
         }
 
         // Adding quantity to dish
-        public BasketItemViewModel AddQuantityToDish(string dishId, string userId, int quantity)
+        public FoodItemViewModel AddQuantityToDish(string dishId, string userId, int quantity)
         {
             var dish =
                        this.basketDishRepository
@@ -250,7 +250,7 @@
         }
 
         // Removing a dish from the basket
-        public BasketItemViewModel RemoveDish(string dishIId, string userId, int quantity = 0)
+        public FoodItemViewModel RemoveDish(string dishIId, string userId, int quantity = 0)
         {
             var dish = this.basketDishRepository
                    .All()
@@ -268,7 +268,7 @@
         }
 
         // Removing a drink from the basket
-        public BasketItemViewModel RemoveDrink(string drinkId, string userId, int quantity = 0)
+        public FoodItemViewModel RemoveDrink(string drinkId, string userId, int quantity = 0)
         {
             var drink = this.basketDrinkRepository
                    .All()

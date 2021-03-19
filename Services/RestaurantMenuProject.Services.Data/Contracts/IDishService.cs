@@ -16,9 +16,9 @@
 
         public Dish GetDishById(string id);
 
-        public FoodItemViewModel GetDishAsFoodItemById(string id);
+        public DishViewModel GetDishAsFoodItemById(string id);
 
-        public ICollection<FoodItemViewModel> GetAllDisheshWithDishTypeAsFoodItem(string dishType);
+        public ICollection<DishViewModel> GetAllDisheshWithDishTypeAsFoodItem(string dishType);
 
         public void EditDish(EditDishViewModel editDish, string wwwroot);
     }

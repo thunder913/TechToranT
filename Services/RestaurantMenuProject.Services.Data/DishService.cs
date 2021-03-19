@@ -60,21 +60,21 @@
             return this.dishRepository.All().Include(x => x.Ingredients).Where(x => x.Id == id).FirstOrDefault();
         }
 
-        public FoodItemViewModel GetDishAsFoodItemById(string id)
+        public DishViewModel GetDishAsFoodItemById(string id)
         {
             return this.dishRepository
                     .AllAsNoTracking()
                     .Where(x => x.Id == id)
-                    .To<FoodItemViewModel>()
+                    .To<DishViewModel>()
                     .FirstOrDefault();
         }
 
-        public ICollection<FoodItemViewModel> GetAllDisheshWithDishTypeAsFoodItem(string dishType)
+        public ICollection<DishViewModel> GetAllDisheshWithDishTypeAsFoodItem(string dishType)
         {
             return this.dishRepository
                         .AllAsNoTracking()
                         .Where(x => x.DishType.Name == dishType)
-                        .To<FoodItemViewModel>()
+                        .To<DishViewModel>()
                         .ToList();
         }
 

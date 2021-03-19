@@ -13,21 +13,21 @@
 
         public Task AddBasketDrinkItemAsync(string basketId, int quantity, string drinkId);
 
-        public ICollection<BasketItemViewModel> GetDrinksInUserBasket(string userId);
+        public ICollection<FoodItemViewModel> GetDrinksInUserBasket(string userId);
 
-        public ICollection<BasketItemViewModel> GetDishesInUserBasket(string userId);
+        public ICollection<FoodItemViewModel> GetDishesInUserBasket(string userId);
 
-        public BasketItemViewModel GetBasketDishItemById(string dishId, string userId); 
+        public FoodItemViewModel GetBasketDishItemById(string dishId, string userId); 
 
-        public BasketItemViewModel GetBasketDrinkItemById(string drinkId, string userId);
+        public FoodItemViewModel GetBasketDrinkItemById(string drinkId, string userId);
 
-        public BasketItemViewModel AddQuantityToDrink(string drinkId, string userId, int quantity);
+        public FoodItemViewModel AddQuantityToDrink(string drinkId, string userId, int quantity);
 
-        public BasketItemViewModel AddQuantityToDish(string dishId, string userId, int quantity);
+        public FoodItemViewModel AddQuantityToDish(string dishId, string userId, int quantity);
 
-        public BasketItemViewModel RemoveDish(string dishIId, string userId, int quantity = 0);
+        public FoodItemViewModel RemoveDish(string dishIId, string userId, int quantity = 0);
 
-        public BasketItemViewModel RemoveDrink(string drinkId, string userId, int quantity = 0);
+        public FoodItemViewModel RemoveDrink(string drinkId, string userId, int quantity = 0);
 
         public decimal GetTotalPrice(string userId);
 

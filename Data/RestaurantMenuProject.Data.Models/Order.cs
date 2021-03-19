@@ -13,6 +13,7 @@
         {
             this.Id = Guid.NewGuid().ToString();
         }
+
         public ProcessType ProcessType { get; set; }
 
         public DateTime? DeliveredOn { get; set; }

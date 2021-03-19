@@ -1,4 +1,4 @@
-﻿@model ICollection<BasketItemViewModel>
+﻿@model ICollection<FoodItemViewModel>
 
 <style>
     img {
@@ -42,6 +42,8 @@
             </tr>
         }
 
+        @if (Model.Any())
+        {
         <tr>
             <td></td>
             <td></td>
@@ -56,8 +58,16 @@
                     <button type="submit" class="btn btn-info">ORDER</button>
                 </form>
             </td>
-
         </tr>
+        }
+        else
+        {
+            <tr>
+                <td colspan="75%">
+                    The basket is empty! Add some items by going to the menu page.
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 

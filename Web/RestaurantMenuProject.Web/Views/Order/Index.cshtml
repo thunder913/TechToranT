@@ -1,75 +1,68 @@
-﻿@model List<OrderViewModel>
+﻿@model OrderInfoViewModel
+
+<style>
+    img {
+        width: 50px;
+    }
+</style>
+
+<h3>Information about order: @Model.Id</h3>
+
+<h4>Date created: @Model.CreatedOn.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")</h4>
+
+<h4>Process type: @Model.ProcessType</h4>
+
+<h4>Promo code used: @if (Model.PromoCode != null)
+{ @Model.PromoCode.Code }
+else { <text>none</text> }</h4>
+
+<h4>The order @if (Model.PaidOn != null)
+{
+    @Model.PaidOn?.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")
+}
+else {
+    <text> has not been paid.</text>
+}</h4>
 
 <table class="table table-striped table-bordered table-hover">
     <thead class="thead-dark">
         <tr>
-            <th scope="col" style="width: 330px">Order ID</th>
-            <th scope="col" style="width: 200px">Date</th>
-            <th scope="col">Price</th>
-            <th scope="col">Status</th>
-            <th scope="col" style="width: 160px">Actions</th>
+            <th scope="col">Image</th>
+            <th scope="col">Name</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Price for one</th>
+            <th scope="col">Total price</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.FoodItems)
         {
-            <tr>
-                <td>@item.Id</td>
-                <td>@item.Date.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")</td>
-                <td>@Math.Round(item.Price, 2)$</td>
-                <td>@item.Status</td>
-                <td>
-                    <form method="post" asp-controller="Order" asp-action="Edit">
-                        <input hidden name="orderId" value="@item.Id" />
-                        @if (item.Status == RestaurantMenuProject.Data.Models.Enums.ProcessType.Pending)
-                        {
-                            <button type="button" class="btn btn-danger remove">Delete</button>
-                            <button type="submit" class="btn btn-info edit">Edit</button>
-                        }
-                        else
-                        {
-                            <span>No actions available!</span>
-                        }
-                    </form>
-                </td>
-            </tr>
+        <tr data-id="@item.Id" data-type="@item.FoodType.ToString()">
+            <td>
+                @{
+                        var foodFolder = item.FoodType.ToString().ToLower() == "drink" ? "Drinks" : "Dishes";
+                    <img src="~/img/@(foodFolder)/@(item.Image.Id).@(item.Image.Extension) " class="img-fluid" />
+
+                }
+            </td>
+            <td class="name">@item.Name</td>
+            <td class="quantity">@item.Quantity</td>
+            <td class="price">@(item.Price)$</td>
+            <td class="totalPrice">@(item.Price*item.Quantity)$</td>
+        </tr>
         }
+
+        
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+                <span class="price">
+                    @Model.FoodItems.Sum(x => x.Price*x.Quantity).ToString("G29")$
+                </span>
+            </td>
+        </tr>
     </tbody>
 </table>
-
-@section Scripts{
-    <script src="~/js/notifications.js"></script>
-    <script>
-        $('.remove').click(function (e) {
-
-            var form = e.target.parentElement;
-
-            var orderId = form.querySelector('input[name=orderId]').value;
-            var antiForgeryToken = $('input[name=__RequestVerificationToken]').val();
-            var orderDto = { orderId };
-            var data = JSON.stringify(orderDto);
-
-            $.ajax({
-                type: 'POST',
-                url: '/api/Order/Delete',
-                data: data,
-                headers: {
-                    'X-CSRF-TOKEN': antiForgeryToken
-                },
-                contentType: 'application/json',
-                success: function (res) {
-                    if (res) {
-                        form.parentElement.parentElement.remove();
-                        successNotification('You successfully removed your order!');
-                    } else {
-                        dangerNotification("The order must be pending!");
-                    }
-
-                },
-                error: function (res) {
-                    dangerNotification('Something went wrong, try again!');
-                }
-            });
-        })
-    </script>
-}

@@ -1,31 +1,27 @@
 ﻿namespace RestaurantMenuProject.Web.ViewModels
 {
     using System;
-    using System.Globalization;
+    using System.Collections.Generic;
     using System.Linq;
 
-    using AutoMapper;
-    using RestaurantMenuProject.Data.Models;
-    using RestaurantMenuProject.Data.Models.Enums;
-    using RestaurantMenuProject.Services.Mapping;
-
-    public class OrderViewModel : IMapFrom<Order>, IHaveCustomMappings
+    public class OrderViewModel
     {
-        public string Id { get; set; }
+        public int Page { get; set; }
 
-        public DateTime Date { get; set; }
+        public ICollection<OrderInListViewModel> Orders { get; set; } = new HashSet<OrderInListViewModel>();
 
-        public ProcessType Status { get; set; }
+        public int OrdersPerPage { get; set; }
 
-        public decimal Price { get; set; }
+        public int OrdersCount { get; set; }
 
-        public void CreateMappings(IProfileExpression configuration)
-        {
-            configuration.CreateMap<Order, OrderViewModel>()
-                .ForMember(x => x.Date, y => y.MapFrom(x => x.CreatedOn))
-                .ForMember(x => x.Status, y => y.MapFrom(x => x.ProcessType))
-                .ForMember(x => x.Price, y =>
-                y.MapFrom(x => x.OrderDishes.Sum(d => d.Dish.Price * d.Count) + x.OrderDrinks.Sum(d => d.Drink.Price * d.Count)));
-        }
+        public int PagesCount => (int)Math.Ceiling((double)OrdersCount / this.OrdersPerPage);
+
+        public bool HasPreviousPage => this.Page > 1;
+
+        public int PreviousPageNumber => this.Page - 1;
+
+        public bool HasNextPage => this.Page < this.PagesCount;
+
+        public int NextPageNumber => this.Page + 1;
     }
 }

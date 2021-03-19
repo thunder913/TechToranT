@@ -26,7 +26,7 @@
         }
 
         [HttpPost("Add")]
-        public ActionResult<BasketItemViewModel> AddItem(BasketItemDto basketItem)
+        public ActionResult<FoodItemViewModel> AddItem(BasketItemDto basketItem)
         {
             var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             switch (basketItem.Type.ToLower())
@@ -56,7 +56,7 @@
         }
 
         [HttpPost("RemoveOne")]
-        public ActionResult<BasketItemViewModel> RemoveOneItem(BasketItemDto basketItem)
+        public ActionResult<FoodItemViewModel> RemoveOneItem(BasketItemDto basketItem)
         {
             var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             switch (basketItem.Type.ToLower())

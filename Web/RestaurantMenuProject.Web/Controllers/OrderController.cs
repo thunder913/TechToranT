@@ -4,6 +4,7 @@
 
     using Microsoft.AspNetCore.Mvc;
     using RestaurantMenuProject.Services.Data.Contracts;
+    using RestaurantMenuProject.Web.ViewModels;
 
     public class OrderController : Controller
     {
@@ -14,11 +15,20 @@
             this.orderService = orderService;
         }
 
-        public IActionResult Index()
+        public IActionResult All(int id = 1)
         {
             var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var userOrders = this.orderService.GetOrderViewModelsByUserId(userId);
-            return this.View(userOrders);
+            const int itemsPerPage = 10;
+            var viewModel = new OrderViewModel()
+            {
+                Page = id,
+                Orders = this.orderService.GetOrderViewModelsByUserId(userId, itemsPerPage, id),
+                OrdersPerPage = itemsPerPage,
+                OrdersCount = this.orderService.GetUserOrdersCount(userId),
+            };
+
+
+            return this.View(viewModel);
         }
 
         [HttpPost]
@@ -27,6 +37,12 @@
             var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             this.orderService.MakeOrder(userId);
             return this.RedirectToAction("Index", "Menu");
+        }
+
+        public IActionResult Index(string id)
+        {
+            var orderInfo = this.orderService.GetFullInformationForOrder(id);
+            return this.View(orderInfo);
         }
     }
 }

@@ -36,9 +36,15 @@ $('.removeAll').click(function (e) {
         },
         contentType: 'application/json',
         success: function (res) {
-            trElement.remove();
-            finalPriceElement.textContent = getTotalPrice();
-            successNotification(`Successfully removed "${res.name}" from the basket!`);
+            if (res) {
+                finalPriceElement.textContent = getTotalPrice();
+                var removedName = trElement.querySelectorAll('td')[1].textContent;
+                successNotification(`Successfully removed "${removedName}" from the basket!`);
+                trElement.remove();
+            } else {
+                dangerNotification("Something went wrong, try again!");
+            }
+            
         }
     });
 })

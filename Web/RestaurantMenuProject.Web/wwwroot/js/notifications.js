@@ -6,7 +6,7 @@
     mouse_over: 'pause',
     type: 'success',
     offset: 50,
-    delay: 3000
+    delay: 200
 };
 
 function successNotification(message) {
