@@ -5,15 +5,18 @@
     using System.Threading.Tasks;
 
     using AutoMapper;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
+    using RestaurantMenuProject.Common;
     using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Services.Data.Contracts;
     using RestaurantMenuProject.Services.Mapping;
     using RestaurantMenuProject.Web.ViewModels;
 
+    [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
     public class ManageController : Controller
     {
         private readonly IDishTypeService dishTypeService;

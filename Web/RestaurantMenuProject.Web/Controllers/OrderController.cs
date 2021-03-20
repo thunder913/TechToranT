@@ -1,11 +1,12 @@
 ﻿namespace RestaurantMenuProject.Web.Controllers
 {
     using System.Security.Claims;
-
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using RestaurantMenuProject.Services.Data.Contracts;
     using RestaurantMenuProject.Web.ViewModels;
 
+    [Authorize]
     public class OrderController : Controller
     {
         private readonly IOrderService orderService;

@@ -60,7 +60,7 @@ else {
             <td></td>
             <td>
                 <span class="price">
-                    @Model.FoodItems.Sum(x => x.Price*x.Quantity).ToString("G29")$
+                    @Model.FoodItems.Sum(x => x.Price*x.Quantity).ToString("0.00")$
                 </span>
             </td>
         </tr>
