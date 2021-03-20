@@ -53,6 +53,11 @@
         "library": "animate.css@3.5.2",
         "destination": "wwwroot/css/animatecss",
         "files": [ "animate.css" ]
+    },
+    {
+        "library": "jquery.dataTables.min.js@1.10.5",
+        "destination": "wwwroot/lib/jquery.datatables",
+        "files": ["css/jquery.dataTables.min.css", "js/jquery.dataTables.min.js"]
     }
   ]
 }

@@ -1,7 +1,66 @@
-﻿@model RestaurantMenuProject.Web.ViewModels.Administration.Dashboard.IndexViewModel
-@{
-    this.ViewData["Title"] = "Admin dashboard";
-}
+﻿@model UserDetailsViewModel
 
-<h1>@this.ViewData["Title"]</h1>
-Settings: @this.Model.SettingsCount
+
+<table id="dtOrderExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th class="th-sm">
+                Email
+            </th>
+            <th class="th-sm">
+                Role
+            </th>
+            <th class="th-sm">
+                Name
+            </th>
+            <th class="th-sm">
+                Date created
+            </th>
+            <th class="th-sm">
+                Date deleted
+            </th>
+            <th class="th-sm">
+                Actions
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Users)
+        {
+            <tr>
+                <th>@item.Email</th>
+                <th>@string.Join(", ", item.Roles)</th>
+                <th>@item.FirstName @item.LastName</th>
+                <th>@item.CreatedOn</th>
+                <th>@item.DeletedOn</th>
+                <th><button class="btn btn-info">Action</button></th>
+            </tr>
+        }
+    </tbody>
+    </table>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @if (!Model.HasPreviousPage) { <text>disabled</text> }">
+            <a class="page-link" asp-action="Index" asp-route-id="@(Model.PreviousPageNumber)">Previous</a>
+        </li>
+        @for (int i = Model.Page - 3; i < Model.Page; i++)
+        {
+            if (i > 0)
+            {
+                <li class="page-item"><a class="page-link" asp-action="Index" asp-route-id="@i">@i</a></li>
+            }
+        }
+        <li class="page-item active"><a class="page-link" href="#">@Model.Page</a></li>
+
+        @for (int i = Model.Page + 1; i <= Model.Page + 3; i++)
+        {
+            if (i <= Model.PagesCount)
+            {
+                <li class="page-item"><a class="page-link" asp-action="Index" asp-route-id="@i">@i</a></li>
+            }
+        }
+
+        <li class="page-item @if (!Model.HasNextPage) { <text>disabled</text> }"><a class="page-link" asp-action="Index" asp-route-id="@(Model.NextPageNumber)">Next</a></li>
+    </ul>
+</nav>

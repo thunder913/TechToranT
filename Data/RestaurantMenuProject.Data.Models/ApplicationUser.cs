@@ -44,5 +44,9 @@ namespace RestaurantMenuProject.Data.Models
         public virtual Basket Basket { get; set; }
 
         public string BasketId { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
     }
 }
