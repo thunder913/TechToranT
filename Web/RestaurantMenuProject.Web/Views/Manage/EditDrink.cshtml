@@ -73,8 +73,17 @@
     <button type="submit" class="btn btn-info col-md-2">Edit</button>
 </form>
 
+<form method="post" asp-controller="Manage" asp-action="DeleteDrink">
+    <input hidden asp-for="Id" value="@Model.Id" />
+    <button type="submit" class="btn btn-danger col-md-2">Delete</button>
+</form>
+
+
 
 <style>
+    form {
+        display: inline;
+    }
     button {
         margin-left: 2%;
     }

@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-
+    using Microsoft.EntityFrameworkCore;
     using RestaurantMenuProject.Data.Common.Repositories;
     using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Data.Models.Dtos;
@@ -19,17 +19,24 @@
         private readonly IRepository<OrderDrink> orderDrinkRepository;
         private readonly IRepository<OrderDish> orderDishRepository;
         private readonly IBasketService basketService;
+        private readonly IDishService dishService;
+        private readonly IDrinkService drinkService;
 
         public OrderService(
             IDeletableEntityRepository<Order> orderRepository,
             IRepository<OrderDrink> orderDrinkRepository,
             IRepository<OrderDish> orderDishRepository,
-            IBasketService basketService)
+            IBasketService basketService,
+            IDishService dishService,
+            IDrinkService drinkService
+            )
         {
             this.orderRepository = orderRepository;
             this.orderDrinkRepository = orderDrinkRepository;
             this.orderDishRepository = orderDishRepository;
             this.basketService = basketService;
+            this.dishService = dishService;
+            this.drinkService = drinkService;
         }
 
         public ICollection<OrderInListViewModel> GetOrderViewModelsByUserId(string userId, int itemsPerPage, int page)
@@ -66,11 +73,13 @@
             {
                 Count = x.Quantity,
                 DrinkId = x.Id,
+                PriceForOne = x.Price,
             }).ToList();
             order.OrderDishes = basket.Dishes.Select(x => new OrderDish()
             {
                 Count = x.Quantity,
                 DishId = x.Id,
+                PriceForOne = x.Price,
             }).ToList();
 
             this.orderRepository.AddAsync(order).GetAwaiter().GetResult();
@@ -99,19 +108,47 @@
 
         public ICollection<FoodItemViewModel> GetAllDishesInOrder(string orderId)
         {
-            var drinks = this.orderDrinkRepository
-                .AllAsNoTracking()
-                .Where(x => x.OrderId == orderId)
-                .To<FoodItemViewModel>();
-
-            var dishes = this.orderDishRepository
-                .AllAsNoTracking()
-                .Where(x => x.OrderId == orderId)
-                .To<FoodItemViewModel>();
-
+            var mapper = AutoMapperConfig.MapperInstance;
             var items = new List<FoodItemViewModel>();
-            items.AddRange(drinks);
-            items.AddRange(dishes);
+
+            var orderDrinks = this.orderDrinkRepository
+                .AllAsNoTracking()
+                .Where(x => x.OrderId == orderId)
+                .Select(x => new
+                {
+                   Id = x.DrinkId,
+                   PriceForOne = x.PriceForOne,
+                   Count = x.Count,
+                })
+                .ToList();
+
+            foreach (var item in orderDrinks)
+            {
+                var drink = mapper.Map<Drink, FoodItemViewModel>(this.drinkService.GetDrinkWithDeletedById(item.Id));
+                drink.Price = item.PriceForOne;
+                drink.Quantity = item.Count;
+                items.Add(drink);
+            }
+
+            var orderdishes = this.orderDishRepository
+                .AllAsNoTracking()
+                .Where(x => x.OrderId == orderId)
+                .Select(x => new
+                {
+                    Id = x.DishId,
+                    PriceForOne = x.PriceForOne,
+                    Count = x.Count,
+                })
+                .ToList();
+
+
+            foreach (var item in orderdishes)
+            {
+                var dish = mapper.Map<Dish, FoodItemViewModel>(this.dishService.GetDishWithDeletedById(item.Id));
+                dish.Price = item.PriceForOne;
+                dish.Quantity = item.Count;
+                items.Add(dish);
+            }
 
             return items;
         }

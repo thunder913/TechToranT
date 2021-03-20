@@ -161,9 +161,18 @@
             return this.RedirectToAction("Index", "Menu");
         }
 
-        public IActionResult Remove()
+        [HttpPost]
+        public IActionResult DeleteDish(string id)
         {
-            return this.View();
+            this.dishService.DeleteDishById(id);
+            return this.RedirectToAction("Index", "Menu");
+        }
+
+        [HttpPost]
+        public IActionResult DeleteDrink(string id)
+        {
+            this.drinkService.DeleteDrinkById(id);
+            return this.RedirectToAction("Index", "Menu");
         }
 
         // TODO REMOVE DYNAMIC SOMEHOW

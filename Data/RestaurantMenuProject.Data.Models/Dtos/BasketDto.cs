@@ -9,9 +9,9 @@ namespace RestaurantMenuProject.Data.Models.Dtos
     {
         public string Id { get; set; }
 
-        public ICollection<FoodCountDto> Dishes { get; set; } = new HashSet<FoodCountDto>();
+        public ICollection<FoodCountPriceDto> Dishes { get; set; } = new HashSet<FoodCountPriceDto>();
 
-        public ICollection<FoodCountDto> Drinks { get; set; } = new HashSet<FoodCountDto>();
+        public ICollection<FoodCountPriceDto> Drinks { get; set; } = new HashSet<FoodCountPriceDto>();
 
         public void CreateMappings(IProfileExpression configuration)
         {

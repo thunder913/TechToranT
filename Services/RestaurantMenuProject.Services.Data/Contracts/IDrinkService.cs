@@ -19,5 +19,9 @@
         public EditDrinkViewModel GetEditDrinkViewModelById(string id);
 
         public void EditDrink(EditDrinkViewModel editDrink, string wwwroot);
+
+        public void DeleteDrinkById(string id);
+
+        public Drink GetDrinkWithDeletedById(string id);
     }
 }

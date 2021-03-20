@@ -11,5 +11,7 @@
         public Dish Dish { get; set; }
 
         public int Count { get; set; }
+
+        public decimal PriceForOne { get; set; }
     }
 }

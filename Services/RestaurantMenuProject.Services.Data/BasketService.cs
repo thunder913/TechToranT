@@ -311,15 +311,17 @@
                         .Select(b => new BasketDto()
                         {
                             Id = b.User.Id,
-                            Dishes = b.Dishes.Select(d => new FoodCountDto()
+                            Dishes = b.Dishes.Select(d => new FoodCountPriceDto()
                             {
                                 Id = d.DishId,
                                 Quantity = d.Quantity,
+                                Price = d.Dish.Price,
                             }).ToList(),
-                            Drinks = b.Drinks.Select(d => new FoodCountDto()
+                            Drinks = b.Drinks.Select(d => new FoodCountPriceDto()
                             {
                                 Id = d.DrinkId,
                                 Quantity = d.Quantity,
+                                Price = d.Drink.Price,
                             }).ToList(),
                         })
                         .First(); // TODO use automapper

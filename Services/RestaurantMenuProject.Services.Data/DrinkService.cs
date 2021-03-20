@@ -136,5 +136,20 @@
             this.drinkRepository.Update(drink);
             this.drinkRepository.SaveChangesAsync().GetAwaiter().GetResult();
         }
+
+        public void DeleteDrinkById(string id)
+        {
+            var drinkToRemove = this.drinkRepository.All().FirstOrDefault(x => x.Id == id);
+            this.drinkRepository.Delete(drinkToRemove);
+            this.drinkRepository.SaveChangesAsync().GetAwaiter().GetResult();
+        }
+
+        public Drink GetDrinkWithDeletedById(string id)
+        {
+            return this.drinkRepository
+                .AllAsNoTrackingWithDeleted()
+                .Include(x => x.Image)
+                .FirstOrDefault(x => x.Id == id);
+        }
     }
 }

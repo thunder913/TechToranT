@@ -60,6 +60,14 @@
             return this.dishRepository.All().Include(x => x.Ingredients).Where(x => x.Id == id).FirstOrDefault();
         }
 
+        public Dish GetDishWithDeletedById(string id)
+        {
+            return this.dishRepository
+                .AllAsNoTrackingWithDeleted()
+                .Include(x => x.Image)
+                .FirstOrDefault(x => x.Id == id);
+        }
+
         public DishViewModel GetDishAsFoodItemById(string id)
         {
             return this.dishRepository
@@ -133,6 +141,13 @@
 
             // Saving the new dish to the DB
             this.dishRepository.Update(dish);
+            this.dishRepository.SaveChangesAsync().GetAwaiter().GetResult();
+        }
+
+        public void DeleteDishById(string id)
+        {
+            var dishToDelete = this.dishRepository.All().FirstOrDefault(x => x.Id == id);
+            this.dishRepository.Delete(dishToDelete);
             this.dishRepository.SaveChangesAsync().GetAwaiter().GetResult();
         }
 

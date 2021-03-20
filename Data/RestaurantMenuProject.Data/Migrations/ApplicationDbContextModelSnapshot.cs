@@ -762,6 +762,9 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.Property<int>("Count")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("PriceForOne")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("DishId", "OrderId");
 
                     b.HasIndex("OrderId");
@@ -779,6 +782,9 @@ namespace RestaurantMenuProject.Data.Migrations
 
                     b.Property<int>("Count")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("PriceForOne")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("DrinkId", "OrderId");
 

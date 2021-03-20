@@ -16,10 +16,14 @@
 
         public Dish GetDishById(string id);
 
+        public Dish GetDishWithDeletedById(string id);
+
         public DishViewModel GetDishAsFoodItemById(string id);
 
         public ICollection<DishViewModel> GetAllDisheshWithDishTypeAsFoodItem(string dishType);
 
         public void EditDish(EditDishViewModel editDish, string wwwroot);
+
+        public void DeleteDishById(string id);
     }
 }
