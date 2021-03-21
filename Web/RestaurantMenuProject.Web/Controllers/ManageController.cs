@@ -27,6 +27,7 @@
         private readonly IAllergenService allergenService;
         private readonly IWebHostEnvironment webHostEnvironment;
         private readonly IDrinkService drinkService;
+        private readonly IUserService userService;
 
         public ManageController(
             IDishTypeService dishTypeService,
@@ -36,7 +37,8 @@
             IPackagingService packagingService,
             IAllergenService allergenService,
             IWebHostEnvironment webHostEnvironment,
-            IDrinkService drinkService)
+            IDrinkService drinkService,
+            IUserService userService)
         {
             this.dishTypeService = dishTypeService;
             this.ingredientService = ingredientService;
@@ -46,6 +48,7 @@
             this.allergenService = allergenService;
             this.webHostEnvironment = webHostEnvironment;
             this.drinkService = drinkService;
+            this.userService = userService;
         }
 
         public IActionResult Index()
@@ -178,11 +181,25 @@
             return this.RedirectToAction("Index", "Menu");
         }
 
+        public IActionResult EditUser(string id)
+        {
+            var mapper = AutoMapperConfig.MapperInstance;
+
+            var user = mapper.Map<ApplicationUser, EditUserViewModel>(this.userService.GetUserById(id));
+            this.SetValuesToUserViewModel(user);
+            return this.View(user);
+        }
+
         // TODO REMOVE DYNAMIC SOMEHOW
         private void SetValuesToDishViewModel(dynamic addDishViewModel)
         {
             addDishViewModel.Ingredients = this.ingredientService.GetAllAsDishIngredientViewModel().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
             addDishViewModel.DishType = this.dishTypeService.GetAllDishTypesWithId().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
+        }
+
+        private void SetValuesToUserViewModel(dynamic editUserViewModel)
+        {
+            editUserViewModel.Roles = this.userService.GetUserRoles().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
         }
 
         private void SetValuesToDrinkViewModel(dynamic addDrinkViewModel)

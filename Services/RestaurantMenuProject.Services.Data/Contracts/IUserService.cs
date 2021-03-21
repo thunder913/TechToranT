@@ -3,13 +3,18 @@
     using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Web.ViewModels;
     using System.Collections.Generic;
+    using System.Linq;
 
     public interface IUserService
     {
         public ApplicationUser GetUserById(string id);
 
-        public ICollection<UserInListDetailViewModel> GetAllUserDetails(int itemsPerPage, int page);
+        public IQueryable<UserViewModel> GetAllUserDetails();
 
         public int GetUsersCount();
+
+        public IQueryable<UserViewModel> GetUserDataAsQueryable(string sortColumn, string sortDirection, string searchValue);
+
+        public ICollection<ApplicationRole> GetUserRoles();
     }
 }

@@ -19,16 +19,7 @@
 
         public IActionResult Index(int id = 1)
         {
-            const int itemsPerPage = 12;
-            var viewModel = new UserDetailsViewModel()
-            {
-                Page = id,
-                Users = this.userService.GetAllUserDetails(itemsPerPage, id),
-                UsersPerPage = itemsPerPage,
-                UsersCount = this.userService.GetUsersCount(),
-            };
-
-            return this.View(viewModel);
+            return this.View();
         }
     }
 }

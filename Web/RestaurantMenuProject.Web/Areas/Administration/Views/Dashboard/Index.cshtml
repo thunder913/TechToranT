@@ -1,14 +1,18 @@
-﻿@model UserDetailsViewModel
+﻿<form method="post">
 
+</form>
 
-<table id="dtOrderExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+<table id="usersTable" class="table table-striped table-bordered" style="width:100%">
     <thead>
         <tr>
+            <th class="th-sm">
+                Id
+            </th>
             <th class="th-sm">
                 Email
             </th>
             <th class="th-sm">
-                Role
+                Roles
             </th>
             <th class="th-sm">
                 Name
@@ -24,43 +28,48 @@
             </th>
         </tr>
     </thead>
-    <tbody>
-        @foreach (var item in Model.Users)
-        {
-            <tr>
-                <th>@item.Email</th>
-                <th>@string.Join(", ", item.Roles)</th>
-                <th>@item.FirstName @item.LastName</th>
-                <th>@item.CreatedOn</th>
-                <th>@item.DeletedOn</th>
-                <th><button class="btn btn-info">Action</button></th>
-            </tr>
-        }
-    </tbody>
-    </table>
+</table>
 
-<nav aria-label="Page navigation example">
-    <ul class="pagination justify-content-center">
-        <li class="page-item @if (!Model.HasPreviousPage) { <text>disabled</text> }">
-            <a class="page-link" asp-action="Index" asp-route-id="@(Model.PreviousPageNumber)">Previous</a>
-        </li>
-        @for (int i = Model.Page - 3; i < Model.Page; i++)
-        {
-            if (i > 0)
-            {
-                <li class="page-item"><a class="page-link" asp-action="Index" asp-route-id="@i">@i</a></li>
-            }
-        }
-        <li class="page-item active"><a class="page-link" href="#">@Model.Page</a></li>
-
-        @for (int i = Model.Page + 1; i <= Model.Page + 3; i++)
-        {
-            if (i <= Model.PagesCount)
-            {
-                <li class="page-item"><a class="page-link" asp-action="Index" asp-route-id="@i">@i</a></li>
-            }
-        }
-
-        <li class="page-item @if (!Model.HasNextPage) { <text>disabled</text> }"><a class="page-link" asp-action="Index" asp-route-id="@(Model.NextPageNumber)">Next</a></li>
-    </ul>
-</nav>
+@section Scripts{ 
+    <script>
+        var antiForgeryToken = $('input[name=__RequestVerificationToken]').val();
+        $(document).ready(function () {
+            $('#usersTable').DataTable({
+                processing: true,
+                serverSide: true,
+                filter: true,
+                ajax: {
+                    url: '/api/users',
+                    type: 'POST',
+                    dataType: "json",
+                    headers:
+                    {
+                        'X-CSRF-TOKEN': antiForgeryToken
+                    }
+                },
+                "columnDefs": [{
+                    "targets": [0],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [6],
+                    "searchable": false,
+                    "orderable": false
+                }],
+                "columns": [
+                    { "data": "id", "name": "Id", "autoWidth": true },
+                    { "data": "email", "name": "Email", "autoWidth": true },
+                    { "data": "roles", "name": "Roles", "autoWidth": true },
+                    { "data": "name", "name": "Name", "autoWidth": true },
+                    { "data": "createdOn", "name": "CreatedOn", "autoWidth": true },
+                    { "data": "deletedOn", "name": "DeletedOn", "autoWidth": true },
+                    {
+                        data: "id",
+                        "render": function (data) { return "<a href='/Manage/EditUser/" + data + "' class='btn btn-info'>Edit</a>"; }
+                    },
+                ]
+            });
+        });
+    </script>
+}

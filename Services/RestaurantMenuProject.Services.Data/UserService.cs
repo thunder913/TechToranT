@@ -2,6 +2,8 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Linq.Dynamic.Core;
+
     using Microsoft.AspNetCore.Identity;
     using RestaurantMenuProject.Data.Common.Repositories;
     using RestaurantMenuProject.Data.Models;
@@ -13,13 +15,16 @@
     {
         private readonly IDeletableEntityRepository<ApplicationUser> userRepository;
         private readonly RoleManager<ApplicationRole> roleManager;
+        private readonly IDeletableEntityRepository<ApplicationRole> roleRepository;
 
         public UserService(
             IDeletableEntityRepository<ApplicationUser> userRepository,
-            RoleManager<ApplicationRole> roleManager)
+            RoleManager<ApplicationRole> roleManager,
+            IDeletableEntityRepository<ApplicationRole> roleRepository)
         {
             this.userRepository = userRepository;
             this.roleManager = roleManager;
+            this.roleRepository = roleRepository;
         }
 
         public ApplicationUser GetUserById(string id)
@@ -29,14 +34,31 @@
                         .FirstOrDefault(x => x.Id == id);
         }
 
-        public ICollection<UserInListDetailViewModel> GetAllUserDetails(int itemsPerPage, int page)
+        public IQueryable<UserViewModel> GetUserDataAsQueryable(string sortColumn, string sortDirection, string searchValue)
+        {
+            var userData = this.GetAllUserDetails();
+            if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortDirection)))
+            {
+                userData = userData.OrderBy(sortColumn + " " + sortDirection);
+            }
+
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                userData = userData.Where(m => m.Email.Contains(searchValue)
+                                            || m.Name.Contains(searchValue)
+                                            || m.Roles.Contains(searchValue)
+                                            || m.CreatedOn.ToString().Contains(searchValue)
+                                            || m.DeletedOn.ToString().Contains(searchValue));
+            }
+
+            return userData;
+        }
+
+        public IQueryable<UserViewModel> GetAllUserDetails()
         {
             var users = this
                 .userRepository
                 .AllAsNoTrackingWithDeleted()
-                .OrderBy(x => x.Email)
-                .Skip((page - 1) * itemsPerPage)
-                .Take(itemsPerPage)
                 .To<UserInListDetailViewModel>()
                 .ToList();
 
@@ -49,10 +71,18 @@
                     roles.Add(this.roleManager.FindByIdAsync(roleId).GetAwaiter().GetResult().Name);
                 }
 
-                users[i].Roles = roles.ToArray();
+                users[i].Roles = string.Join(", ", roles);
             }
 
-            return users;
+            return users.Select(x => new UserViewModel()
+            {
+                CreatedOn = x.CreatedOn,
+                DeletedOn = x.DeletedOn,
+                Email = x.Email,
+                Id = x.Id,
+                Name = x.Name,
+                Roles = x.Roles,
+            }).AsQueryable();
         }
 
         public int GetUsersCount()
@@ -61,6 +91,11 @@
                 .userRepository
                 .AllAsNoTrackingWithDeleted()
                 .Count();
+        }
+
+        public ICollection<ApplicationRole> GetUserRoles()
+        {
+            return this.roleRepository.AllAsNoTracking().ToList();
         }
     }
 }
