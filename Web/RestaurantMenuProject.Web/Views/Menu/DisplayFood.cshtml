@@ -41,13 +41,14 @@
     <span class="left gray-bg">@Model.Weight grams</span>
     <span class="right gray-bg">@Model.Price$</span>
 
-    @*TODO make it actually work and add it to a basket (probably in browser memory)*@
-    <form class="right" method="post">
-        <input type="hidden" name="Id" value="@Model.Id" />
-        <input type="hidden" name="Type" value="Dish" />
-        <input id="count" type="text" name="Count" style="width: 50px" placeholder="Count" />
-        <button type="button" class="btn btn-success add">Add</button>
-    </form>
+    @if (this.User.Identity.IsAuthenticated)
+    {
+<form class="right" method="post">
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" name="Type" value="Dish" />
+    <input id="count" type="text" name="Count" style="width: 50px" placeholder="Count" />
+    <button type="button" class="btn btn-success add">Add</button>
+</form>}
 </div>
 <h1>@Model.AdditionalInfo</h1>
 <span>Ingredients: @string.Join(", ", Model.Ingredients.Select(x => x.Name))</span>

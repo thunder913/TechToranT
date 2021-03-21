@@ -16,5 +16,7 @@
         public IQueryable<UserViewModel> GetUserDataAsQueryable(string sortColumn, string sortDirection, string searchValue);
 
         public ICollection<ApplicationRole> GetUserRoles();
+
+        public void EditUserData(EditUserViewModel editUser);
     }
 }

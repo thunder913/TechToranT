@@ -1,4 +1,6 @@
 ﻿@model ICollection<DishViewModel>
+@using RestaurantMenuProject.Common
+
 <link href="~/css/displayFoodItem.css" rel="stylesheet" />
 <link rel="stylesheet" runat="server" media="screen" href="~/css/menu.css" />
 <ul id="menu" class="row">
@@ -12,20 +14,25 @@
         </div>
         <div class="float-right col-md-5">
             <span id="price" class="float-right right gray-bg">@item.Price$</span>
+            @if (this.User.Identity.IsAuthenticated)
+            {
             <form method="post">
                 <input type="hidden" name="Id" value="@item.Id" />
                 <input type="hidden" name="Type" value="Dish" />
                 <input id="count" type="text" name="Count" class="right" placeholder="Count" />
                 <button type="button" class="btn btn-success right add">Add</button>
             </form>
+            }
         </div>
-        <form asp-controller="Manage" asp-action="EditDish" method="get">
-            <input type="hidden" name="type" value="Dish"/>
-            <input type="hidden" name="id" value="@item.Id"/>
-            <button type="submit" class="btn btn-info edit" >Edit</button>
-        </form>
-    </li>
-}
+    @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+        {
+    <form asp-controller="Manage" asp-action="EditDish" method="get">
+        <input type="hidden" name="type" value="Dish" />
+        <input type="hidden" name="id" value="@item.Id" />
+        <button type="submit" class="btn btn-info edit">Edit</button>
+    </form>
+        }
+    </li>}
 </ul>
 @* TODO move the scripts and styles to another file*@
 

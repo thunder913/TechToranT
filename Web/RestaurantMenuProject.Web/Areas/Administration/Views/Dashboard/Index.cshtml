@@ -35,6 +35,7 @@
         var antiForgeryToken = $('input[name=__RequestVerificationToken]').val();
         $(document).ready(function () {
             $('#usersTable').DataTable({
+                order: [[4, "desc"]],
                 processing: true,
                 serverSide: true,
                 filter: true,
@@ -62,8 +63,20 @@
                     { "data": "email", "name": "Email", "autoWidth": true },
                     { "data": "roles", "name": "Roles", "autoWidth": true },
                     { "data": "name", "name": "Name", "autoWidth": true },
-                    { "data": "createdOn", "name": "CreatedOn", "autoWidth": true },
-                    { "data": "deletedOn", "name": "DeletedOn", "autoWidth": true },
+                    {
+                        "data": "createdOn", "name": "CreatedOn", "autoWidth": true,
+                        render: function (data) { return new Date(Date.parse(data)).toLocaleString() }
+                    },
+                    {
+                        "data": "deletedOn", "name": "DeletedOn", "autoWidth": true,
+                        render: function (data) {
+                            if (data) {
+                                return data;
+                            } else {
+                                return "Account is active!"
+                            }
+                        }
+                    },
                     {
                         data: "id",
                         "render": function (data) { return "<a href='/Manage/EditUser/" + data + "' class='btn btn-info'>Edit</a>"; }

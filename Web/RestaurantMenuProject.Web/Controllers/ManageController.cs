@@ -184,10 +184,17 @@
         public IActionResult EditUser(string id)
         {
             var mapper = AutoMapperConfig.MapperInstance;
-
-            var user = mapper.Map<ApplicationUser, EditUserViewModel>(this.userService.GetUserById(id));
+            var useruser = this.userService.GetUserById(id);
+            var user = mapper.Map<ApplicationUser, EditUserViewModel>(useruser);
             this.SetValuesToUserViewModel(user);
             return this.View(user);
+        }
+
+        [HttpPost]
+        public IActionResult EditUser(EditUserViewModel editUser)
+        {
+            this.userService.EditUserData(editUser);
+            return this.RedirectToAction("Dashboard", "Administration");
         }
 
         // TODO REMOVE DYNAMIC SOMEHOW
