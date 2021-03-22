@@ -7,7 +7,7 @@
 
     public interface IOrderService
     {
-        public ICollection<OrderInListViewModel> GetOrderViewModelsByUserId(string userId, int page, int itemsPerPage);
+        public ICollection<OrderInListViewModel> GetOrderViewModelsByUserId(int page, int itemsPerPage, string userId = null);
 
         public Task MakeOrder(string userId);
 
@@ -18,5 +18,7 @@
         public ICollection<FoodItemViewModel> GetAllDishesInOrder(string orderId);
 
         public OrderInfoViewModel GetFullInformationForOrder(string orderId);
+
+        public ICollection<ManageOrderViewModel> GetAllOrders(string sortColumn, string sortDirection, string searchValue);
     }
 }

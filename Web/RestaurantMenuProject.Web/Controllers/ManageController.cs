@@ -190,11 +190,21 @@
             return this.View(user);
         }
 
+        public IActionResult Orders()
+        {
+            return this.View();
+        }
+
         [HttpPost]
         public IActionResult EditUser(EditUserViewModel editUser)
         {
             this.userService.EditUserData(editUser);
             return this.RedirectToAction("Dashboard", "Administration");
+        }
+
+        public IActionResult Users(int id = 1)
+        {
+            return this.View();
         }
 
         // TODO REMOVE DYNAMIC SOMEHOW

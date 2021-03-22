@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Linq.Dynamic.Core;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using RestaurantMenuProject.Data.Common.Repositories;
@@ -39,14 +40,15 @@
             this.drinkService = drinkService;
         }
 
-        public ICollection<OrderInListViewModel> GetOrderViewModelsByUserId(string userId, int itemsPerPage, int page)
+        public ICollection<OrderInListViewModel> GetOrderViewModelsByUserId(int itemsPerPage, int page, string userId = null)
         {
             return this.orderRepository
                     .AllAsNoTrackingWithDeleted()
+                    .Include(x => x.Client)
                     .OrderByDescending(x => x.CreatedOn)
                     .Skip((page - 1) * itemsPerPage)
                     .Take(itemsPerPage)
-                    .Where(x => x.ClientId == userId)
+                    .Where(x => userId == null || x.ClientId == userId)
                     .To<OrderInListViewModel>()
                     .ToList();
         }
@@ -163,6 +165,33 @@
             order.FoodItems = this.GetAllDishesInOrder(orderId);
 
             return order;
+        }
+
+        public ICollection<ManageOrderViewModel> GetAllOrders(string sortColumn, string sortDirection, string searchValue)
+        {
+            var orders = this.orderRepository
+                .AllAsNoTrackingWithDeleted()
+                .To<OrderInListViewModel>();
+
+            if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortDirection)))
+            {
+                orders = orders.OrderBy(sortColumn + " " + sortDirection);
+            }
+
+            var dataToReturn = orders.To<ManageOrderViewModel>().ToList();
+
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                dataToReturn = dataToReturn.Where(m =>
+                                            m.Price.ToString().Contains(searchValue)
+                                            || m.Email.ToLower().Contains(searchValue.ToLower())
+                                            || m.Status.ToString().ToLower().Contains(searchValue.ToLower())
+                                            || m.Date.ToLocalTime().ToString("dd/MM/yyyy, HH:mm:ss").Contains(searchValue)
+                                            || m.FullName.ToLower().Contains(searchValue)).ToList(); // TODO fix it again to make it do it all as Queryable
+            }
+
+
+            return dataToReturn;
         }
     }
 }

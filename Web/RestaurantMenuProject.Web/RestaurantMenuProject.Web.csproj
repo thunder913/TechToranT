@@ -43,4 +43,9 @@
     <ProjectReference Include="..\RestaurantMenuProject.Web.Infrastructure\RestaurantMenuProject.Web.Infrastructure.csproj" />
     <ProjectReference Include="..\RestaurantMenuProject.Web.ViewModels\RestaurantMenuProject.Web.ViewModels.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Administration\Controllers\" />
+    <Folder Include="Areas\Administration\Views\Dashboard\" />
+  </ItemGroup>
 </Project>

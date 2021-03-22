@@ -1,0 +1,90 @@
+﻿<form method="post">
+</form>
+
+<table id="usersTable" class="table table-striped table-bordered" style="width:100%">
+    <thead>
+        <tr>
+            <th class="th-sm">
+                Id
+            </th>
+            <th class="th-sm">
+                Client Email
+            </th>
+            <th class="th-sm">
+                Client Name
+            </th>
+            <th class="th-sm">
+                Date
+            </th>
+            <th class="th-sm">
+                Total Price
+            </th>
+            <th class="th-sm">
+                Status
+            </th>
+            <th class="th-sm" width="20px">
+                Actions
+            </th>
+        </tr>
+    </thead>
+</table>
+
+@section Scripts{
+    <script>
+        var antiForgeryToken = $('input[name=__RequestVerificationToken]').val();
+        $(document).ready(function () {
+            $('#usersTable').DataTable({
+                order: [[3, "desc"]],
+                processing: true,
+                serverSide: true,
+                filter: true,
+                ajax: {
+                    url: '/api/order/all',
+                    type: 'POST',
+                    dataType: "json",
+                    headers:
+                    {
+                        'X-CSRF-TOKEN': antiForgeryToken
+                    }
+                },
+                "columnDefs": [{
+                    "targets": [0],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [6],
+                    "searchable": false,
+                    "orderable": false
+                }],
+                "columns": [
+                    { "data": "id", "name": "Id", "autoWidth": true },
+                    { "data": "email", "name": "Email", "autoWidth": true },
+                    { "data": "fullName", "name": "FullName", "autoWidth": true },
+                    {
+                        "data": "date", "name": "Date", "autoWidth": true,
+                        render: function (data) {
+                            var date = new Date(Date.parse(data));
+                            var userTimeZoneOffset = new Date().getTimezoneOffset();
+                            date.setMinutes(date.getMinutes() - userTimeZoneOffset);
+                            return date.toLocaleString();
+                        }},
+                    {
+                        "data": "price", "name": "Price", "autoWidth": true,
+                    },
+                    { "data": "status", "name": "Status", "autoWidth": true },
+                    {
+                        data: "id",
+                        "render": function (data) { return "<a href='/Manage/EditOrder/" + data + "' class='btn btn-info'>Edit</a>"; }
+                    },
+                ]
+            });
+        });
+    </script>
+
+    <script>
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+    </script>
+}

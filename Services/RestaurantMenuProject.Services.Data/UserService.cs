@@ -1,6 +1,8 @@
 ﻿namespace RestaurantMenuProject.Services.Data
 {
+    using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Linq.Dynamic.Core;
 
@@ -38,55 +40,49 @@
 
         // TODO make it not take all the elements and then sort them
         // TODO fix this kasha
-        public IQueryable<UserViewModel> GetUserDataAsQueryable(string sortColumn, string sortDirection, string searchValue)
+        public ICollection<UserViewModel> GetUserDataAsQueryable(string sortColumn, string sortDirection, string searchValue)
         {
             var userData = this.GetAllUserDetails();
+
             if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortDirection)))
             {
                 userData = userData.OrderBy(sortColumn + " " + sortDirection);
             }
 
+            var dataToReturn = userData.ToList();
+
             if (!string.IsNullOrEmpty(searchValue))
             {
-                userData = userData.Where(m => m.Email.Contains(searchValue)
-                                            || m.Name.Contains(searchValue)
-                                            || m.Roles.Contains(searchValue)
+                dataToReturn = dataToReturn.Where(m => m.Email.ToLower().Contains(searchValue.ToLower())
+                                            || m.Name.ToLower().Contains(searchValue.ToLower())
+                                            || m.Roles.ToLower().Contains(searchValue.ToLower())
                                             || m.CreatedOn.ToLocalTime().ToString("dd/MM/yyyy, HH:mm:ss").Contains(searchValue)
-                                            || m.DeletedOn.ToString().Contains(searchValue)); // TODO make it possible to search for deletedOn
+                                            || m.DeletedOn.ToString().Contains(searchValue)).ToList(); // TODO fix it again to make it do it all as Queryable
             }
 
-            return userData;
+
+            return dataToReturn;
         }
 
         public IQueryable<UserViewModel> GetAllUserDetails()
         {
-            var users = this
+                var users = this
                 .userRepository
                 .AllAsNoTrackingWithDeleted()
                 .To<UserWithRolesViewModel>()
-                .ToList();
-
-            for (int i = 0; i < users.Count(); i++)
-            {
-                var roles = new List<string>();
-
-                foreach (var roleId in users[i].RoleIds)
+                .Select(x => new UserViewModel()
                 {
-                    roles.Add(this.roleManager.FindByIdAsync(roleId).GetAwaiter().GetResult().Name);
-                }
+                    CreatedOn = x.CreatedOn,
+                    DeletedOn = x.DeletedOn,
+                    Email = x.Email,
+                    Id = x.Id,
+                    Name = x.Name,
+                    Roles = string.Join(", ", this.roleRepository.All().Where(y => x.RoleIds.Contains(y.Id))),
+                });
 
-                users[i].Roles = string.Join(", ", roles);
-            }
+                return users;
 
-            return users.Select(x => new UserViewModel()
-            {
-                CreatedOn = x.CreatedOn.ToLocalTime(),
-                DeletedOn = x.DeletedOn?.ToLocalTime(),
-                Email = x.Email,
-                Id = x.Id,
-                Name = x.Name,
-                Roles = x.Roles,
-            }).AsQueryable();
+            // TODO use automapper
         }
 
         public int GetUsersCount()

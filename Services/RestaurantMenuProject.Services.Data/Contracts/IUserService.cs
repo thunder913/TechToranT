@@ -13,7 +13,7 @@
 
         public int GetUsersCount();
 
-        public IQueryable<UserViewModel> GetUserDataAsQueryable(string sortColumn, string sortDirection, string searchValue);
+        public ICollection<UserViewModel> GetUserDataAsQueryable(string sortColumn, string sortDirection, string searchValue);
 
         public ICollection<ApplicationRole> GetUserRoles();
 
