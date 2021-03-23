@@ -15,7 +15,7 @@
 
         public int GetUserOrdersCount(string userId);
 
-        public ICollection<FoodItemViewModel> GetAllDishesInOrder(string orderId);
+        public ICollection<FoodItemViewModel> GetAllFoodItemsById(string orderId);
 
         public OrderInfoViewModel GetFullInformationForOrder(string orderId);
 

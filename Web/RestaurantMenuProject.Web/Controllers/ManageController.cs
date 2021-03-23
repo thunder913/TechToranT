@@ -28,6 +28,7 @@
         private readonly IWebHostEnvironment webHostEnvironment;
         private readonly IDrinkService drinkService;
         private readonly IUserService userService;
+        private readonly IOrderService orderService;
 
         public ManageController(
             IDishTypeService dishTypeService,
@@ -38,7 +39,8 @@
             IAllergenService allergenService,
             IWebHostEnvironment webHostEnvironment,
             IDrinkService drinkService,
-            IUserService userService)
+            IUserService userService,
+            IOrderService orderService)
         {
             this.dishTypeService = dishTypeService;
             this.ingredientService = ingredientService;
@@ -49,6 +51,7 @@
             this.webHostEnvironment = webHostEnvironment;
             this.drinkService = drinkService;
             this.userService = userService;
+            this.orderService = orderService;
         }
 
         public IActionResult Index()
@@ -206,6 +209,14 @@
         {
             return this.View();
         }
+
+        //public IActionResult EditOrder(string id)
+        //{
+        //    var ordersItems = this.orderService.GetAllFoodItemsById(id);
+
+        //    var price = ordersItems.Sum(x => x.Price * x.Quantity);
+        //    return this.View(ordersItems);
+        //}
 
         // TODO REMOVE DYNAMIC SOMEHOW
         private void SetValuesToDishViewModel(dynamic addDishViewModel)

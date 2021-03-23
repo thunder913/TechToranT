@@ -80,7 +80,8 @@ $('.remove').click(function (e) {
 })
 
 
-let finalPriceElement = $('span.price')[0].textContent = getTotalPrice();
+let finalPriceElement = $('span.price')[0]
+finalPriceElement.textContent = getTotalPrice();
 
     function getElementAndAntiForgeryToken(tdElement, trElement) {
         let antiForgeryToken = tdElement.querySelector('input[name=__RequestVerificationToken]').value;

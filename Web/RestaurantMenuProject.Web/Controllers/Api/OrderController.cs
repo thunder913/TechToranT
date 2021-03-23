@@ -45,5 +45,12 @@
 
             return this.Ok(jsonData);
         }
+
+        [HttpPost("EditStatus")]
+        public ActionResult EditStatus(EditStatusDto editStatus)
+        {
+            Console.WriteLine(editStatus.NewTypeId.ToString());
+            return this.View();
+        }
     }
 }

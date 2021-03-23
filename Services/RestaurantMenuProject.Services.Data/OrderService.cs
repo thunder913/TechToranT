@@ -108,7 +108,7 @@
             return false;
         }
 
-        public ICollection<FoodItemViewModel> GetAllDishesInOrder(string orderId)
+        public ICollection<FoodItemViewModel> GetAllFoodItemsById(string orderId)
         {
             var mapper = AutoMapperConfig.MapperInstance;
             var items = new List<FoodItemViewModel>();
@@ -162,7 +162,7 @@
                 .To<OrderInfoViewModel>()
                 .FirstOrDefault(x => x.Id == orderId);
 
-            order.FoodItems = this.GetAllDishesInOrder(orderId);
+            order.FoodItems = this.GetAllFoodItemsById(orderId);
 
             return order;
         }
@@ -192,6 +192,21 @@
 
 
             return dataToReturn;
+        }
+
+        public void ChangeOrderStatus(ProcessType oldProcessType, ProcessType newProcessType, string orderId)
+        {
+            if (oldProcessType == newProcessType)
+            {
+                throw new InvalidOperationException("The status is the same.");
+            }
+
+            var order = this.orderRepository.All().Where(x => x.Id == orderId && x.ProcessType == oldProcessType).FirstOrDefault();
+
+            if (order == null)
+            {
+                throw new InvalidOperationException("The old status has changed!");
+            }
         }
     }
 }

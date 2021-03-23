@@ -1,7 +1,9 @@
 ﻿<form method="post">
 </form>
 
-<table id="usersTable" class="table table-striped table-bordered" style="width:100%">
+
+
+<table id="ordersTable" class="table table-striped table-bordered" style="width:100%">
     <thead>
         <tr>
             <th class="th-sm">
@@ -33,7 +35,7 @@
     <script>
         var antiForgeryToken = $('input[name=__RequestVerificationToken]').val();
         $(document).ready(function () {
-            $('#usersTable').DataTable({
+            $('#ordersTable').DataTable({
                 order: [[3, "desc"]],
                 processing: true,
                 serverSide: true,
@@ -68,14 +70,54 @@
                             var userTimeZoneOffset = new Date().getTimezoneOffset();
                             date.setMinutes(date.getMinutes() - userTimeZoneOffset);
                             return date.toLocaleString();
-                        }},
+                        }
+                    },
                     {
                         "data": "price", "name": "Price", "autoWidth": true,
+                        render: function (data) {
+                            return Number.parseFloat(data).toFixed(2);
+                        }
                     },
-                    { "data": "status", "name": "Status", "autoWidth": true },
+                    {
+                        "data": "status", "name": "Status", "autoWidth": true,
+                        render: function (data) {
+
+
+                            let selectElement = document.createElement("select");
+                            let processTypes = [{ id: 0, text: 'Pending' },
+                            { id: 1, text: 'InProcess' },
+                            { id: 2, text: 'Cooking' },
+                            { id: 3, text: 'Cooked' },
+                            { id: 4, text: 'Delivered' },
+                            { id: 5, text: 'Completed' },
+                            { id: 6, text: 'Cancelled' }];
+
+                            for (let i = 0; i < processTypes.length; i++) {
+                                let element = processTypes[i];
+                                let option = document.createElement("option");
+                                option.text = element.text;
+                                option.value = element.id;
+                                if (data === element.text) {
+                                    option.setAttribute("selected", true);
+                                }
+                                selectElement.appendChild(option);
+                            }
+                            let formElement = document.createElement('form');
+                            formElement.setAttribute('method', 'POST');
+                            formElement.classList.add("status");
+                            formElement.appendChild(selectElement);
+                            var buttonElement = document.createElement('button');
+                            buttonElement.innerText = "Edit";
+                            buttonElement.classList.add(...['btn', 'btn-success', 'edit']);
+                            buttonElement.type = 'button';
+                            formElement.appendChild(buttonElement);
+                            // TODO make the onclick work!
+                            return formElement.outerHTML;
+                        }
+                    },
                     {
                         data: "id",
-                        "render": function (data) { return "<a href='/Manage/EditOrder/" + data + "' class='btn btn-info'>Edit</a>"; }
+                        "render": function (data) { return "<a href='/Order/Index/" + data + "' class='btn btn-info'>View</a>"; }
                     },
                 ]
             });
@@ -83,8 +125,51 @@
     </script>
 
     <script>
+        $('#ordersTable').on('click', '.edit', function (e) {
+            e.preventDefault();
+            setEdit(e);
+        })
+    </script>
+
+    <script>
+        function setEdit(e) {
+            var form = e.target.parentElement;
+            var newProcessingTypeId = form.querySelector('.status select').value;
+            var row = form.parentElement.parentElement;
+            var rowData = $('#ordersTable').DataTable().row(row).data();
+            let rowId = rowData.id;
+            var oldProcessType = rowData.status;
+            let antiForgeryToken = $('input[name=__RequestVerificationToken]')[0].value;
+
+            let asd = { newTypeId: newProcessingTypeId, orderId: rowId, oldProcessingType: oldProcessType };
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/Order/EditStatus',
+                data: JSON.stringify({ newTypeId: newProcessingTypeId, orderId: rowId, oldProcessingType: oldProcessType }),
+                headers: {
+                    'X-CSRF-TOKEN': antiForgeryToken
+                },
+                contentType: 'application/json',
+                success: function (res) {
+                    trElement.querySelector('td[class=name]').textContent = res.name;
+                    trElement.querySelector('td[class=quantity]').textContent = res.quantity;
+                    trElement.querySelector('td[class=price]').textContent = Number.parseFloat(res.price).toFixed(2) + '$';
+                    trElement.querySelector('td[class=totalPrice]').textContent = Number.parseFloat(res.price * res.quantity).toFixed(2) + '$';
+                    finalPriceElement.textContent = getTotalPrice();
+                    successNotification(`Successfully added one more "${res.name}"!`);
+                }
+            });
+            e.preventDefault();
+        }
+    </script>
+
+
+    <script>
         if (window.history.replaceState) {
             window.history.replaceState(null, null, window.location.href);
         }
     </script>
+
+
 }
