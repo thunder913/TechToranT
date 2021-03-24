@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-
+    using RestaurantMenuProject.Data.Models.Enums;
     using RestaurantMenuProject.Web.ViewModels;
 
     public interface IOrderService
@@ -11,7 +11,7 @@
 
         public Task MakeOrder(string userId);
 
-        public Task<bool> DeleteById(string orderId);
+        public Task<bool> CancelOrder(string orderId);
 
         public int GetUserOrdersCount(string userId);
 
@@ -20,5 +20,7 @@
         public OrderInfoViewModel GetFullInformationForOrder(string orderId);
 
         public ICollection<ManageOrderViewModel> GetAllOrders(string sortColumn, string sortDirection, string searchValue);
+
+        public void ChangeOrderStatus(string oldProcessType, ProcessType newProcessType, string orderId);
     }
 }

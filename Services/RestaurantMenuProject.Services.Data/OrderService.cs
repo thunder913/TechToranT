@@ -93,14 +93,13 @@
             return Task.CompletedTask;
         }
 
-        public async Task<bool> DeleteById(string orderId)
+        public async Task<bool> CancelOrder(string orderId)
         {
             var order = this.orderRepository.AllWithDeleted().FirstOrDefault(x => x.Id == orderId);
 
             if (order.ProcessType == ProcessType.Pending)
             {
                 order.ProcessType = ProcessType.Cancelled;
-                this.orderRepository.Delete(order);
                 await this.orderRepository.SaveChangesAsync();
                 return true;
             }
@@ -194,19 +193,26 @@
             return dataToReturn;
         }
 
-        public void ChangeOrderStatus(ProcessType oldProcessType, ProcessType newProcessType, string orderId)
+        public void ChangeOrderStatus(string oldProcessType, ProcessType newProcessType, string orderId)
         {
-            if (oldProcessType == newProcessType)
+            var oldProcessTypeEnum = (ProcessType) Enum.Parse(typeof(ProcessType), oldProcessType);
+
+            if (oldProcessTypeEnum == newProcessType)
             {
                 throw new InvalidOperationException("The status is the same.");
             }
 
-            var order = this.orderRepository.All().Where(x => x.Id == orderId && x.ProcessType == oldProcessType).FirstOrDefault();
+            var order = this.orderRepository.AllWithDeleted().Where(x => x.Id == orderId && x.ProcessType == oldProcessTypeEnum).FirstOrDefault();
 
             if (order == null)
             {
                 throw new InvalidOperationException("The old status has changed!");
             }
+
+            order.ProcessType = newProcessType;
+
+            this.orderRepository.Update(order);
+            this.orderRepository.SaveChangesAsync().GetAwaiter().GetResult();
         }
     }
 }

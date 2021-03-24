@@ -2,6 +2,7 @@
 {
     using Microsoft.AspNetCore.Mvc;
     using RestaurantMenuProject.Data.Models.Dtos;
+    using RestaurantMenuProject.Data.Models.Enums;
     using RestaurantMenuProject.Services.Data.Contracts;
     using System;
     using System.Linq;
@@ -22,7 +23,7 @@
         [HttpPost("Delete")]
         public ActionResult<bool> Delete(OrderIdDto orderDto)
         {
-            return this.orderService.DeleteById(orderDto.OrderId).Result;
+            return this.orderService.CancelOrder(orderDto.OrderId).Result;
         }
 
         [HttpPost("All")]
@@ -47,10 +48,10 @@
         }
 
         [HttpPost("EditStatus")]
-        public ActionResult EditStatus(EditStatusDto editStatus)
+        public ActionResult<bool> EditStatus(EditStatusDto editStatus)
         {
-            Console.WriteLine(editStatus.NewTypeId.ToString());
-            return this.View();
+            this.orderService.ChangeOrderStatus(editStatus.OldProcessingType, (ProcessType) editStatus.NewProcessingTypeId, editStatus.OrderId);
+            return true;
         }
     }
 }

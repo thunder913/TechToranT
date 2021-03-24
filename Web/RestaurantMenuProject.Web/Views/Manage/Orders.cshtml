@@ -31,8 +31,9 @@
     </thead>
 </table>
 
-@section Scripts{
-    <script>
+@section Scripts{   
+    <script src="~/js/notifications.js"></script>
+<script>
         var antiForgeryToken = $('input[name=__RequestVerificationToken]').val();
         $(document).ready(function () {
             $('#ordersTable').DataTable({
@@ -136,28 +137,25 @@
             var form = e.target.parentElement;
             var newProcessingTypeId = form.querySelector('.status select').value;
             var row = form.parentElement.parentElement;
-            var rowData = $('#ordersTable').DataTable().row(row).data();
+            let table = $('#ordersTable').DataTable();
+            var rowData = table.row(row).data();
             let rowId = rowData.id;
             var oldProcessType = rowData.status;
             let antiForgeryToken = $('input[name=__RequestVerificationToken]')[0].value;
 
-            let asd = { newTypeId: newProcessingTypeId, orderId: rowId, oldProcessingType: oldProcessType };
-
             $.ajax({
                 type: 'POST',
                 url: '/api/Order/EditStatus',
-                data: JSON.stringify({ newTypeId: newProcessingTypeId, orderId: rowId, oldProcessingType: oldProcessType }),
+                data: JSON.stringify({ newProcessingTypeId: newProcessingTypeId, orderId: rowId, oldProcessingType: oldProcessType }),
                 headers: {
                     'X-CSRF-TOKEN': antiForgeryToken
                 },
                 contentType: 'application/json',
                 success: function (res) {
-                    trElement.querySelector('td[class=name]').textContent = res.name;
-                    trElement.querySelector('td[class=quantity]').textContent = res.quantity;
-                    trElement.querySelector('td[class=price]').textContent = Number.parseFloat(res.price).toFixed(2) + '$';
-                    trElement.querySelector('td[class=totalPrice]').textContent = Number.parseFloat(res.price * res.quantity).toFixed(2) + '$';
-                    finalPriceElement.textContent = getTotalPrice();
-                    successNotification(`Successfully added one more "${res.name}"!`);
+                    if (!!res) {
+                        successNotification("Succesfully changed the Status of the order.");
+                        table.ajax.reload();
+                    }
                 }
             });
             e.preventDefault();
@@ -170,6 +168,4 @@
             window.history.replaceState(null, null, window.location.href);
         }
     </script>
-
-
 }
