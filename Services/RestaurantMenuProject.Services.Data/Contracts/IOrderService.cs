@@ -9,7 +9,7 @@
     {
         public ICollection<OrderInListViewModel> GetOrderViewModelsByUserId(int page, int itemsPerPage, string userId = null);
 
-        public Task MakeOrder(string userId);
+        public Task MakeOrder(string userId, string tableCode);
 
         public Task<bool> CancelOrder(string orderId);
 
@@ -21,6 +21,6 @@
 
         public ICollection<ManageOrderViewModel> GetAllOrders(string sortColumn, string sortDirection, string searchValue);
 
-        public void ChangeOrderStatus(string oldProcessType, ProcessType newProcessType, string orderId);
+        public void ChangeOrderStatus(ProcessType oldProcessType, ProcessType newProcessType, string orderId);
     }
 }

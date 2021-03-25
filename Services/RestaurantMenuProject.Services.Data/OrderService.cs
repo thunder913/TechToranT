@@ -22,6 +22,7 @@
         private readonly IBasketService basketService;
         private readonly IDishService dishService;
         private readonly IDrinkService drinkService;
+        private readonly ITableService tableService;
 
         public OrderService(
             IDeletableEntityRepository<Order> orderRepository,
@@ -29,7 +30,8 @@
             IRepository<OrderDish> orderDishRepository,
             IBasketService basketService,
             IDishService dishService,
-            IDrinkService drinkService
+            IDrinkService drinkService,
+            ITableService tableService
             )
         {
             this.orderRepository = orderRepository;
@@ -38,6 +40,7 @@
             this.basketService = basketService;
             this.dishService = dishService;
             this.drinkService = drinkService;
+            this.tableService = tableService;
         }
 
         public ICollection<OrderInListViewModel> GetOrderViewModelsByUserId(int itemsPerPage, int page, string userId = null)
@@ -58,10 +61,16 @@
             return this.orderRepository.AllAsNoTrackingWithDeleted().Where(x => x.ClientId == userId).Count();
         }
 
-        public Task MakeOrder(string userId)
+        public Task MakeOrder(string userId, string tableCode)
         {
+            var tableId = this.tableService.GetTableIdByCode(tableCode);
             var mapper = AutoMapperConfig.MapperInstance;
             BasketDto basket = this.basketService.GetBasket(userId);
+
+            if (tableId == 0)
+            {
+                throw new Exception("The table code is invalid!");
+            }
 
             // TODO use automapper
             if (!(basket.Drinks.Any() || basket.Dishes.Any()))
@@ -71,6 +80,7 @@
 
             Order order = new Order();
             order.ClientId = basket.Id;
+            order.TableId = tableId;
             order.OrderDrinks = basket.Drinks.Select(x => new OrderDrink()
             {
                 Count = x.Quantity,
@@ -193,16 +203,14 @@
             return dataToReturn;
         }
 
-        public void ChangeOrderStatus(string oldProcessType, ProcessType newProcessType, string orderId)
+        public void ChangeOrderStatus(ProcessType oldProcessType, ProcessType newProcessType, string orderId)
         {
-            var oldProcessTypeEnum = (ProcessType) Enum.Parse(typeof(ProcessType), oldProcessType);
-
-            if (oldProcessTypeEnum == newProcessType)
+            if (oldProcessType == newProcessType)
             {
                 throw new InvalidOperationException("The status is the same.");
             }
 
-            var order = this.orderRepository.AllWithDeleted().Where(x => x.Id == orderId && x.ProcessType == oldProcessTypeEnum).FirstOrDefault();
+            var order = this.orderRepository.AllWithDeleted().Where(x => x.Id == orderId && x.ProcessType == oldProcessType).FirstOrDefault();
 
             if (order == null)
             {

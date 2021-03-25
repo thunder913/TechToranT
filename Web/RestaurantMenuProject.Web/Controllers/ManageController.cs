@@ -29,6 +29,7 @@
         private readonly IDrinkService drinkService;
         private readonly IUserService userService;
         private readonly IOrderService orderService;
+        private readonly ITableService tableService;
 
         public ManageController(
             IDishTypeService dishTypeService,
@@ -40,7 +41,8 @@
             IWebHostEnvironment webHostEnvironment,
             IDrinkService drinkService,
             IUserService userService,
-            IOrderService orderService)
+            IOrderService orderService,
+            ITableService tableService)
         {
             this.dishTypeService = dishTypeService;
             this.ingredientService = ingredientService;
@@ -52,6 +54,7 @@
             this.drinkService = drinkService;
             this.userService = userService;
             this.orderService = orderService;
+            this.tableService = tableService;
         }
 
         public IActionResult Index()
@@ -202,12 +205,57 @@
         public IActionResult EditUser(EditUserViewModel editUser)
         {
             this.userService.EditUserData(editUser);
-            return this.RedirectToAction("Dashboard", "Administration");
+            return this.RedirectToAction("Users");
         }
 
         public IActionResult Users(int id = 1)
         {
             return this.View();
+        }
+
+        public IActionResult Tables()
+        {
+            var tables = this.tableService.GetAllTables();
+            return this.View(tables);
+        }
+
+        public IActionResult AddTable()
+        {
+            return this.View(new AddTableViewModel());
+        }
+
+        [HttpPost]
+        public IActionResult AddTable(AddTableViewModel tableViewModel)
+        {
+            this.tableService.AddTable(tableViewModel);
+            return this.RedirectToAction("Tables");
+        }
+
+        public IActionResult EditTable(int id)
+        {
+            var table = this.tableService.GetTableById(id);
+            return this.View(table);
+        }
+
+        [HttpPost]
+        public IActionResult EditTable(AddTableViewModel tableViewModel)
+        {
+            this.tableService.EditTable(tableViewModel);
+            return this.RedirectToAction("Tables");
+        }
+
+        [HttpPost]
+        public IActionResult RemoveTable(int id)
+        {
+            this.tableService.RemoveTable(id);
+            return this.RedirectToAction("Tables");
+        }
+
+        [HttpPost]
+        public IActionResult RefreshTables()
+        {
+            this.tableService.RefreshTableCodes();
+            return this.RedirectToAction("Tables");
         }
 
         //public IActionResult EditOrder(string id)

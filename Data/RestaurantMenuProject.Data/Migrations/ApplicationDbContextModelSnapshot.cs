@@ -720,6 +720,7 @@ namespace RestaurantMenuProject.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ClientId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedOn")
@@ -746,6 +747,9 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.Property<int?>("PromoCodeId")
                         .HasColumnType("int");
 
+                    b.Property<int>("TableId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
@@ -753,6 +757,8 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.HasIndex("IsDeleted");
 
                     b.HasIndex("PromoCodeId");
+
+                    b.HasIndex("TableId");
 
                     b.ToTable("Orders");
                 });
@@ -902,6 +908,42 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.HasIndex("IsDeleted");
 
                     b.ToTable("Settings");
+                });
+
+            modelBuilder.Entity("RestaurantMenuProject.Data.Models.Table", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("Tables");
                 });
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.UserDislike", b =>
@@ -1180,15 +1222,25 @@ namespace RestaurantMenuProject.Data.Migrations
                 {
                     b.HasOne("RestaurantMenuProject.Data.Models.ApplicationUser", "Client")
                         .WithMany("Orders")
-                        .HasForeignKey("ClientId");
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("RestaurantMenuProject.Data.Models.PromoCode", "PromoCode")
                         .WithMany("Orders")
                         .HasForeignKey("PromoCodeId");
 
+                    b.HasOne("RestaurantMenuProject.Data.Models.Table", "Table")
+                        .WithMany("Orders")
+                        .HasForeignKey("TableId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Client");
 
                     b.Navigation("PromoCode");
+
+                    b.Navigation("Table");
                 });
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.OrderDish", b =>
@@ -1328,6 +1380,11 @@ namespace RestaurantMenuProject.Data.Migrations
                 });
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.PromoCode", b =>
+                {
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("RestaurantMenuProject.Data.Models.Table", b =>
                 {
                     b.Navigation("Orders");
                 });

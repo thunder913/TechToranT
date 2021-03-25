@@ -81,6 +81,7 @@
             services.AddTransient<IBasketService, BasketService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IImageService, ImageService>();
+            services.AddTransient<ITableService, TableService>();
             services.AddTransient<IOrderService, OrderService>();
         }
 

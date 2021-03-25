@@ -52,14 +52,17 @@
         public DbSet<Basket> Baskets { get; set; }
 
         public DbSet<BasketDrink> BasketsDrinks { get; set; }
-        
+
         public DbSet<UserLike> UsersLikes { get; set; }
 
         public DbSet<UserDislike> UsersDislikes { get; set; }
-        
+
         public DbSet<BasketDish> BasketsDishes { get; set; }
 
+        // TODO make image to Images and also fix other casings
         public DbSet<Image> Images { get; set; }
+
+        public DbSet<Table> Tables { get; set; }
 
         public override int SaveChanges() => this.SaveChanges(true);
 

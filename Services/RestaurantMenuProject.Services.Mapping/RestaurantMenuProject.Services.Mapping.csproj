@@ -19,4 +19,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RestaurantMenuProject.Services.Messaging\RestaurantMenuProject.Services.Messaging.csproj" />
+  </ItemGroup>
+
 </Project>

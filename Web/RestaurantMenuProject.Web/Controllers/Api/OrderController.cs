@@ -50,7 +50,8 @@
         [HttpPost("EditStatus")]
         public ActionResult<bool> EditStatus(EditStatusDto editStatus)
         {
-            this.orderService.ChangeOrderStatus(editStatus.OldProcessingType, (ProcessType) editStatus.NewProcessingTypeId, editStatus.OrderId);
+            var oldProcessingTypeId = (ProcessType)Enum.Parse(typeof(ProcessType), editStatus.OldProcessingType);
+            this.orderService.ChangeOrderStatus(oldProcessingTypeId, (ProcessType) editStatus.NewProcessingTypeId, editStatus.OrderId);
             return true;
         }
     }

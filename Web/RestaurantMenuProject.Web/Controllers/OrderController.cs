@@ -44,10 +44,10 @@
         }
 
         [HttpPost]
-        public IActionResult MakeOrder()
+        public IActionResult MakeOrder(string tableCode)
         {
             var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            this.orderService.MakeOrder(userId);
+            this.orderService.MakeOrder(userId, tableCode);
             return this.RedirectToAction("Index", "Menu");
         }
 
