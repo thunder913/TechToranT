@@ -1,0 +1,53 @@
+﻿@model ICollection<OrderInListViewModel>
+
+<h1>New orders:</h1>
+
+<table id="ordersTable" class="table table-striped table-bordered" style="width:100%">
+    <thead>
+        <tr>
+            <th class="th-sm">
+                Table
+            </th>
+            <th class="th-sm">
+                Date
+            </th>
+            <th class="th-sm">
+                Client Name
+            </th>
+            <th class="th-sm">
+                Status
+            </th>
+            <th class="th-sm">
+                Accept
+            </th>
+            <th class="th-sm">
+                Action
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            @*<th class="th-sm">
+                @item.table
+            </th>
+            <th class="th-sm">
+                @item.table
+            </th>
+            <th class="th-sm">
+                @item.table
+            </th>
+            <th class="th-sm">
+                @item.table
+            </th>
+            <th class="th-sm">
+                @item.table
+            </th>
+            <th class="th-sm">
+                @item.table
+            </th>*@
+        </tr>
+        }
+    </tbody>
+</table>

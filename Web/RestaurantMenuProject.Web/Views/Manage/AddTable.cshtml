@@ -1,0 +1,21 @@
+﻿@model AddTableViewModel
+
+
+<form asp-controller="Manage" asp-action="AddTable" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="Number"></label>
+        <input asp-for="Number" class="form-control" />
+        <span asp-validation-for="Number" class="text-danger"></span>
+        <button>Get next number</button>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="Capacity"></label>
+        <input asp-for="Capacity" class="form-control" />
+        <span asp-validation-for="Capacity" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success col-md-2">Add</button>
+</form>

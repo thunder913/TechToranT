@@ -1,0 +1,73 @@
+﻿@model ICollection<TableDisplayViewModel>
+@using RestaurantMenuProject.Common
+<style>
+    body {
+        text-align: center;
+    }
+</style>
+
+<form asp-controller="Manage" asp-action="RefreshTables" method="post">
+    <button class="btn btn-success">Refresh table codes</button>
+</form>
+<form asp-controller="Manage" asp-action="AddTable" method="get">
+    <button class="btn btn-info">Add Table</button>
+</form>
+<table id="usersTable" class="table table-striped table-bordered" style="width:100%">
+    <thead>
+        <tr>
+            <th class="th-sm">
+                Id
+            </th>
+            <th class="th-sm">
+                Number
+            </th>
+            <th class="th-sm">
+                Capacity
+            </th>
+            <th class="th-sm">
+                Code
+            </th>
+            <th class="th-sm">
+                Date created
+            </th>
+            <th class="th-sm">
+                Date generated
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <th>
+                    @item.Id
+                </th>
+                <th>
+                    @item.Number
+                </th>
+                <th>
+                    @item.Capacity
+                </th>
+                <th>
+                    @item.Code
+                </th>
+                <th>
+                    @item.DateCreated.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")
+                </th>
+                <th>
+                    @(item.DateGenerated != null ? ((DateTime)item.DateGenerated).ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss") : item.DateCreated.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"))
+                </th>
+                <th>
+                    <form asp-controller="Manage" asp-action="EditTable" method="get">
+                        <input name="id" value="@item.Id" hidden />
+                        <button class="btn btn-info">Edit</button>
+                    </form>
+                </th>
+            </tr>
+        }
+    </tbody>
+</table>
+
