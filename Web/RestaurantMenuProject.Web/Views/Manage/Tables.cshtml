@@ -55,10 +55,10 @@
                     @item.Code
                 </th>
                 <th>
-                    @item.DateCreated.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")
+                    @item.DateCreated.ToLocalTime()
                 </th>
                 <th>
-                    @(item.DateGenerated != null ? ((DateTime)item.DateGenerated).ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss") : item.DateCreated.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"))
+                    @(item.DateGenerated != null ? ((DateTime)item.DateGenerated).ToLocalTime() : item.DateCreated.ToLocalTime())
                 </th>
                 <th>
                     <form asp-controller="Manage" asp-action="EditTable" method="get">

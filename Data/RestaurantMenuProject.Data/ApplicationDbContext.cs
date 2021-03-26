@@ -64,6 +64,8 @@
 
         public DbSet<Table> Tables { get; set; }
 
+        public DbSet<PickupItem> PickupItems { get; set; }
+
         public override int SaveChanges() => this.SaveChanges(true);
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)

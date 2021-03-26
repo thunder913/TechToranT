@@ -22,5 +22,7 @@
         public ICollection<ManageOrderViewModel> GetAllOrders(string sortColumn, string sortDirection, string searchValue);
 
         public void ChangeOrderStatus(ProcessType oldProcessType, ProcessType newProcessType, string orderId);
+
+        public ICollection<OrderInListViewModel> GetOrdersWithStatus(ProcessType processType);
     }
 }

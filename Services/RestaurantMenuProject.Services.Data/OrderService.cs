@@ -203,6 +203,15 @@
             return dataToReturn;
         }
 
+        public ICollection<OrderInListViewModel> GetOrdersWithStatus(ProcessType processType)
+        {
+            return this.orderRepository
+                .All()
+                .Where(x => x.ProcessType == processType)
+                .To<OrderInListViewModel>()
+                .ToList();
+        }
+
         public void ChangeOrderStatus(ProcessType oldProcessType, ProcessType newProcessType, string orderId)
         {
             if (oldProcessType == newProcessType)

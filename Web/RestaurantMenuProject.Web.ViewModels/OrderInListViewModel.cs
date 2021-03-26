@@ -27,6 +27,8 @@
 
         public string Email { get; set; }
 
+        public int TableNumber { get; set; }
+
         public void CreateMappings(IProfileExpression configuration)
         {
             configuration.CreateMap<Order, OrderInListViewModel>()

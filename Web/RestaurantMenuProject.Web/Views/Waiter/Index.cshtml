@@ -1,53 +1,147 @@
 ﻿@model ICollection<OrderInListViewModel>
+<style>
+    .newOrders {
+        height: 300px;
+        border: 1px solid black;
+    }
 
-<h1>New orders:</h1>
+    .pickupTable{
+        height: 350px;
+        border: 1px solid black;
+    }
 
-<table id="ordersTable" class="table table-striped table-bordered" style="width:100%">
-    <thead>
-        <tr>
-            <th class="th-sm">
-                Table
-            </th>
-            <th class="th-sm">
-                Date
-            </th>
-            <th class="th-sm">
-                Client Name
-            </th>
-            <th class="th-sm">
-                Status
-            </th>
-            <th class="th-sm">
-                Accept
-            </th>
-            <th class="th-sm">
-                Action
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-        <tr>
-            @*<th class="th-sm">
-                @item.table
-            </th>
-            <th class="th-sm">
-                @item.table
-            </th>
-            <th class="th-sm">
-                @item.table
-            </th>
-            <th class="th-sm">
-                @item.table
-            </th>
-            <th class="th-sm">
-                @item.table
-            </th>
-            <th class="th-sm">
-                @item.table
-            </th>*@
-        </tr>
-        }
-    </tbody>
-</table>
+</style>
+
+<h2>New orders:</h2>
+<div class="table-responsive fixed-table-body newOrders">
+    <table id="ordersTable" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th class="th-sm">
+                    Table
+                </th>
+                <th class="th-sm">
+                    Date
+                </th>
+                <th class="th-sm">
+                    Client Name
+                </th>
+                <th class="th-sm">
+                    Status
+                </th>
+                <th class="th-sm">
+                    Price
+                </th>
+                <th class="th-sm" width="160px">
+                    Action
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <th class="th-sm">
+                        @item.TableNumber
+                    </th>
+                    <th class="th-sm">
+                        @item.Date.ToLocalTime()
+                    </th>
+                    <th class="th-sm">
+                        @item.FirstName @item.LastName
+                    </th>
+                    <th class="th-sm">
+                        @item.Status
+                    </th>
+                    <th class="th-sm">
+                        @item.Price.ToString("0.00")$
+                    </th>
+                    <th class="th-sm">
+                        <form method="post">
+                            <input name="id" value="@item.Id" hidden />
+                            <button class="btn btn-success accept">Accept</button>
+                        </form>
+                        <form method="get" asp-controller="Order" asp-action="Index" asp-route-id="@item.Id" style='display:inline-block;'>
+                            <button class="btn btn-info">Info</button>
+                        </form>
+                    </th>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<h2>Pickup</h2>
+
+<div class="table-responsive fixed-table-body pickupTable col-md-7">
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th class="th-sm">
+                    Item
+                </th>
+                <th class="th-sm">
+                    Table
+                </th>
+                <th class="th-sm">
+                    Client
+                </th>
+                <th class="th-sm">
+                    Action
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <th class="th-sm">
+                        @item.TableNumber
+                    </th>
+                    <th class="th-sm">
+                        @item.Date.ToLocalTime()
+                    </th>
+                    <th class="th-sm">
+                        @item.FirstName @item.LastName
+                    </th>
+                    <th class="th-sm">
+                        @item.Status
+                    </th>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+
+@section Scripts{
+    <script src="~/js/notifications.js"></script>
+    <script>
+        $('.accept').on('click', function (e) {
+            var form = e.target.parentElement;
+            var id = form.querySelector('input[name=id]').value;
+            var antiForgeryToken = form.querySelector('input[name=__RequestVerificationToken]').value;
+            $.ajax({
+                type: 'POST',
+                url: '/api/Order/EditStatus',
+                data: JSON.stringify({ newProcessingTypeId: 1, orderId: id, oldProcessingType: 'Pending' }),
+                headers: {
+                    'X-CSRF-TOKEN': antiForgeryToken
+                },
+                contentType: 'application/json',
+                success: function (res) {
+                    if (!!res) {
+                        successNotification("Succesfully accepted the order!");
+                        table.ajax.reload();
+                    }
+                },
+                error: function (err) {
+                    dangerNotification('Something went wrong, try again!');
+                }
+            });
+            e.preventDefault();
+        })
+
+    </script>
+}

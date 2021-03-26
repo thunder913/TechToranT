@@ -24,7 +24,7 @@
                     <td>@item.Id</td>
                     <td>@item.Email</td>
                     <td>@item.FirstName @item.LastName</td>
-                    <td>@item.Date.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")</td>
+                    <td>@item.Date.ToLocalTime()</td>
                     <td>@Math.Round(item.Price, 2)$</td>
                     <td>@item.Status</td>
                     <td>
@@ -62,7 +62,7 @@ else
             {
                 <tr class="clickable-row" data-href="/Order/Index/@item.Id" style="cursor: pointer">
                     <td>@item.Id</td>
-                    <td>@item.Date.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")</td>
+                    <td>@item.Date.ToLocalTime()</td>
                     <td>@Math.Round(item.Price, 2)$</td>
                     <td>@item.Status</td>
                     <td>
