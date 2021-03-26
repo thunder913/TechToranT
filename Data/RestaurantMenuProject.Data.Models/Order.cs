@@ -35,6 +35,10 @@
         [Required]
         public int TableId { get; set; }
 
+        public string WaiterId { get; set; }
+
+        public ApplicationUser Waiter { get; set; }
+
         public virtual ICollection<OrderDish> OrderDishes { get; set; } = new HashSet<OrderDish>();
 
         public virtual ICollection<OrderDrink> OrderDrinks { get; set; } = new HashSet<OrderDrink>();

@@ -141,6 +141,10 @@
                 .HasOne(x => x.Basket)
                 .WithMany(x => x.Drinks);
 
+            builder.Entity<Order>()
+                .HasOne(x => x.Waiter)
+                .WithMany(x => x.WaiterOrders);
+
             // Needed for Identity models configuration
             base.OnModelCreating(builder);
 

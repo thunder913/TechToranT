@@ -1,4 +1,6 @@
 ﻿using RestaurantMenuProject.Data.Common.Models;
+using RestaurantMenuProject.Data.Models.Dtos;
+using RestaurantMenuProject.Services.Mapping;
 
 namespace RestaurantMenuProject.Data.Models
 {

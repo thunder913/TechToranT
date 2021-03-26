@@ -23,6 +23,7 @@
         private readonly IDishService dishService;
         private readonly IDrinkService drinkService;
         private readonly ITableService tableService;
+        private readonly IPickupItemService pickupItemService;
 
         public OrderService(
             IDeletableEntityRepository<Order> orderRepository,
@@ -31,7 +32,8 @@
             IBasketService basketService,
             IDishService dishService,
             IDrinkService drinkService,
-            ITableService tableService
+            ITableService tableService,
+            IPickupItemService pickupItemService
             )
         {
             this.orderRepository = orderRepository;
@@ -41,6 +43,7 @@
             this.dishService = dishService;
             this.drinkService = drinkService;
             this.tableService = tableService;
+            this.pickupItemService = pickupItemService;
         }
 
         public ICollection<OrderInListViewModel> GetOrderViewModelsByUserId(int itemsPerPage, int page, string userId = null)
@@ -230,6 +233,34 @@
 
             this.orderRepository.Update(order);
             this.orderRepository.SaveChangesAsync().GetAwaiter().GetResult();
+        }
+
+        public void AddWaiterToOrder(string orderId, string waiterId)
+        {
+            var order = this.orderRepository.All().FirstOrDefault(x => x.Id == orderId);
+            if (order == null)
+            {
+                throw new InvalidOperationException("There is no such order!");
+            }
+
+            order.WaiterId = waiterId;
+            this.orderRepository.SaveChangesAsync().GetAwaiter().GetResult();
+
+        }
+
+        public ICollection<ActiveOrderViewModel> GetActiveOrders(string waiterId)
+        {
+            return this.orderRepository.All().Where(x => x.WaiterId == waiterId).To<ActiveOrderViewModel>().ToList();
+        }
+
+        public WaiterViewModel GetWaiterViewModel(string userId)
+        {
+            var viewModel = new WaiterViewModel();
+            viewModel.NewOrders = this.GetOrdersWithStatus(ProcessType.Pending);
+            viewModel.PickupItems = this.pickupItemService.GetAllItemsToPickUp(); // Just make the method take userId and return only the waiters orders items
+            viewModel.ActiveOrders = this.GetActiveOrders(userId);
+
+            return viewModel;
         }
     }
 }

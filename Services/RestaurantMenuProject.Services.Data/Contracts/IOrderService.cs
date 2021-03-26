@@ -24,5 +24,11 @@
         public void ChangeOrderStatus(ProcessType oldProcessType, ProcessType newProcessType, string orderId);
 
         public ICollection<OrderInListViewModel> GetOrdersWithStatus(ProcessType processType);
+
+        public void AddWaiterToOrder(string orderId, string waiterId);
+
+        public ICollection<ActiveOrderViewModel> GetActiveOrders(string waiterId);
+
+        public WaiterViewModel GetWaiterViewModel(string userId);
     }
 }

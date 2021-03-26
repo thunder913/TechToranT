@@ -6,6 +6,7 @@
     using RestaurantMenuProject.Services.Data.Contracts;
     using System;
     using System.Linq;
+    using System.Security.Claims;
 
     [Route("api/[Controller]")]
     [ApiController]
@@ -52,6 +53,21 @@
         {
             var oldProcessingTypeId = (ProcessType)Enum.Parse(typeof(ProcessType), editStatus.OldProcessingType);
             this.orderService.ChangeOrderStatus(oldProcessingTypeId, (ProcessType) editStatus.NewProcessingTypeId, editStatus.OrderId);
+            return true;
+        }
+
+        [HttpPost("AcceptOrder")]
+        public ActionResult<bool> AcceptOrder(EditStatusDto editStatus)
+        {
+            var statusEditted = this.EditStatus(editStatus).Value;
+            if (!statusEditted)
+            {
+                throw new InvalidOperationException("There was an error changing the status of the order!");
+            }
+            var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            this.orderService.AddWaiterToOrder(editStatus.OrderId, userId);
+
             return true;
         }
     }

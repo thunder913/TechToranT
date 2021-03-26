@@ -83,6 +83,7 @@
             services.AddTransient<IImageService, ImageService>();
             services.AddTransient<ITableService, TableService>();
             services.AddTransient<IOrderService, OrderService>();
+            services.AddTransient<IPickupItemService, PickupItemService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
