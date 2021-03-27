@@ -7,6 +7,7 @@
     using System;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading.Tasks;
 
     [Route("api/[Controller]")]
     [ApiController]
@@ -14,11 +15,15 @@
     public class OrderController : BaseController
     {
         private readonly IOrderService orderService;
+        private readonly IPickupItemService pickupItemService;
 
         public OrderController(
-            IOrderService orderService)
+            IOrderService orderService,
+            IPickupItemService pickupItemService
+            )
         {
             this.orderService = orderService;
+            this.pickupItemService = pickupItemService;
         }
 
         [HttpPost("Delete")]
@@ -68,6 +73,20 @@
 
             this.orderService.AddWaiterToOrder(editStatus.OrderId, userId);
 
+            return true;
+        }
+
+        [HttpPost("DonePickup/{id}")]
+        public async Task<ActionResult<bool>> DonePickup(string id)
+        {
+            await this.pickupItemService.DeleteItemAsync(id);
+            return true;
+        }
+
+        [HttpPost("FinishOrder/{id}")]
+        public async Task<ActionResult<bool>> FinishOrderAsync(string id)
+        {
+            await this.orderService.FinishOrder(id);
             return true;
         }
     }

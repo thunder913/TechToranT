@@ -23,7 +23,7 @@
         private readonly IDishService dishService;
         private readonly IDrinkService drinkService;
         private readonly ITableService tableService;
-        private readonly IPickupItemService pickupItemService;
+        private readonly IDishTypeService dishTypeService;
 
         public OrderService(
             IDeletableEntityRepository<Order> orderRepository,
@@ -33,7 +33,7 @@
             IDishService dishService,
             IDrinkService drinkService,
             ITableService tableService,
-            IPickupItemService pickupItemService
+            IDishTypeService dishTypeService
             )
         {
             this.orderRepository = orderRepository;
@@ -43,7 +43,7 @@
             this.dishService = dishService;
             this.drinkService = drinkService;
             this.tableService = tableService;
-            this.pickupItemService = pickupItemService;
+            this.dishTypeService = dishTypeService;
         }
 
         public ICollection<OrderInListViewModel> GetOrderViewModelsByUserId(int itemsPerPage, int page, string userId = null)
@@ -130,9 +130,9 @@
                 .Where(x => x.OrderId == orderId)
                 .Select(x => new
                 {
-                   Id = x.DrinkId,
-                   PriceForOne = x.PriceForOne,
-                   Count = x.Count,
+                    Id = x.DrinkId,
+                    PriceForOne = x.PriceForOne,
+                    Count = x.Count,
                 })
                 .ToList();
 
@@ -154,7 +154,6 @@
                     Count = x.Count,
                 })
                 .ToList();
-
 
             foreach (var item in orderdishes)
             {
@@ -211,6 +210,7 @@
             return this.orderRepository
                 .All()
                 .Where(x => x.ProcessType == processType)
+                .OrderBy(x => x.CreatedOn)
                 .To<OrderInListViewModel>()
                 .ToList();
         }
@@ -250,17 +250,166 @@
 
         public ICollection<ActiveOrderViewModel> GetActiveOrders(string waiterId)
         {
-            return this.orderRepository.All().Where(x => x.WaiterId == waiterId).To<ActiveOrderViewModel>().ToList();
+            return this.orderRepository
+                .All()
+                .Where(x => x.WaiterId == waiterId && x.ProcessType != ProcessType.Completed && x.ProcessType != ProcessType.Pending)
+                .OrderBy(x => x.CreatedOn)
+                .To<ActiveOrderViewModel>()
+                .ToList();
         }
 
         public WaiterViewModel GetWaiterViewModel(string userId)
         {
             var viewModel = new WaiterViewModel();
             viewModel.NewOrders = this.GetOrdersWithStatus(ProcessType.Pending);
-            viewModel.PickupItems = this.pickupItemService.GetAllItemsToPickUp(); // Just make the method take userId and return only the waiters orders items
             viewModel.ActiveOrders = this.GetActiveOrders(userId);
 
             return viewModel;
+        }
+
+        public async Task FinishOrder(string orderId)
+        {
+            var order = this.orderRepository.All().FirstOrDefault(x => x.Id == orderId);
+            if (order.PaidOn == null)
+            {
+                throw new InvalidOperationException("The order is not paid!");
+            }
+
+            if (order.ProcessType != ProcessType.Delivered)
+            {
+                throw new InvalidOperationException("The order has not yet been delivered!");
+            }
+
+            order.ProcessType = ProcessType.Completed;
+            await this.orderRepository.SaveChangesAsync();
+        }
+
+        public ChefViewModel GetChefViewModel()
+        {
+            var viewModel = new ChefViewModel();
+            viewModel.NewOrders = this.GetOrdersWithStatus(ProcessType.InProcess);
+            viewModel.FoodTypes = this.GetCookFoodTypes();
+            return viewModel;
+        }
+
+        public ICollection<CookFoodCategoriesViewModel> GetCookFoodTypes()
+        {
+            var allDrinks = this.orderDrinkRepository
+                .All()
+                .Where(x => x.Order.ProcessType == ProcessType.Cooking && x.Count - x.DeliveredCount > 0)
+                .OrderBy(x => x.Order.CreatedOn)
+                .Select(x => new CookItemViewModel()
+                {
+                    Count = x.Count - x.DeliveredCount,
+                    FoodId = x.DrinkId,
+                    FoodName = x.Drink.Name,
+                    OrderId = x.OrderId,
+                }).ToList();
+
+            var drinks = new CookFoodCategoriesViewModel()
+            {
+                FoodType = FoodType.Drink,
+                CategoryName = "Drinks",
+                ItemsToCook = allDrinks,
+            };
+
+            var dishTypes = this.orderDishRepository
+                .All()
+                .GroupBy(x => x.Dish.DishTypeId)
+                .Select(x => x.Key);
+
+            var dishes = new HashSet<CookFoodCategoriesViewModel>();
+
+            foreach (var type in dishTypes)
+            {
+                var typeItems = this.orderDishRepository.All()
+                    .Where(x => x.Dish.DishTypeId == type && x.Order.ProcessType == ProcessType.Cooking && x.Count - x.DeliveredCount > 0)
+                    .OrderBy(x => x.Order.CreatedOn)
+                    .Select(x => new CookItemViewModel()
+                    {
+                        OrderId = x.OrderId,
+                        FoodId = x.Dish.Id,
+                        Count = x.Count - x.DeliveredCount,
+                        FoodName = x.Dish.Name,
+                    }).ToList();
+
+                dishes.Add(new CookFoodCategoriesViewModel()
+                {
+                    CategoryName = this.dishTypeService.GetDishTypeById(type).Name,
+                    FoodType = FoodType.Dish,
+                    ItemsToCook = typeItems,
+                });
+            }
+
+            var toReturn = new HashSet<CookFoodCategoriesViewModel>();
+
+            toReturn.Add(drinks);
+
+            foreach (var dish in dishes)
+            {
+                toReturn.Add(dish);
+            }
+
+            return toReturn;
+        }
+
+
+        public async Task AddDeliveredCountToOrderDish(int count, CookFinishItemViewModel itemViewModel)
+        {
+            var orderDishItem = this.orderDishRepository
+                .All()
+                .FirstOrDefault(x => x.OrderId == itemViewModel.OrderId && x.DishId == itemViewModel.FoodId);
+
+            if (orderDishItem.Count - orderDishItem.DeliveredCount <= 0)
+            {
+                throw new InvalidOperationException("The item has already been made!");
+            }
+
+            orderDishItem.DeliveredCount += count;
+            await this.orderDishRepository.SaveChangesAsync();
+        }
+
+        public async Task AddDeliveredCountToOrderDrink(int count, CookFinishItemViewModel itemViewModel)
+        {
+            var orderDrinkItem = this.orderDrinkRepository
+                .All()
+                .FirstOrDefault(x => x.OrderId == itemViewModel.OrderId && x.DrinkId == itemViewModel.FoodId);
+
+            if (orderDrinkItem.Count - orderDrinkItem.DeliveredCount <= 0)
+            {
+                throw new InvalidOperationException("The item has already been made!");
+            }
+
+            orderDrinkItem.DeliveredCount += count;
+            await this.orderDrinkRepository.SaveChangesAsync();
+        }
+
+        public PickupItem GetOrderDishAsPickupItem(CookFinishItemViewModel itemViewModel)
+        {
+            return this.orderDishRepository
+                .All()
+                .Where(x => x.OrderId == itemViewModel.OrderId && x.DishId == itemViewModel.FoodId)
+                .Select(x => new PickupItem()
+                 {
+                     ClientName = x.Order.Client.FirstName + " " + x.Order.Client.LastName,
+                     Name = x.Dish.Name,
+                     TableNumber = x.Order.Table.Number,
+                 })
+                .FirstOrDefault();
+        }
+
+        public PickupItem GetOrderDrinkAsPickupItem(CookFinishItemViewModel itemViewModel)
+        {
+            return this.orderDrinkRepository
+                .All()
+                .Where(x => x.OrderId == itemViewModel.OrderId && x.DrinkId == itemViewModel.FoodId)
+                .Select(x => new PickupItem()
+                {
+                    ClientName = x.Order.Client.FirstName + " " + x.Order.Client.LastName,
+                    Name = x.Drink.Name,
+                    TableNumber = x.Order.Table.Number,
+                })
+                .FirstOrDefault();
         }
     }
 }

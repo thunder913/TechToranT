@@ -13,5 +13,7 @@
         public int Count { get; set; }
 
         public decimal PriceForOne { get; set; }
+
+        public int DeliveredCount { get; set; }
     }
 }

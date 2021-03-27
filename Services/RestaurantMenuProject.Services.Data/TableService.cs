@@ -96,14 +96,31 @@ namespace RestaurantMenuProject.Services.Data
             this.tableRepository.SaveChangesAsync().GetAwaiter().GetResult();
         }
 
+        private bool IsTableCodeFree(string code)
+        {
+            if (this.tableRepository.All().Any(x => x.Code == code))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         private string RandomString(int length)
         {
             Random random = new Random();
 
         // TODO use some other generation method
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string (Enumerable.Repeat(chars, length)
+            var randomCode = new string (Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
+
+            if (!this.IsTableCodeFree(randomCode))
+            {
+                randomCode = this.RandomString(length);
+            }
+
+            return randomCode;
         }
     }
 }

@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Data.Models.Enums;
     using RestaurantMenuProject.Web.ViewModels;
 
@@ -30,5 +31,19 @@
         public ICollection<ActiveOrderViewModel> GetActiveOrders(string waiterId);
 
         public WaiterViewModel GetWaiterViewModel(string userId);
+
+        public Task FinishOrder(string orderId);
+
+        public ChefViewModel GetChefViewModel();
+
+        public ICollection<CookFoodCategoriesViewModel> GetCookFoodTypes();
+
+        public Task AddDeliveredCountToOrderDrink(int count, CookFinishItemViewModel itemViewModel);
+
+        public Task AddDeliveredCountToOrderDish(int count, CookFinishItemViewModel itemViewModel);
+
+        public PickupItem GetOrderDishAsPickupItem(CookFinishItemViewModel itemViewModel);
+
+        public PickupItem GetOrderDrinkAsPickupItem(CookFinishItemViewModel itemViewModel);
     }
 }
