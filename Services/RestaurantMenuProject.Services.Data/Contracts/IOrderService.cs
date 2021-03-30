@@ -1,5 +1,6 @@
 ﻿namespace RestaurantMenuProject.Services.Data.Contracts
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using RestaurantMenuProject.Data.Models;
@@ -9,7 +10,6 @@
     public interface IOrderService
     {
         public ICollection<OrderInListViewModel> GetOrderViewModelsByUserId(int page, int itemsPerPage, string userId = null);
-
         public Task MakeOrder(string userId, string tableCode);
 
         public Task<bool> CancelOrder(string orderId);
@@ -47,5 +47,7 @@
         public PickupItem GetOrderDrinkAsPickupItem(CookFinishItemViewModel itemViewModel);
 
         public double GetOrderDeliveredPerCent(string orderId);
+
+        public ICollection<SalesChartViewModel> GetSalesDataForPeriod(DateTime startDate, DateTime endDate);
     }
 }

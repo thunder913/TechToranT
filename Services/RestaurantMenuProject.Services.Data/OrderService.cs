@@ -396,14 +396,14 @@
                 .All()
                 .Where(x => x.OrderId == itemViewModel.OrderId && x.DishId == itemViewModel.FoodId)
                 .Select(x => new PickupItem()
-                 {
-                     ClientName = x.Order.Client.FirstName + " " + x.Order.Client.LastName,
-                     Name = x.Dish.Name,
-                     TableNumber = x.Order.Table.Number,
-                     WaiterId = x.Order.WaiterId,
-                     Count = 1,
-                     OrderId = itemViewModel.OrderId,
-                 })
+                {
+                    ClientName = x.Order.Client.FirstName + " " + x.Order.Client.LastName,
+                    Name = x.Dish.Name,
+                    TableNumber = x.Order.Table.Number,
+                    WaiterId = x.Order.WaiterId,
+                    Count = 1,
+                    OrderId = itemViewModel.OrderId,
+                })
                 .FirstOrDefault();
         }
 
@@ -455,6 +455,35 @@
             // Calculation the percent
             var percent = Math.Round((double)totalItemsDelivered / totalItemsOrdered * 100, 2);
             return percent;
+        }
+
+        public ICollection<SalesChartViewModel> GetSalesDataForPeriod(DateTime startDate, DateTime endDate)
+        {
+            var orderDishesIncome = this.orderDishRepository
+                .All()
+                .Where(x => x.Order.DeliveredOn > startDate && x.Order.DeliveredOn < endDate)
+                .GroupBy(x => x.Order.DeliveredOn.Value.Year)
+                .Select(x => new SalesChartViewModel()
+                {
+                    Date = x.Key,
+                    Income = x.Sum(y => y.PriceForOne * y.Count),
+                }).ToList();
+
+            var orderDrinksIncome = this.orderDrinkRepository
+                .All()
+                .Where(x => x.Order.DeliveredOn > startDate && x.Order.DeliveredOn < endDate)
+                .GroupBy(x => x.Order.DeliveredOn.Value.Year)
+                .Select(x => new SalesChartViewModel()
+                {
+                    Date = x.Key,
+                    Income = x.Sum(y => y.PriceForOne * y.Count),
+                }).ToList();
+
+            foreach (var item in orderDishesIncome)
+            {
+                var 
+                    // TODO MAKE IT DIFFERENT CHARTS (DRINKS, DISHES, TOTAL PER YEAR/MONTH/DAY)
+            }
         }
     }
 }

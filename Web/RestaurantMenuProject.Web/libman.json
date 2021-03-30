@@ -57,7 +57,14 @@
     {
         "library": "jquery.dataTables.min.js@1.10.5",
         "destination": "wwwroot/lib/jquery.datatables",
-        "files": ["css/jquery.dataTables.min.css", "js/jquery.dataTables.min.js"]
+        "files": [ "css/jquery.dataTables.min.css", "js/jquery.dataTables.min.js" ]
+    },
+    {
+        "library": "chart.js@2.9.4",
+        "destination": "wwwroot/lib/chartJS",
+        "files": [
+            "dist/Chart.js"
+        ]
     }
   ]
 }
