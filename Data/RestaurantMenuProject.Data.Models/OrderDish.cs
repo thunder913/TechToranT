@@ -1,6 +1,9 @@
-﻿namespace RestaurantMenuProject.Data.Models
+﻿using RestaurantMenuProject.Data.Models.Dtos;
+using RestaurantMenuProject.Services.Mapping;
+
+namespace RestaurantMenuProject.Data.Models
 {
-    public class OrderDish
+    public class OrderDish : IMapTo<OrderDeliveredItemDto>
     {
         public string OrderId { get; set; }
 

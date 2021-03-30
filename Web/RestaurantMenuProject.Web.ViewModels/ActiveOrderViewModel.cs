@@ -15,6 +15,9 @@
 
         public bool IsPaid { get; set; }
 
+        [IgnoreMap]
+        public double ReadyPercent { get; set; }
+
         public void CreateMappings(IProfileExpression configuration)
         {
             configuration.CreateMap<Order, ActiveOrderViewModel>()

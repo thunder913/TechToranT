@@ -25,9 +25,9 @@ namespace RestaurantMenuProject.Services.Data
             this.orderService = orderService;
         }
 
-        public ICollection<PickupItem> GetAllItemsToPickUp()
+        public ICollection<PickupItem> GetAllItemsToPickUp(string userId)
         {
-            return this.pickupItemRepository.All().ToList();
+            return this.pickupItemRepository.All().Where(x => x.WaiterId == userId).ToList();
         }
 
         public async Task DeleteItemAsync(string id)
@@ -44,18 +44,33 @@ namespace RestaurantMenuProject.Services.Data
 
         public async Task<bool> AddPickupItemAsync(CookFinishItemViewModel viewModel)
         {
-            var pickupItem = new PickupItem();
+            var oldPickupItem = new PickupItem();
 
             if (viewModel.DishType == FoodType.Dish)
             {
                 await this.orderService.AddDeliveredCountToOrderDish(1, viewModel);
-                pickupItem = this.orderService.GetOrderDishAsPickupItem(viewModel);
+                oldPickupItem = this.orderService.GetOrderDishAsPickupItem(viewModel);
             }
             else if (viewModel.DishType == FoodType.Drink)
             {
                 await this.orderService.AddDeliveredCountToOrderDrink(1, viewModel);
-                pickupItem = this.orderService.GetOrderDrinkAsPickupItem(viewModel);
+                oldPickupItem = this.orderService.GetOrderDrinkAsPickupItem(viewModel);
             }
+
+            var pickupItem = this.pickupItemRepository
+                .All()
+                .FirstOrDefault(x => x.TableNumber == oldPickupItem.TableNumber
+                && x.OrderId == oldPickupItem.OrderId
+                && x.ClientName == oldPickupItem.ClientName);
+
+            if (pickupItem != null)
+            {
+                pickupItem.Count++;
+                this.pickupItemRepository.Update(pickupItem);
+                await this.pickupItemRepository.SaveChangesAsync();
+                return true;
+            }
+            pickupItem = oldPickupItem;
 
             await this.pickupItemRepository.AddAsync(pickupItem);
             await this.pickupItemRepository.SaveChangesAsync();

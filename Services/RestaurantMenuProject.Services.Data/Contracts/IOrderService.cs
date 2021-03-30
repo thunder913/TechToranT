@@ -45,5 +45,7 @@
         public PickupItem GetOrderDishAsPickupItem(CookFinishItemViewModel itemViewModel);
 
         public PickupItem GetOrderDrinkAsPickupItem(CookFinishItemViewModel itemViewModel);
+
+        public double GetOrderDeliveredPerCent(string orderId);
     }
 }

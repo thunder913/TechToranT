@@ -44,8 +44,4 @@
     <ProjectReference Include="..\RestaurantMenuProject.Data.Models\RestaurantMenuProject.Data.Models.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
 </Project>

@@ -22,10 +22,10 @@
         {
             var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            var newOrders = this.orderService.GetWaiterViewModel(userId);
-            newOrders.PickupItems = this.pickupItemService.GetAllItemsToPickUp(); // Just make the method take userId and return only the waiters orders items
+            var waiterViewModel = this.orderService.GetWaiterViewModel(userId);
+            waiterViewModel.PickupItems = this.pickupItemService.GetAllItemsToPickUp(userId); // Just make the method take userId and return only the waiters orders items
 
-            return this.View(newOrders);
+            return this.View(waiterViewModel);
         }
     }
 }

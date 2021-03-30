@@ -250,12 +250,18 @@
 
         public ICollection<ActiveOrderViewModel> GetActiveOrders(string waiterId)
         {
-            return this.orderRepository
+            var activeOrders = this.orderRepository
                 .All()
                 .Where(x => x.WaiterId == waiterId && x.ProcessType != ProcessType.Completed && x.ProcessType != ProcessType.Pending)
                 .OrderBy(x => x.CreatedOn)
                 .To<ActiveOrderViewModel>()
                 .ToList();
+            foreach (var order in activeOrders)
+            {
+                order.ReadyPercent = this.GetOrderDeliveredPerCent(order.Id);
+            }
+
+            return activeOrders;
         }
 
         public WaiterViewModel GetWaiterViewModel(string userId)
@@ -394,6 +400,9 @@
                      ClientName = x.Order.Client.FirstName + " " + x.Order.Client.LastName,
                      Name = x.Dish.Name,
                      TableNumber = x.Order.Table.Number,
+                     WaiterId = x.Order.WaiterId,
+                     Count = 1,
+                     OrderId = itemViewModel.OrderId,
                  })
                 .FirstOrDefault();
         }
@@ -408,8 +417,44 @@
                     ClientName = x.Order.Client.FirstName + " " + x.Order.Client.LastName,
                     Name = x.Drink.Name,
                     TableNumber = x.Order.Table.Number,
+                    WaiterId = x.Order.WaiterId,
+                    Count = 1,
+                    OrderId = itemViewModel.OrderId,
                 })
                 .FirstOrDefault();
+        }
+
+        public double GetOrderDeliveredPerCent(string orderId)
+        {
+            var foodItems = new List<OrderDeliveredItemDto>();
+            // Get all the items
+            foodItems.AddRange(this.orderDishRepository
+                .All()
+                .Where(x => x.OrderId == orderId)
+                .Select(x => new OrderDeliveredItemDto()
+                {
+                    Count = x.Count,
+                    DeliveredCount = x.DeliveredCount,
+                })
+                .ToArray());
+            foodItems.AddRange(this.orderDrinkRepository
+                .All()
+                .Where(x => x.OrderId == orderId)
+                .Select(x => new OrderDeliveredItemDto()
+                {
+                    Count = x.Count,
+                    DeliveredCount = x.DeliveredCount,
+                })
+                .ToArray());
+            // TODO use automapper
+
+            // Find the total delivered and ordered items
+            var totalItemsOrdered = foodItems.Sum(x => x.Count);
+            var totalItemsDelivered = foodItems.Sum(x => x.DeliveredCount);
+
+            // Calculation the percent
+            var percent = Math.Round((double)totalItemsDelivered / totalItemsOrdered * 100, 2);
+            return percent;
         }
     }
 }

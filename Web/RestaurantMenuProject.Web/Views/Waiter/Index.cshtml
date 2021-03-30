@@ -78,6 +78,9 @@
         <thead>
             <tr>
                 <th class="th-sm">
+                    Count
+                </th>
+                <th class="th-sm">
                     Item
                 </th>
                 <th class="th-sm">
@@ -95,6 +98,9 @@
             @foreach (var item in Model.PickupItems)
             {
                 <tr>
+                    <th class="th-sm">
+                        @item.Count
+                    </th>
                     <th class="th-sm">
                         @item.Name
                     </th>
@@ -133,28 +139,34 @@
                 <th class="th-sm" style="width: 110px;">
                     Completed
                 </th>
+                <th class="th-sm">
+                    Cooked%
+                </th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.ActiveOrders)
             {
-                <tr>
-                    <th class="th-sm">
-                        @item.TableNumber
-                    </th>
-                    <th class="th-sm">
-                        @item.ProcessType
-                    </th>
-                    <th class="th-sm">
-                        @item.IsPaid
-                    </th>
-                    <th class="th-sm">
-                        <form method="post">
-                            <input name="id" value="@item.Id" hidden />
-                            <button class="btn btn-success finishOrder">Done</button>
-                        </form>
-                    </th>
-                </tr>
+            <tr>
+                <th class="th-sm">
+                    @item.TableNumber
+                </th>
+                <th class="th-sm">
+                    @item.ProcessType
+                </th>
+                <th class="th-sm">
+                    @item.IsPaid
+                </th>
+                <th class="th-sm">
+                    <form method="post">
+                        <input name="id" value="@item.Id" hidden />
+                        <button class="btn btn-success finishOrder">Done</button>
+                    </form>
+                </th>
+                <th class="th-sm">
+                    @item.ReadyPercent%
+                </th>
+            </tr>
             }
         </tbody>
     </table>

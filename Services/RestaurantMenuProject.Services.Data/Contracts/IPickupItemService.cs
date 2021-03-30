@@ -7,7 +7,7 @@ namespace RestaurantMenuProject.Services.Data.Contracts
 {
     public interface IPickupItemService
     {
-        public ICollection<PickupItem> GetAllItemsToPickUp();
+        public ICollection<PickupItem> GetAllItemsToPickUp(string userId);
 
         public Task DeleteItemAsync(string id);
 
