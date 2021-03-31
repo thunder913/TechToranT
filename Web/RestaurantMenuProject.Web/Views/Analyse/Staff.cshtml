@@ -1,0 +1,40 @@
+﻿@model ICollection<StaffAnalyseViewModel>
+<canvas id="myChart" width="400" height="200"></canvas>
+
+@section Scripts{
+    <script src="~/lib/chartJS/dist/Chart.js"></script>
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+        });
+
+        var mixedChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                datasets: [{
+                    label: 'Bar Dataset',
+                    data: [300, 500, 100, 200, 400, 700, 1000],
+                    backgroundColor: getRGBColor(),
+                }, {
+                    label: 'Bar Dataset',
+                    data: [1, 150, 87, 140, 522],
+                    type: 'line',
+                        backgroundColor: getRGBColor(),
+                    fill: false,
+                        borderColor: getRGBColor(),
+
+                }],
+                labels: ['January', 'February', 'March', 'April', 'May']
+            },
+        });
+
+        function getRGBColor() {
+                var r = Math.floor(Math.random() * 255);
+                var g = Math.floor(Math.random() * 255);
+                var b = Math.floor(Math.random() * 255);
+                return "rgba(" + r + "," + g + "," + b + ", 0.6)";
+            };
+    </script>
+
+}

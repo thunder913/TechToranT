@@ -24,7 +24,8 @@ namespace RestaurantMenuProject.Web.Controllers
 
         public IActionResult Staff()
         {
-            return this.View();
+            var staff = this.orderService.GetAllStaffForAnalyse();
+            return this.View(staff);
         }
     }
 }

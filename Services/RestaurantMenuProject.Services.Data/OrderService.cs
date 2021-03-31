@@ -6,7 +6,9 @@
     using System.Linq;
     using System.Linq.Dynamic.Core;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
+    using RestaurantMenuProject.Common;
     using RestaurantMenuProject.Data.Common.Repositories;
     using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Data.Models.Dtos;
@@ -25,6 +27,7 @@
         private readonly IDrinkService drinkService;
         private readonly ITableService tableService;
         private readonly IDishTypeService dishTypeService;
+        private readonly RoleManager<ApplicationRole> roleManager;
 
         public OrderService(
             IDeletableEntityRepository<Order> orderRepository,
@@ -34,7 +37,8 @@
             IDishService dishService,
             IDrinkService drinkService,
             ITableService tableService,
-            IDishTypeService dishTypeService
+            IDishTypeService dishTypeService,
+            RoleManager<ApplicationRole> roleManager
             )
         {
             this.orderRepository = orderRepository;
@@ -45,6 +49,7 @@
             this.drinkService = drinkService;
             this.tableService = tableService;
             this.dishTypeService = dishTypeService;
+            this.roleManager = roleManager;
         }
 
         public ICollection<OrderInListViewModel> GetOrderViewModelsByUserId(int itemsPerPage, int page, string userId = null)
@@ -500,6 +505,28 @@
 
         }
 
+        public ICollection<StaffAnalyseViewModel> GetAllStaffForAnalyse()
+        {
+            var oneYearAgo = DateTime.UtcNow;
+            oneYearAgo = oneYearAgo.AddYears(-1);
+
+            var roleIds = this.roleManager.Roles
+                .Where(x => x.Name == GlobalConstants.ChefRoleName || x.Name == GlobalConstants.WaiterRoleName)
+                .Select(x => x.Id)
+                .ToArray();
+
+            var waiterIds = this.orderRepository
+                .All()
+                .Where(x => x.DeliveredOn >= oneYearAgo && x.Waiter.Roles.Any(y => roleIds.Contains(y.RoleId)))
+                .GroupBy(x => x.WaiterId)
+                .Select(x => x.Key)
+                .ToList();
+
+            // TODO complete the staff analyses algorithm
+            return null;
+        }
+
+
         private SalesViewModel GetSales(List<string> dates, ICollection<SalesChartViewModel> dishIncome,  ICollection<SalesChartViewModel> drinkIncome, string period)
         {
             var salesViewModel = new SalesViewModel();
@@ -560,7 +587,6 @@
             return salesViewModel;
         }
 
-        
         private ICollection<SalesChartViewModel> GetDailyDishIncomeByPeriod(DateTime startDate, DateTime endDate)
         {
             return this.orderDishRepository

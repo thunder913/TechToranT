@@ -49,5 +49,7 @@
         public double GetOrderDeliveredPerCent(string orderId);
 
         public SalesViewModel GetSalesDataForPeriod(DateTime startDate, DateTime endDate, string period);
+
+        ICollection<StaffAnalyseViewModel> GetAllStaffForAnalyse();
     }
 }

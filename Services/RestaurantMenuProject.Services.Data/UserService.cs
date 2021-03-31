@@ -115,5 +115,16 @@
             user.Roles = roles;
             this.userRepository.SaveChangesAsync().GetAwaiter().GetResult();
         }
+
+        public ICollection<StaffAnalyseViewModel> GetUsersByIdsForanalyse(List<string> userIds)
+        {
+            return this.userRepository
+                .All()
+                .Where(x => userIds.Contains(x.Id))
+                .Select(x => new StaffAnalyseViewModel()
+                {
+                    // TODO finish the charts (many things to do)
+                }).ToList()
+        }
     }
 }

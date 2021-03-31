@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Data\RestaurantMenuProject.Data.Common\RestaurantMenuProject.Data.Common.csproj" />
     <ProjectReference Include="..\..\Data\RestaurantMenuProject.Data.Models\RestaurantMenuProject.Data.Models.csproj" />
+    <ProjectReference Include="..\..\RestaurantMenuProject.Common\RestaurantMenuProject.Common.csproj" />
     <ProjectReference Include="..\..\Web\RestaurantMenuProject.Web.ViewModels\RestaurantMenuProject.Web.ViewModels.csproj" />
     <ProjectReference Include="..\RestaurantMenuProject.Services.Mapping\RestaurantMenuProject.Services.Mapping.csproj" />
   </ItemGroup>
