@@ -48,6 +48,6 @@
 
         public double GetOrderDeliveredPerCent(string orderId);
 
-        public ICollection<SalesChartViewModel> GetSalesDataForPeriod(DateTime startDate, DateTime endDate);
+        public SalesViewModel GetSalesDataForPeriod(DateTime startDate, DateTime endDate, string period);
     }
 }

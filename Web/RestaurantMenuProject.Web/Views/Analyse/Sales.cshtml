@@ -1,0 +1,194 @@
+﻿@model SalesViewModel
+<style>
+    input[type="radio"] {
+        background-color: #ddd;
+        background-image: -webkit-linear-gradient(0deg, transparent 20%, hsla(0,0%,100%,.7), transparent 80%), -webkit-linear-gradient(90deg, transparent 20%, hsla(0,0%,100%,.7), transparent 80%);
+        border-radius: 10px;
+        box-shadow: inset 0 1px 1px hsla(0,0%,100%,.8), 0 0 0 1px hsla(0,0%,0%,.6), 0 2px 3px hsla(0,0%,0%,.6), 0 4px 3px hsla(0,0%,0%,.4), 0 6px 6px hsla(0,0%,0%,.2), 0 10px 6px hsla(0,0%,0%,.2);
+        cursor: pointer;
+        display: inline-block;
+        height: 15px;
+        margin-right: 15px;
+        position: relative;
+        width: 15px;
+        -webkit-appearance: none;
+    }
+
+        input[type="radio"]:after {
+            background-color: #444;
+            border-radius: 25px;
+            box-shadow: inset 0 0 0 1px hsla(0,0%,0%,.4), 0 1px 1px hsla(0,0%,100%,.8);
+            content: '';
+            display: block;
+            height: 7px;
+            left: 4px;
+            position: relative;
+            top: 4px;
+            width: 7px;
+        }
+
+        input[type="radio"]:checked:after {
+            background-color: #f66;
+            box-shadow: inset 0 0 0 1px hsla(0,0%,0%,.4), inset 0 2px 2px hsla(0,0%,100%,.4), 0 1px 1px hsla(0,0%,100%,.8), 0 0 2px 2px hsla(0,70%,70%,.4);
+        }
+
+    input[type="date"], .date, .filter {
+        float: right;
+    }
+</style>
+
+<form id="filter" method="get">
+    <input type="radio" name="period" checked="checked" value="Daily" />Daily
+    <input type="radio" name="period" value="Monthly" />Monthly
+    <input type="radio" name="period" value="Yearly" />Yearly
+    <button type="button" class="btn-success filter">Filter</button>
+    <input id="end" type="date" />
+    <label for="end" class="date">End date: </label>
+    <input id="start" type="date" />
+    <label for="start" class="date">Start date: </label>
+</form>
+
+<canvas id="incomeChart" width="400" height="200"></canvas>
+
+@section Scripts{
+    <script src="~/lib/chartJS/dist/Chart.js"></script>
+    <script src="~/js/notifications.js"></script>
+
+    <script>
+        let date = new Date();
+        $('#end').val(date.toJSON().slice(0, 10));
+        date.setDate(date.getDate() - 6)
+        $('#start').val(date.toJSON().slice(0, 10));
+    </script>
+
+    <script>
+        var ctx = document.getElementById('incomeChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [@Html.Raw((string.Join(",", Model.TotalIncome.Select(x => "\'" + x.Date + "\'"))))],
+                datasets: [{
+                    label: 'Income',
+                    data: [@(string.Join(",", Model.TotalIncome.Select(x => x.Income)))],
+                    backgroundColor: 'rgba(48, 145, 110, 0.6)',
+                    borderColor: 'rgba(39, 107, 82, 1)',
+                    minBarLength: 5,
+                    borderWidth: 1
+                },
+                {
+                    label: 'Dish Income',
+                    data: [@(string.Join(",", Model.DishIncome.Select(x => x.Income)))],
+                    backgroundColor: 'rgba(166, 66, 12, 0.6)',
+                    borderColor: 'rgba(128, 51, 9, 1)',
+                    minBarLength: 5,
+                    borderWidth: 1
+                    },
+                {
+                    label: 'Drink Income',
+                    minBarLength: 5,
+                    data: [@(string.Join(",", Model.DrinkIncome.Select(x => x.Income)))],
+                    backgroundColor: 'rgba(115, 102, 227, 0.6)',
+                    borderColor: 'rgba(86, 76, 176, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: "Restaurant income chart",
+                    fontSize: 50,
+                    position: 'top'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        },
+                    }],
+                    xAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: '@Model.Type'
+                        }
+                    }]
+                }
+            }
+        });
+    </script>
+
+    <script>
+        $('.filter').click(function (e) {
+
+            e.preventDefault();
+            var form = e.target.parentElement;
+            var period = $('input[name=period]:checked', '#filter').val()
+            var startDate = $('#start').val();
+            var endDate = $('#end').val();
+            var dataObj = { period, startDate, endDate }
+            var data = JSON.stringify(dataObj);
+
+            $.ajax({
+                type: 'GET',
+                url: '/api/Analyse/Incomes',
+                data: dataObj,
+                contentType: 'application/json',
+                success: function (res) {
+                    let data = {
+                        labels: res.totalIncome.map(x => x.date),
+                        datasets: [{
+                            label: 'Income',
+                            data: res.totalIncome.map(x => x.income),
+                            backgroundColor: 'rgba(48, 145, 110, 0.6)',
+                            borderColor: 'rgba(39, 107, 82, 1)',
+                            minBarLength: 5,
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Dish Income',
+                            data: res.dishIncome.map(x => x.income),
+                            backgroundColor: 'rgba(166, 66, 12, 0.6)',
+                            borderColor: 'rgba(128, 51, 9, 1)',
+                            minBarLength: 5,
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Drink Income',
+                            minBarLength: 5,
+                            data: res.drinkIncome.map(x => x.income),
+                            backgroundColor: 'rgba(115, 102, 227, 0.6)',
+                            borderColor: 'rgba(86, 76, 176, 1)',
+                            minBarLength: 5,
+                            borderWidth: 1
+                        }]
+                    };
+
+                    myChart["config"]["data"] = data;
+                    myChart.options.scales.xAxes[0].scaleLabel.labelString = res.type;
+                    myChart.update();
+                },
+                error: function (res) {
+                    dangerNotification('Something went wrong, try again!');
+                }
+            });
+
+        })
+    </script>
+
+    <script>
+        function addData(chart, label, data) {
+            chart.data.labels.push(label);
+            chart.data.datasets.forEach((dataset) => {
+                dataset.data.push(data);
+            });
+            chart.update();
+        }
+
+        function removeData(chart) {
+            chart.data.labels.pop();
+            chart.data.datasets.forEach((dataset) => {
+                dataset.data.pop();
+            });
+            chart.update();
+        }
+    </script>
+}

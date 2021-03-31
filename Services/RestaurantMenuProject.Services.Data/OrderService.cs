@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Linq.Dynamic.Core;
     using System.Threading.Tasks;
@@ -446,6 +447,7 @@
                     DeliveredCount = x.DeliveredCount,
                 })
                 .ToArray());
+
             // TODO use automapper
 
             // Find the total delivered and ordered items
@@ -457,33 +459,186 @@
             return percent;
         }
 
-        public ICollection<SalesChartViewModel> GetSalesDataForPeriod(DateTime startDate, DateTime endDate)
+        public SalesViewModel GetSalesDataForPeriod(DateTime startDate, DateTime endDate, string period)
         {
-            var orderDishesIncome = this.orderDishRepository
-                .All()
-                .Where(x => x.Order.DeliveredOn > startDate && x.Order.DeliveredOn < endDate)
-                .GroupBy(x => x.Order.DeliveredOn.Value.Year)
-                .Select(x => new SalesChartViewModel()
-                {
-                    Date = x.Key,
-                    Income = x.Sum(y => y.PriceForOne * y.Count),
-                }).ToList();
-
-            var orderDrinksIncome = this.orderDrinkRepository
-                .All()
-                .Where(x => x.Order.DeliveredOn > startDate && x.Order.DeliveredOn < endDate)
-                .GroupBy(x => x.Order.DeliveredOn.Value.Year)
-                .Select(x => new SalesChartViewModel()
-                {
-                    Date = x.Key,
-                    Income = x.Sum(y => y.PriceForOne * y.Count),
-                }).ToList();
-
-            foreach (var item in orderDishesIncome)
+            // Get the dates for the specific period
+            var dates = new List<string>();
+            var dishIncome = new List<SalesChartViewModel>();
+            var drinkIncome = new List<SalesChartViewModel>();
+            switch (period.ToLower())
             {
-                var 
-                    // TODO MAKE IT DIFFERENT CHARTS (DRINKS, DISHES, TOTAL PER YEAR/MONTH/DAY)
+                case "daily":
+                    for (var dt = startDate; dt <= endDate; dt = dt.AddDays(1))
+                    {
+                        dates.Add(dt.ToString("dd/MM/yyyy"));
+                        dishIncome = this.GetDailyDishIncomeByPeriod(startDate, endDate).ToList();
+                        drinkIncome = this.GetDailyDrinkIncomeByPeriod(startDate, endDate).ToList();
+                    }
+
+                    break;
+                case "monthly":
+                    for (var dt = startDate; dt.Year < endDate.Year || (dt.Year <= endDate.Year && dt.Month <= endDate.Month); dt = dt.AddMonths(1))
+                    {
+                        dates.Add(dt.ToString("MM/yyyy"));
+                        dishIncome = this.GetMonthlyDishIncomeByPeriod(startDate, endDate).ToList();
+                        drinkIncome = this.GetMonthlyDrinkIncomeByPeriod(startDate, endDate).ToList();
+                    }
+
+                    break;
+                case "yearly":
+                    for (var dt = startDate; dt.Year <= endDate.Year; dt = dt.AddYears(1))
+                    {
+                        dates.Add(dt.ToString("yyyy"));
+                        dishIncome = this.GetYearlyDishIncomeByPeriod(startDate, endDate).ToList();
+                        drinkIncome = this.GetYearlyDrinkIncomeByPeriod(startDate, endDate).ToList();
+                    }
+                    break;
+                default:
+                    throw new InvalidOperationException("An invalid period was given!");
             }
+
+            // Return the sales
+            return this.GetSales(dates, dishIncome, drinkIncome, period);
+
+        }
+
+        private SalesViewModel GetSales(List<string> dates, ICollection<SalesChartViewModel> dishIncome,  ICollection<SalesChartViewModel> drinkIncome, string period)
+        {
+            var salesViewModel = new SalesViewModel();
+            foreach (var date in dates)
+            {
+                var dishIncomeToday = new SalesChartViewModel();
+                var drinkIncomeToday = new SalesChartViewModel();
+
+                // Get the right dish/drink if it exists
+                switch (period.ToLower())
+                {
+                    case "daily":
+                        dishIncomeToday = dishIncome.FirstOrDefault(x => x.Date == date);
+                        drinkIncomeToday = drinkIncome.FirstOrDefault(x => x.Date == date);
+                        break;
+                    case "monthly":
+                        dishIncomeToday = dishIncome.FirstOrDefault(x => x.Date == date && x.Date== date);
+                        drinkIncomeToday = drinkIncome.FirstOrDefault(x => x.Date == date && x.Date== date);
+
+                        break;
+                    case "yearly":
+                        dishIncomeToday = dishIncome.FirstOrDefault(x => x.Date == date);
+                        drinkIncomeToday = drinkIncome.FirstOrDefault(x => x.Date == date);
+                        break;
+                }
+
+                // Make new model
+                salesViewModel.DishIncome.Add(new SalesChartViewModel()
+                {
+                    Date = date,
+                    Income = dishIncomeToday == null ? 0 : dishIncomeToday.Income,
+                });
+
+                salesViewModel.DrinkIncome.Add(new SalesChartViewModel()
+                {
+                    Date = date,
+                    Income = drinkIncomeToday == null ? 0 : drinkIncomeToday.Income,
+                });
+
+                decimal totalIncome = 0;
+                if (dishIncomeToday != null)
+                {
+                    totalIncome += dishIncomeToday.Income;
+                }
+
+                if (drinkIncomeToday != null)
+                {
+                    totalIncome += drinkIncomeToday.Income;
+                }
+
+                salesViewModel.TotalIncome.Add(new SalesChartViewModel()
+                {
+                    Date = date,
+                    Income = totalIncome,
+                });
+            }
+
+            return salesViewModel;
+        }
+
+        
+        private ICollection<SalesChartViewModel> GetDailyDishIncomeByPeriod(DateTime startDate, DateTime endDate)
+        {
+            return this.orderDishRepository
+                    .All()
+                    .Where(x => x.Order.DeliveredOn.Value.Date >= startDate.Date && x.Order.DeliveredOn.Value.Date <= endDate.Date)
+                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Day, x.Order.DeliveredOn.Value.Month, x.Order.DeliveredOn.Value.Year })
+                    .Select(x => new SalesChartViewModel()
+                    {
+                        Date = new DateTime(x.Key.Year, x.Key.Month, x.Key.Day).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                        Income = x.Sum(y => y.PriceForOne * y.Count),
+                    }).ToList();
+        }
+
+        private ICollection<SalesChartViewModel> GetDailyDrinkIncomeByPeriod(DateTime startDate, DateTime endDate)
+        {
+            return this.orderDrinkRepository
+                    .All()
+                    .Where(x => x.Order.DeliveredOn.Value.Date >= startDate.Date && x.Order.DeliveredOn.Value.Date <= endDate.Date)
+                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Day, x.Order.DeliveredOn.Value.Month, x.Order.DeliveredOn.Value.Year })
+                    .Select(x => new SalesChartViewModel()
+                    {
+                        Date = new DateTime(x.Key.Year, x.Key.Month, x.Key.Day).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                        Income = x.Sum(y => y.PriceForOne * y.Count),
+                    }).ToList();
+        }
+
+        private ICollection<SalesChartViewModel> GetMonthlyDishIncomeByPeriod(DateTime startDate, DateTime endDate)
+        {
+            return this.orderDishRepository
+                    .All()
+                    .Where(x => x.Order.DeliveredOn > startDate && x.Order.DeliveredOn < endDate)
+                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Month, x.Order.DeliveredOn.Value.Year })
+                    .Select(x => new SalesChartViewModel()
+                    {
+                        Date = new DateTime(x.Key.Year, x.Key.Month, 1).ToString("MM/yyyy", CultureInfo.InvariantCulture),
+                        Income = x.Sum(y => y.PriceForOne * y.Count),
+                    }).ToList();
+        }
+
+        private ICollection<SalesChartViewModel> GetMonthlyDrinkIncomeByPeriod(DateTime startDate, DateTime endDate)
+        {
+            return this.orderDrinkRepository
+                    .All()
+                    .Where(x => x.Order.DeliveredOn > startDate && x.Order.DeliveredOn < endDate)
+                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Month, x.Order.DeliveredOn.Value.Year })
+                    .Select(x => new SalesChartViewModel()
+                    {
+                        Date = new DateTime(x.Key.Year, x.Key.Month, 1).ToString("MM/yyyy", CultureInfo.InvariantCulture),
+                        Income = x.Sum(y => y.PriceForOne * y.Count),
+                    }).ToList();
+        }
+
+        private ICollection<SalesChartViewModel> GetYearlyDishIncomeByPeriod(DateTime startDate, DateTime endDate)
+        {
+            return this.orderDishRepository
+                    .All()
+                    .Where(x => x.Order.DeliveredOn > startDate && x.Order.DeliveredOn < endDate)
+                    .GroupBy(x => new {  x.Order.DeliveredOn.Value.Year })
+                    .Select(x => new SalesChartViewModel()
+                    {
+                        Date = new DateTime(x.Key.Year, 1, 1).ToString("yyyy", CultureInfo.InvariantCulture),
+                        Income = x.Sum(y => y.PriceForOne * y.Count),
+                    }).ToList();
+        }
+
+        private ICollection<SalesChartViewModel> GetYearlyDrinkIncomeByPeriod(DateTime startDate, DateTime endDate)
+        {
+            return this.orderDrinkRepository
+                    .All()
+                    .Where(x => x.Order.DeliveredOn > startDate && x.Order.DeliveredOn < endDate)
+                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Year })
+                    .Select(x => new SalesChartViewModel()
+                    {
+                        Date = new DateTime(x.Key.Year, 1, 1).ToString("yyyy", CultureInfo.InvariantCulture),
+                        Income = x.Sum(y => y.PriceForOne * y.Count),
+                    }).ToList();
         }
     }
 }
