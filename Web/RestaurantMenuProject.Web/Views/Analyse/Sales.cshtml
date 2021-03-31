@@ -49,6 +49,7 @@
 </form>
 
 <canvas id="incomeChart" width="400" height="200"></canvas>
+<h2>Total income for the period: <span id="totalIncome">@Model.TotalIncome.Sum(x => x.Income).ToString("0.00")$</span></h2>
 
 @section Scripts{
     <script src="~/lib/chartJS/dist/Chart.js"></script>
@@ -164,6 +165,7 @@
 
                     myChart["config"]["data"] = data;
                     myChart.options.scales.xAxes[0].scaleLabel.labelString = res.type;
+                    $('#totalIncome').text((res.totalIncome.map(x => x.income).reduce((a, b) => a + b, 0)).toFixed(2) + "$");
                     myChart.update();
                 },
                 error: function (res) {

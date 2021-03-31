@@ -21,5 +21,10 @@ namespace RestaurantMenuProject.Web.Controllers
             sales.Type = "Daily";
             return this.View(sales);
         }
+
+        public IActionResult Staff()
+        {
+            return this.View();
+        }
     }
 }

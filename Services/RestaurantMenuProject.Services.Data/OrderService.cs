@@ -471,27 +471,25 @@
                     for (var dt = startDate; dt <= endDate; dt = dt.AddDays(1))
                     {
                         dates.Add(dt.ToString("dd/MM/yyyy"));
-                        dishIncome = this.GetDailyDishIncomeByPeriod(startDate, endDate).ToList();
-                        drinkIncome = this.GetDailyDrinkIncomeByPeriod(startDate, endDate).ToList();
                     }
-
+                    dishIncome = this.GetDailyDishIncomeByPeriod(startDate, endDate).ToList();
+                    drinkIncome = this.GetDailyDrinkIncomeByPeriod(startDate, endDate).ToList();
                     break;
                 case "monthly":
                     for (var dt = startDate; dt.Year < endDate.Year || (dt.Year <= endDate.Year && dt.Month <= endDate.Month); dt = dt.AddMonths(1))
                     {
                         dates.Add(dt.ToString("MM/yyyy"));
-                        dishIncome = this.GetMonthlyDishIncomeByPeriod(startDate, endDate).ToList();
-                        drinkIncome = this.GetMonthlyDrinkIncomeByPeriod(startDate, endDate).ToList();
                     }
-
+                    dishIncome = this.GetMonthlyDishIncomeByPeriod(startDate, endDate).ToList();
+                    drinkIncome = this.GetMonthlyDrinkIncomeByPeriod(startDate, endDate).ToList();
                     break;
                 case "yearly":
                     for (var dt = startDate; dt.Year <= endDate.Year; dt = dt.AddYears(1))
                     {
                         dates.Add(dt.ToString("yyyy"));
-                        dishIncome = this.GetYearlyDishIncomeByPeriod(startDate, endDate).ToList();
-                        drinkIncome = this.GetYearlyDrinkIncomeByPeriod(startDate, endDate).ToList();
                     }
+                    dishIncome = this.GetYearlyDishIncomeByPeriod(startDate, endDate).ToList();
+                    drinkIncome = this.GetYearlyDrinkIncomeByPeriod(startDate, endDate).ToList();
                     break;
                 default:
                     throw new InvalidOperationException("An invalid period was given!");
@@ -518,8 +516,8 @@
                         drinkIncomeToday = drinkIncome.FirstOrDefault(x => x.Date == date);
                         break;
                     case "monthly":
-                        dishIncomeToday = dishIncome.FirstOrDefault(x => x.Date == date && x.Date== date);
-                        drinkIncomeToday = drinkIncome.FirstOrDefault(x => x.Date == date && x.Date== date);
+                        dishIncomeToday = dishIncome.FirstOrDefault(x => x.Date == date && x.Date == date);
+                        drinkIncomeToday = drinkIncome.FirstOrDefault(x => x.Date == date && x.Date == date);
 
                         break;
                     case "yearly":
@@ -593,7 +591,9 @@
         {
             return this.orderDishRepository
                     .All()
-                    .Where(x => x.Order.DeliveredOn > startDate && x.Order.DeliveredOn < endDate)
+                    .Where(x => (x.Order.DeliveredOn >= startDate && x.Order.DeliveredOn < endDate)
+                    || (x.Order.DeliveredOn.Value.Month == startDate.Month && x.Order.DeliveredOn.Value.Year == startDate.Year)
+                    || (x.Order.DeliveredOn.Value.Month == endDate.Month && x.Order.DeliveredOn.Value.Year == endDate.Year))
                     .GroupBy(x => new { x.Order.DeliveredOn.Value.Month, x.Order.DeliveredOn.Value.Year })
                     .Select(x => new SalesChartViewModel()
                     {
@@ -606,7 +606,9 @@
         {
             return this.orderDrinkRepository
                     .All()
-                    .Where(x => x.Order.DeliveredOn > startDate && x.Order.DeliveredOn < endDate)
+                    .Where(x => (x.Order.DeliveredOn >= startDate && x.Order.DeliveredOn < endDate)
+                    || (x.Order.DeliveredOn.Value.Month == startDate.Month && x.Order.DeliveredOn.Value.Year == startDate.Year)
+                    || (x.Order.DeliveredOn.Value.Month == endDate.Month && x.Order.DeliveredOn.Value.Year == endDate.Year))
                     .GroupBy(x => new { x.Order.DeliveredOn.Value.Month, x.Order.DeliveredOn.Value.Year })
                     .Select(x => new SalesChartViewModel()
                     {
@@ -619,7 +621,7 @@
         {
             return this.orderDishRepository
                     .All()
-                    .Where(x => x.Order.DeliveredOn > startDate && x.Order.DeliveredOn < endDate)
+                    .Where(x => x.Order.DeliveredOn.Value.Year >= startDate.Year && x.Order.DeliveredOn.Value.Year <= endDate.Year)
                     .GroupBy(x => new {  x.Order.DeliveredOn.Value.Year })
                     .Select(x => new SalesChartViewModel()
                     {
@@ -632,7 +634,7 @@
         {
             return this.orderDrinkRepository
                     .All()
-                    .Where(x => x.Order.DeliveredOn > startDate && x.Order.DeliveredOn < endDate)
+                    .Where(x => x.Order.DeliveredOn.Value.Year >= startDate.Year && x.Order.DeliveredOn.Value.Year <= endDate.Year)
                     .GroupBy(x => new { x.Order.DeliveredOn.Value.Year })
                     .Select(x => new SalesChartViewModel()
                     {
