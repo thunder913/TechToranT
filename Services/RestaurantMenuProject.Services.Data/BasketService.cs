@@ -33,16 +33,16 @@
         }
 
         // Adding item to basket (doesnt matter if dish or drink). Also creating the basket if non existing
-        public Task AddToBasketAsync(AddItemToBasketViewModel itemToAdd, string userId)
+        public async Task AddToBasketAsync(AddItemToBasketViewModel itemToAdd, string userId)
         {
             if (!this.basketRepository.AllAsNoTracking().Any(x => x.User.Id == userId))
             {
-                this.basketRepository.AddAsync(new Basket()
+                await this.basketRepository.AddAsync(new Basket()
                 {
                     Id = userId,
                     User = this.userService.GetUserById(userId),
-                }).GetAwaiter().GetResult();
-                this.basketRepository.SaveChangesAsync().GetAwaiter().GetResult();
+                });
+                await this.basketRepository.SaveChangesAsync();
 
             }
 
@@ -51,11 +51,11 @@
                 var existingDrink = this.GetBasketDrinkInBasketById(userId, itemToAdd.Id);
                 if (existingDrink != null)
                 {
-                    this.AddQuantityToExistingDrink(existingDrink, itemToAdd.Count).GetAwaiter().GetResult();
+                    await this.AddQuantityToExistingDrinkAsync(existingDrink, itemToAdd.Count);
                 }
                 else
                 {
-                    this.AddBasketDrinkItemAsync(userId, itemToAdd.Count, itemToAdd.Id);
+                    await this.AddBasketDrinkItemAsync(userId, itemToAdd.Count, itemToAdd.Id);
 
                 }
             }
@@ -64,20 +64,16 @@
                 var existingDish = this.GetBasketDishInBasketById(userId, itemToAdd.Id);
                 if (existingDish != null)
                 {
-                    this.AddQuantityToExistingDish(existingDish, itemToAdd.Count).GetAwaiter().GetResult();
+                    await this.AddQuantityToExistingDishAsync(existingDish, itemToAdd.Count);
                 }
                 else
                 {
-                    this.AddBasketDishItemAsync(userId, itemToAdd.Count, itemToAdd.Id);
+                    await this.AddBasketDishItemAsync(userId, itemToAdd.Count, itemToAdd.Id);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        // TODO research why it breaks when async task
-        // Adding Drink Item to basket
-        public Task AddBasketDrinkItemAsync(string basketId, int quantity, string drinkId)
+        public async Task AddBasketDrinkItemAsync(string basketId, int quantity, string drinkId)
         {
             var basketDrink = new BasketDrink()
             {
@@ -85,15 +81,14 @@
                 Quantity = quantity,
                 DrinkId = drinkId,
             };
-            this.basketDrinkRepository.AddAsync(basketDrink).GetAwaiter().GetResult();
+            await this.basketDrinkRepository.AddAsync(basketDrink);
 
-            this.basketDrinkRepository.SaveChangesAsync().GetAwaiter().GetResult();
+            await this.basketDrinkRepository.SaveChangesAsync();
 
-            return Task.CompletedTask;
         }
 
         // Adding dish item to BasketDishes
-        public Task AddBasketDishItemAsync(string basketId, int quantity, string dishId)
+        public async Task AddBasketDishItemAsync(string basketId, int quantity, string dishId)
         {
             var basketDish = new BasketDish()
             {
@@ -101,11 +96,9 @@
                 Quantity = quantity,
                 DishId = dishId,
             };
-            this.basketDishRepository.AddAsync(basketDish).GetAwaiter().GetResult();
+            await this.basketDishRepository.AddAsync(basketDish);
 
-            this.basketDishRepository.SaveChangesAsync().GetAwaiter().GetResult();
-
-            return Task.CompletedTask;
+            await this.basketDishRepository.SaveChangesAsync();
         }
 
         // Getting drink item by ids
@@ -117,11 +110,10 @@
         }
 
         // Adding quantity to existing drink
-        public Task AddQuantityToExistingDrink(BasketDrink basketDrink, int quantity)
+        public async Task AddQuantityToExistingDrinkAsync(BasketDrink basketDrink, int quantity)
         {
             basketDrink.Quantity += quantity;
-            this.basketDrinkRepository.SaveChangesAsync().GetAwaiter().GetResult();
-            return Task.CompletedTask;
+            await this.basketDrinkRepository.SaveChangesAsync();
         }
 
         // Get dish item by ids
@@ -133,11 +125,10 @@
         }
 
         // Adding quantity to existing dish
-        public Task AddQuantityToExistingDish(BasketDish basketDish, int quantity)
+        public async Task AddQuantityToExistingDishAsync(BasketDish basketDish, int quantity)
         {
             basketDish.Quantity += quantity;
-            this.basketDishRepository.SaveChangesAsync().GetAwaiter().GetResult();
-            return Task.CompletedTask;
+            await this.basketDishRepository.SaveChangesAsync();
         }
 
         // Getting all the drinks from the user basket
@@ -215,7 +206,7 @@
         }
 
         // Adding quantity to drink (by given ids)
-        public FoodItemViewModel AddQuantityToDrink(string drinkId, string userId, int quantity)
+        public async Task<FoodItemViewModel> AddQuantityToDrinkAsync(string drinkId, string userId, int quantity)
         {
             var drink = this.basketDrinkRepository
                         .All()
@@ -226,13 +217,13 @@
             }
 
             drink.Quantity += quantity;
-            this.basketDishRepository.SaveChangesAsync().GetAwaiter().GetResult();
+            await this.basketDishRepository.SaveChangesAsync();
 
             return this.GetBasketDrinkItemById(drinkId, userId);
         }
 
         // Adding quantity to dish
-        public FoodItemViewModel AddQuantityToDish(string dishId, string userId, int quantity)
+        public async Task<FoodItemViewModel> AddQuantityToDishAsync(string dishId, string userId, int quantity)
         {
             var dish =
                        this.basketDishRepository
@@ -244,13 +235,13 @@
             }
 
             dish.Quantity += quantity;
-            this.basketDishRepository.SaveChangesAsync().GetAwaiter().GetResult();
+            await this.basketDishRepository.SaveChangesAsync();
 
             return this.GetBasketDishItemById(dishId, userId);
         }
 
         // Removing a dish from the basket
-        public FoodItemViewModel RemoveDish(string dishIId, string userId, int quantity = 0)
+        public async Task<FoodItemViewModel> RemoveDishAsync(string dishIId, string userId, int quantity = 0)
         {
             var dish = this.basketDishRepository
                    .All()
@@ -258,17 +249,17 @@
             if (quantity == 0 || dish.Quantity - quantity <= 0)
             {
                 this.basketDishRepository.Delete(dish);
-                this.basketDishRepository.SaveChangesAsync().GetAwaiter().GetResult();
+                await this.basketDishRepository.SaveChangesAsync();
                 return null;
             }
 
             dish.Quantity -= quantity;
-            this.basketDishRepository.SaveChangesAsync().GetAwaiter().GetResult();
+            await this.basketDishRepository.SaveChangesAsync();
             return this.GetBasketDishItemById(dishIId, userId);
         }
 
         // Removing a drink from the basket
-        public FoodItemViewModel RemoveDrink(string drinkId, string userId, int quantity = 0)
+        public async Task<FoodItemViewModel> RemoveDrinkAsync(string drinkId, string userId, int quantity = 0)
         {
             var drink = this.basketDrinkRepository
                    .All()
@@ -276,12 +267,12 @@
             if (quantity == 0 || drink.Quantity - quantity <= 0)
             {
                 this.basketDrinkRepository.Delete(drink);
-                this.basketDrinkRepository.SaveChangesAsync().GetAwaiter().GetResult();
+                await this.basketDrinkRepository.SaveChangesAsync();
                 return null;
             }
 
             drink.Quantity -= quantity;
-            this.basketDrinkRepository.SaveChangesAsync().GetAwaiter().GetResult();
+            await this.basketDrinkRepository.SaveChangesAsync();
             return this.GetBasketDrinkItemById(drinkId, userId);
         }
 
@@ -327,7 +318,7 @@
                         .First(); // TODO use automapper
         }
 
-        public async Task RemoveBasketItems(string userId)
+        public async Task RemoveBasketItemsAsync(string userId)
         {
             var basketDishes = this.basketDishRepository.All().Where(x => x.Basket.User.Id == userId);
             var basketDrinks = this.basketDrinkRepository.All().Where(x => x.Basket.User.Id == userId);

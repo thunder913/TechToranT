@@ -1,6 +1,7 @@
 ﻿using RestaurantMenuProject.Data.Models;
 using RestaurantMenuProject.Web.ViewModels;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RestaurantMenuProject.Services.Data.Contracts
 {
@@ -10,14 +11,14 @@ namespace RestaurantMenuProject.Services.Data.Contracts
 
         public ICollection<TableDisplayViewModel> GetAllTables();
 
-        public void AddTable(AddTableViewModel tableViewModel);
+        public Task AddTableAsync(AddTableViewModel tableViewModel);
 
         public AddTableViewModel GetTableById(int id);
 
-        public void RemoveTable(int id);
+        public Task RemoveTableAsync(int id);
 
-        public void EditTable(AddTableViewModel tableViewModel);
+        public Task EditTableAsync(AddTableViewModel tableViewModel);
 
-        public void RefreshTableCodes();
+        public Task RefreshTableCodesAsync();
     }
 }

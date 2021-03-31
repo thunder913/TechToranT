@@ -4,6 +4,7 @@
     using RestaurantMenuProject.Web.ViewModels;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     public interface IUserService
     {
@@ -17,6 +18,6 @@
 
         public ICollection<ApplicationRole> GetUserRoles();
 
-        public void EditUserData(EditUserViewModel editUser);
+        public Task EditUserDataAsync(EditUserViewModel editUser);
     }
 }

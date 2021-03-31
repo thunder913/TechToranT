@@ -5,7 +5,7 @@
     using System.Globalization;
     using System.Linq;
     using System.Linq.Dynamic.Core;
-
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
     using RestaurantMenuProject.Data.Common.Repositories;
@@ -39,7 +39,7 @@
         }
 
         // TODO make it not take all the elements and then sort them
-        // TODO fix this kasha
+
         public ICollection<UserViewModel> GetUserDataAsQueryable(string sortColumn, string sortDirection, string searchValue)
         {
             var userData = this.GetAllUserDetails();
@@ -98,7 +98,7 @@
             return this.roleRepository.AllAsNoTracking().ToList();
         }
 
-        public void EditUserData(EditUserViewModel editUser)
+        public async Task EditUserDataAsync(EditUserViewModel editUser)
         {
             var user = this.GetUserById(editUser.Id);
 
@@ -113,7 +113,7 @@
                 .Select(x => new IdentityUserRole<string>() { RoleId = x.Id, UserId = editUser.Id})
                 .ToList();
             user.Roles = roles;
-            this.userRepository.SaveChangesAsync().GetAwaiter().GetResult();
+            await this.userRepository.SaveChangesAsync();
         }
 
         public ICollection<StaffAnalyseViewModel> GetUsersByIdsForanalyse(List<string> userIds)
@@ -124,7 +124,7 @@
                 .Select(x => new StaffAnalyseViewModel()
                 {
                     // TODO finish the charts (many things to do)
-                }).ToList()
+                }).ToList();
         }
     }
 }

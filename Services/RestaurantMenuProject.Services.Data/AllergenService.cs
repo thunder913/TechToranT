@@ -19,7 +19,7 @@
             this.allergenRepository = allergenRepository;
         }
 
-        public async Task AddAllergen(AllergenViewModel allergen)
+        public async Task AddAllergenAsync(AllergenViewModel allergen)
         {
             var allergenToAdd = new Allergen()
             {

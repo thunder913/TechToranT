@@ -48,12 +48,12 @@ namespace RestaurantMenuProject.Services.Data
 
             if (viewModel.DishType == FoodType.Dish)
             {
-                await this.orderService.AddDeliveredCountToOrderDish(1, viewModel);
+                await this.orderService.AddDeliveredCountToOrderDishAsync(1, viewModel);
                 oldPickupItem = this.orderService.GetOrderDishAsPickupItem(viewModel);
             }
             else if (viewModel.DishType == FoodType.Drink)
             {
-                await this.orderService.AddDeliveredCountToOrderDrink(1, viewModel);
+                await this.orderService.AddDeliveredCountToOrderDrinkAsync(1, viewModel);
                 oldPickupItem = this.orderService.GetOrderDrinkAsPickupItem(viewModel);
             }
 
@@ -61,7 +61,8 @@ namespace RestaurantMenuProject.Services.Data
                 .All()
                 .FirstOrDefault(x => x.TableNumber == oldPickupItem.TableNumber
                 && x.OrderId == oldPickupItem.OrderId
-                && x.ClientName == oldPickupItem.ClientName);
+                && x.ClientName == oldPickupItem.ClientName
+                && x.Name == oldPickupItem.Name);
 
             if (pickupItem != null)
             {
@@ -70,6 +71,7 @@ namespace RestaurantMenuProject.Services.Data
                 await this.pickupItemRepository.SaveChangesAsync();
                 return true;
             }
+
             pickupItem = oldPickupItem;
 
             await this.pickupItemRepository.AddAsync(pickupItem);

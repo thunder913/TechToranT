@@ -8,7 +8,7 @@
 
     public interface IDishService
     {
-        public Task AddDish(AddDishViewModel dish, string wwwroot);
+        public Task AddDishAsync(AddDishViewModel dish, string wwwroot);
 
         public EditDishViewModel GetEditDishViewModelById(string id);
 
@@ -22,8 +22,8 @@
 
         public ICollection<DishViewModel> GetAllDisheshWithDishTypeAsFoodItem(string dishType);
 
-        public void EditDish(EditDishViewModel editDish, string wwwroot);
+        public Task EditDishAsync(EditDishViewModel editDish, string wwwroot);
 
-        public void DeleteDishById(string id);
+        public Task DeleteDishByIdAsync(string id);
     }
 }

@@ -6,6 +6,7 @@ using RestaurantMenuProject.Web.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace RestaurantMenuProject.Services.Data
 {
@@ -49,7 +50,7 @@ namespace RestaurantMenuProject.Services.Data
                 .ToList();
         }
 
-        public void AddTable(AddTableViewModel tableViewModel)
+        public async Task AddTableAsync(AddTableViewModel tableViewModel)
         {
             var mapper = AutoMapperConfig.MapperInstance;
             if (this.tableRepository.All().Any(x => x.Number == tableViewModel.Number))
@@ -60,8 +61,8 @@ namespace RestaurantMenuProject.Services.Data
 
             var table = mapper.Map<AddTableViewModel, Table>(tableViewModel);
             table.Code = this.RandomString(6);
-            this.tableRepository.AddAsync(table).GetAwaiter().GetResult();
-            this.tableRepository.SaveChangesAsync().GetAwaiter().GetResult();
+            await this.tableRepository.AddAsync(table);
+            await this.tableRepository.SaveChangesAsync();
         }
 
         public AddTableViewModel GetTableById(int id)
@@ -69,31 +70,31 @@ namespace RestaurantMenuProject.Services.Data
             return this.tableRepository.All().To<AddTableViewModel>().First(x => x.Id == id);
         }
 
-        public void RemoveTable(int id)
+        public async Task RemoveTableAsync(int id)
         {
             var tableToDelete = this.tableRepository.AllAsNoTracking().First(x => x.Id == id);
             this.tableRepository.Delete(tableToDelete);
-            this.tableRepository.SaveChangesAsync().GetAwaiter().GetResult();
+            await this.tableRepository.SaveChangesAsync();
         }
 
-        public void EditTable(AddTableViewModel tableViewModel)
+        public async Task EditTableAsync(AddTableViewModel tableViewModel)
         {
             var table = this.tableRepository.All().FirstOrDefault(x => x.Id == tableViewModel.Id);
 
             table.Number = tableViewModel.Number;
             table.Capacity = tableViewModel.Capacity;
             table.Code = this.RandomString(6);
-            this.tableRepository.SaveChangesAsync().GetAwaiter().GetResult();
+            await this.tableRepository.SaveChangesAsync();
         }
 
-        public void RefreshTableCodes()
+        public async Task RefreshTableCodesAsync()
         {
             var tables = this.tableRepository.All();
             foreach (var table in tables)
             {
                 table.Code = this.RandomString(6);
             }
-            this.tableRepository.SaveChangesAsync().GetAwaiter().GetResult();
+            await this.tableRepository.SaveChangesAsync();
         }
 
         private bool IsTableCodeFree(string code)

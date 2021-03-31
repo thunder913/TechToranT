@@ -10,7 +10,7 @@
     {
         public ICollection<AllergenViewModel> GetAllergensWithId();
 
-        public Task AddAllergen(AllergenViewModel allergen);
+        public Task AddAllergenAsync(AllergenViewModel allergen);
 
         public ICollection<Allergen> GetAllergensWithIds(List<int> ids);
     }

@@ -70,7 +70,7 @@
             return this.orderRepository.AllAsNoTrackingWithDeleted().Where(x => x.ClientId == userId).Count();
         }
 
-        public Task MakeOrder(string userId, string tableCode)
+        public async Task MakeOrderAsync(string userId, string tableCode)
         {
             var tableId = this.tableService.GetTableIdByCode(tableCode);
             var mapper = AutoMapperConfig.MapperInstance;
@@ -103,16 +103,12 @@
                 PriceForOne = x.Price,
             }).ToList();
 
-            this.orderRepository.AddAsync(order).GetAwaiter().GetResult();
-
-
-            this.orderRepository.SaveChangesAsync().GetAwaiter().GetResult();
-            this.basketService.RemoveBasketItems(userId).GetAwaiter().GetResult();
-
-            return Task.CompletedTask;
+            await this.orderRepository.AddAsync(order);
+            await this.orderRepository.SaveChangesAsync();
+            await this.basketService.RemoveBasketItemsAsync(userId);
         }
 
-        public async Task<bool> CancelOrder(string orderId)
+        public async Task<bool> CancelOrderAsync(string orderId)
         {
             var order = this.orderRepository.AllWithDeleted().FirstOrDefault(x => x.Id == orderId);
 
@@ -221,7 +217,7 @@
                 .ToList();
         }
 
-        public void ChangeOrderStatus(ProcessType oldProcessType, ProcessType newProcessType, string orderId)
+        public async Task ChangeOrderStatusAsync(ProcessType oldProcessType, ProcessType newProcessType, string orderId)
         {
             if (oldProcessType == newProcessType)
             {
@@ -238,10 +234,10 @@
             order.ProcessType = newProcessType;
 
             this.orderRepository.Update(order);
-            this.orderRepository.SaveChangesAsync().GetAwaiter().GetResult();
+            await this.orderRepository.SaveChangesAsync();
         }
 
-        public void AddWaiterToOrder(string orderId, string waiterId)
+        public async Task AddWaiterToOrderAsync(string orderId, string waiterId)
         {
             var order = this.orderRepository.All().FirstOrDefault(x => x.Id == orderId);
             if (order == null)
@@ -250,7 +246,7 @@
             }
 
             order.WaiterId = waiterId;
-            this.orderRepository.SaveChangesAsync().GetAwaiter().GetResult();
+            await this.orderRepository.SaveChangesAsync();
 
         }
 
@@ -279,7 +275,7 @@
             return viewModel;
         }
 
-        public async Task FinishOrder(string orderId)
+        public async Task FinishOrderAsync(string orderId)
         {
             var order = this.orderRepository.All().FirstOrDefault(x => x.Id == orderId);
             if (order.PaidOn == null)
@@ -366,7 +362,7 @@
         }
 
 
-        public async Task AddDeliveredCountToOrderDish(int count, CookFinishItemViewModel itemViewModel)
+        public async Task AddDeliveredCountToOrderDishAsync(int count, CookFinishItemViewModel itemViewModel)
         {
             var orderDishItem = this.orderDishRepository
                 .All()
@@ -381,7 +377,7 @@
             await this.orderDishRepository.SaveChangesAsync();
         }
 
-        public async Task AddDeliveredCountToOrderDrink(int count, CookFinishItemViewModel itemViewModel)
+        public async Task AddDeliveredCountToOrderDrinkAsync(int count, CookFinishItemViewModel itemViewModel)
         {
             var orderDrinkItem = this.orderDrinkRepository
                 .All()

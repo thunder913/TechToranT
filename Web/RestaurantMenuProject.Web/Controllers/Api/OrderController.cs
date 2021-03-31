@@ -1,13 +1,14 @@
 ﻿namespace RestaurantMenuProject.Web.Controllers.Api
 {
-    using Microsoft.AspNetCore.Mvc;
-    using RestaurantMenuProject.Data.Models.Dtos;
-    using RestaurantMenuProject.Data.Models.Enums;
-    using RestaurantMenuProject.Services.Data.Contracts;
     using System;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+
+    using Microsoft.AspNetCore.Mvc;
+    using RestaurantMenuProject.Data.Models.Dtos;
+    using RestaurantMenuProject.Data.Models.Enums;
+    using RestaurantMenuProject.Services.Data.Contracts;
 
     [Route("api/[Controller]")]
     [ApiController]
@@ -27,9 +28,9 @@
         }
 
         [HttpPost("Delete")]
-        public ActionResult<bool> Delete(OrderIdDto orderDto)
+        public async Task<ActionResult<bool>> Delete(OrderIdDto orderDto)
         {
-            return this.orderService.CancelOrder(orderDto.OrderId).Result;
+            return await this.orderService.CancelOrderAsync(orderDto.OrderId);
         }
 
         [HttpPost("All")]
@@ -54,24 +55,24 @@
         }
 
         [HttpPost("EditStatus")]
-        public ActionResult<bool> EditStatus(EditStatusDto editStatus)
+        public async Task<ActionResult<bool>> EditStatusAsync(EditStatusDto editStatus)
         {
             var oldProcessingTypeId = (ProcessType)Enum.Parse(typeof(ProcessType), editStatus.OldProcessingType);
-            this.orderService.ChangeOrderStatus(oldProcessingTypeId, (ProcessType) editStatus.NewProcessingTypeId, editStatus.OrderId);
+            await this.orderService.ChangeOrderStatusAsync(oldProcessingTypeId, (ProcessType) editStatus.NewProcessingTypeId, editStatus.OrderId);
             return true;
         }
 
         [HttpPost("AcceptOrder")]
-        public ActionResult<bool> AcceptOrder(EditStatusDto editStatus)
+        public async Task<ActionResult<bool>> AcceptOrder(EditStatusDto editStatus)
         {
-            var statusEditted = this.EditStatus(editStatus).Value;
-            if (!statusEditted)
+            var statusEditted = await this.EditStatusAsync(editStatus);
+            if (!statusEditted.Value)
             {
                 throw new InvalidOperationException("There was an error changing the status of the order!");
             }
             var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            this.orderService.AddWaiterToOrder(editStatus.OrderId, userId);
+            await this.orderService.AddWaiterToOrderAsync(editStatus.OrderId, userId);
 
             return true;
         }
@@ -86,7 +87,7 @@
         [HttpPost("FinishOrder/{id}")]
         public async Task<ActionResult<bool>> FinishOrderAsync(string id)
         {
-            await this.orderService.FinishOrder(id);
+            await this.orderService.FinishOrderAsync(id);
             return true;
         }
     }

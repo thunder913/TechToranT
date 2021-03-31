@@ -33,21 +33,19 @@
             this.imageService = imageService;
         }
 
-        public Task AddDish(AddDishViewModel dish, string wwwroot)
+        public async Task AddDishAsync(AddDishViewModel dish, string wwwroot)
         {
             var extension = dish.Image.FileName.Split(".")[^1];
-            var image = this.imageService.AddImage(extension);
+            var image = await this.imageService.AddImageAsync(extension);
 
             var mapper = AutoMapperConfig.MapperInstance;
             var dishToAdd = mapper.Map<Dish>(dish);
             dishToAdd.ImageId = image.Id;
             dishToAdd.Ingredients = this.ingredientService.GetAllIngredientsByIds(dish.IngredientsId.ToArray()).ToArray();
 
-            this.dishRepository.AddAsync(dishToAdd).GetAwaiter().GetResult();
-            this.dishRepository.SaveChangesAsync().GetAwaiter().GetResult();
-            this.fileService.SaveImage("Dishes", image.Id, dish.Image, wwwroot, extension);
-
-            return Task.CompletedTask;
+            await this.dishRepository.AddAsync(dishToAdd);
+            await this.dishRepository.SaveChangesAsync();
+            await this.fileService.SaveImageAsync("Dishes", image.Id, dish.Image, wwwroot, extension);
         }
 
         public void RemoveDish(Dish dish)
@@ -95,7 +93,7 @@
                         .FirstOrDefault();
         }
 
-        public void EditDish(EditDishViewModel editDish, string wwwroot)
+        public async Task EditDishAsync(EditDishViewModel editDish, string wwwroot)
         {
             var dish = this.GetDishById(editDish.Id);
 
@@ -133,22 +131,22 @@
                 var oldImage = this.imageService.GetImage(dish.ImageId);
                 this.fileService.DeleteImage($"{wwwroot}/img/Dishes/{oldImage.Id}.{oldImage.Extension}");
                 var extension = editDish.NewImage.FileName.Split(".")[^1];
-                var image = this.imageService.AddImage(extension);
-                this.fileService.SaveImage("Dishes", image.Id, editDish.NewImage, wwwroot, extension);
+                var image = await this.imageService.AddImageAsync(extension);
+                await this.fileService.SaveImageAsync("Dishes", image.Id, editDish.NewImage, wwwroot, extension);
                 dish.ImageId = image.Id;
                 dish.Image = image;
             }
 
             // Saving the new dish to the DB
             this.dishRepository.Update(dish);
-            this.dishRepository.SaveChangesAsync().GetAwaiter().GetResult();
+            await this.dishRepository.SaveChangesAsync();
         }
 
-        public void DeleteDishById(string id)
+        public async Task DeleteDishByIdAsync(string id)
         {
             var dishToDelete = this.dishRepository.All().FirstOrDefault(x => x.Id == id);
             this.dishRepository.Delete(dishToDelete);
-            this.dishRepository.SaveChangesAsync().GetAwaiter().GetResult();
+            await this.dishRepository.SaveChangesAsync();
         }
 
         private ICollection<Ingredient> GetDishIngredients(string id)

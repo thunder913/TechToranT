@@ -8,7 +8,7 @@
 
     public class FileService : IFileService
     {
-        public async Task SaveImage(string itemCategory, string id, IFormFile formFile, string wwwroot, string extension)
+        public async Task SaveImageAsync(string itemCategory, string id, IFormFile formFile, string wwwroot, string extension)
         {
             var path = $"{wwwroot}/img/{itemCategory}";
 

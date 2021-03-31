@@ -21,18 +21,18 @@
 
         public FoodItemViewModel GetBasketDrinkItemById(string drinkId, string userId);
 
-        public FoodItemViewModel AddQuantityToDrink(string drinkId, string userId, int quantity);
+        public Task<FoodItemViewModel> AddQuantityToDrinkAsync(string drinkId, string userId, int quantity);
 
-        public FoodItemViewModel AddQuantityToDish(string dishId, string userId, int quantity);
+        public Task<FoodItemViewModel> AddQuantityToDishAsync(string dishId, string userId, int quantity);
 
-        public FoodItemViewModel RemoveDish(string dishIId, string userId, int quantity = 0);
+        public Task<FoodItemViewModel> RemoveDishAsync(string dishIId, string userId, int quantity = 0);
 
-        public FoodItemViewModel RemoveDrink(string drinkId, string userId, int quantity = 0);
+        public Task<FoodItemViewModel> RemoveDrinkAsync(string drinkId, string userId, int quantity = 0);
 
         public decimal GetTotalPrice(string userId);
 
         public BasketDto GetBasket(string userId);
 
-        public Task RemoveBasketItems(string userId);
+        public Task RemoveBasketItemsAsync(string userId);
     }
 }

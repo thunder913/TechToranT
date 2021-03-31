@@ -8,7 +8,7 @@
 
     public interface IDrinkService
     {
-        public Task AddDrink(AddDrinkViewModel drink, string wwwroot);
+        public Task AddDrinkAsync(AddDrinkViewModel drink, string wwwroot);
 
         public DrinkItemViewModel GetDrinkItemViewModelById(string id);
 
@@ -18,9 +18,9 @@
 
         public EditDrinkViewModel GetEditDrinkViewModelById(string id);
 
-        public void EditDrink(EditDrinkViewModel editDrink, string wwwroot);
+        public Task EditDrinkAsync(EditDrinkViewModel editDrink, string wwwroot);
 
-        public void DeleteDrinkById(string id);
+        public Task DeleteDrinkByIdAsync(string id);
 
         public Drink GetDrinkWithDeletedById(string id);
     }

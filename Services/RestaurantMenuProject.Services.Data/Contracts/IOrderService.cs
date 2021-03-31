@@ -10,9 +10,9 @@
     public interface IOrderService
     {
         public ICollection<OrderInListViewModel> GetOrderViewModelsByUserId(int page, int itemsPerPage, string userId = null);
-        public Task MakeOrder(string userId, string tableCode);
+        public Task MakeOrderAsync(string userId, string tableCode);
 
-        public Task<bool> CancelOrder(string orderId);
+        public Task<bool> CancelOrderAsync(string orderId);
 
         public int GetUserOrdersCount(string userId);
 
@@ -22,25 +22,25 @@
 
         public ICollection<ManageOrderViewModel> GetAllOrders(string sortColumn, string sortDirection, string searchValue);
 
-        public void ChangeOrderStatus(ProcessType oldProcessType, ProcessType newProcessType, string orderId);
+        public Task ChangeOrderStatusAsync(ProcessType oldProcessType, ProcessType newProcessType, string orderId);
 
         public ICollection<OrderInListViewModel> GetOrdersWithStatus(ProcessType processType);
 
-        public void AddWaiterToOrder(string orderId, string waiterId);
+        public Task AddWaiterToOrderAsync(string orderId, string waiterId);
 
         public ICollection<ActiveOrderViewModel> GetActiveOrders(string waiterId);
 
         public WaiterViewModel GetWaiterViewModel(string userId);
 
-        public Task FinishOrder(string orderId);
+        public Task FinishOrderAsync(string orderId);
 
         public ChefViewModel GetChefViewModel();
 
         public ICollection<CookFoodCategoriesViewModel> GetCookFoodTypes();
 
-        public Task AddDeliveredCountToOrderDrink(int count, CookFinishItemViewModel itemViewModel);
+        public Task AddDeliveredCountToOrderDrinkAsync(int count, CookFinishItemViewModel itemViewModel);
 
-        public Task AddDeliveredCountToOrderDish(int count, CookFinishItemViewModel itemViewModel);
+        public Task AddDeliveredCountToOrderDishAsync(int count, CookFinishItemViewModel itemViewModel);
 
         public PickupItem GetOrderDishAsPickupItem(CookFinishItemViewModel itemViewModel);
 

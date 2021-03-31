@@ -33,9 +33,9 @@ namespace RestaurantMenuProject.Web.Controllers.Api
         }
 
         [HttpPost("AcceptOrder/{id}")]
-        public ActionResult<bool> AcceptOrder(string id)
+        public async Task<ActionResult<bool>> AcceptOrder(string id)
         {
-            this.orderService.ChangeOrderStatus(ProcessType.InProcess, ProcessType.Cooking, id);
+            await this.orderService.ChangeOrderStatusAsync(ProcessType.InProcess, ProcessType.Cooking, id);
             return true;
         }
     }

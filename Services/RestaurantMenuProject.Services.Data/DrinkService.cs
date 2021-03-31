@@ -36,21 +36,18 @@
             this.imageService = imageService;
         }
 
-        public Task AddDrink(AddDrinkViewModel drink, string wwwroot)
+        public async Task AddDrinkAsync(AddDrinkViewModel drink, string wwwroot)
         {
             var extension = drink.Image.FileName.Split(".")[^1];
-            var image = this.imageService.AddImage(extension);
-
+            var image = await this.imageService.AddImageAsync(extension);
             var mapper = AutoMapperConfig.MapperInstance;
             var drinkToAdd = mapper.Map<Drink>(drink);
             drinkToAdd.ImageId = image.Id;
             drinkToAdd.Ingredients = this.ingredientService.GetAllIngredientsByIds(drink.IngredientsId.ToArray()).ToArray();
 
-            this.drinkRepository.AddAsync(drinkToAdd).GetAwaiter().GetResult();
-            this.drinkRepository.SaveChangesAsync().GetAwaiter().GetResult();
-            this.fileService.SaveImage("Drinks", image.Id, drink.Image, wwwroot, extension);
-
-            return Task.CompletedTask;
+            await this.drinkRepository.AddAsync(drinkToAdd);
+            await this.drinkRepository.SaveChangesAsync();
+            await this.fileService.SaveImageAsync("Drinks", image.Id, drink.Image, wwwroot, extension);
         }
 
         public DrinkItemViewModel GetDrinkItemViewModelById(string id)
@@ -88,7 +85,7 @@
                 .FirstOrDefault();
         }
 
-        public void EditDrink(EditDrinkViewModel editDrink, string wwwroot)
+        public async Task EditDrinkAsync(EditDrinkViewModel editDrink, string wwwroot)
         {
             var drink = this.GetDrinkById(editDrink.Id);
 
@@ -126,22 +123,22 @@
                 var oldImage = this.imageService.GetImage(drink.ImageId);
                 this.fileService.DeleteImage($"{wwwroot}/img/Drinks/{oldImage.Id}.{oldImage.Extension}");
                 var extension = editDrink.NewImage.FileName.Split(".")[^1];
-                var image = this.imageService.AddImage(extension);
-                this.fileService.SaveImage("Drinks", image.Id, editDrink.NewImage, wwwroot, extension);
+                var image = await this.imageService.AddImageAsync(extension);
+                await this.fileService.SaveImageAsync("Drinks", image.Id, editDrink.NewImage, wwwroot, extension);
                 drink.ImageId = image.Id;
                 drink.Image = image;
             }
 
             // Saving the new dish to the DB
             this.drinkRepository.Update(drink);
-            this.drinkRepository.SaveChangesAsync().GetAwaiter().GetResult();
+            await this.drinkRepository.SaveChangesAsync();
         }
 
-        public void DeleteDrinkById(string id)
+        public async Task DeleteDrinkByIdAsync(string id)
         {
             var drinkToRemove = this.drinkRepository.All().FirstOrDefault(x => x.Id == id);
             this.drinkRepository.Delete(drinkToRemove);
-            this.drinkRepository.SaveChangesAsync().GetAwaiter().GetResult();
+            await this.drinkRepository.SaveChangesAsync();
         }
 
         public Drink GetDrinkWithDeletedById(string id)

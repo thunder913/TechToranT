@@ -4,6 +4,7 @@ using RestaurantMenuProject.Data.Models.Enums;
 using RestaurantMenuProject.Services.Data.Contracts;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace RestaurantMenuProject.Services.Data
 {
@@ -16,14 +17,14 @@ namespace RestaurantMenuProject.Services.Data
             this.imageRepository = imageRepository;
         }
 
-        public Image AddImage(string extension)
+        public async Task<Image> AddImageAsync(string extension)
         {
             var image = new Image()
             {
                 Extension = (ImageExtension)Enum.Parse(typeof(ImageExtension), extension),
             };
-            this.imageRepository.AddAsync(image).GetAwaiter().GetResult();
-            this.imageRepository.SaveChangesAsync().GetAwaiter().GetResult();
+            await this.imageRepository.AddAsync(image);
+            await this.imageRepository.SaveChangesAsync();
             return image;
         }
 

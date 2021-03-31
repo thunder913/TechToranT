@@ -95,7 +95,7 @@
                 return this.View(dish);
             }
 
-            await this.dishService.AddDish(dish, this.webHostEnvironment.WebRootPath);
+            await this.dishService.AddDishAsync(dish, this.webHostEnvironment.WebRootPath);
 
             // TODO ADD MORE CHECKS AND BETTER ERROR MESSAGES
             // TODO Check if the file is the right format
@@ -114,7 +114,7 @@
 
             // TODO ADD MORE CHECKS AND BETTER ERROR MESSAGES
             // TODO Check if the file is the right format
-            await this.drinkService.AddDrink(drink, this.webHostEnvironment.WebRootPath);
+            await this.drinkService.AddDrinkAsync(drink, this.webHostEnvironment.WebRootPath);
             return this.RedirectToAction("Index");
         }
 
@@ -140,7 +140,7 @@
                 return this.View(allergen);
             }
 
-            await this.allergenService.AddAllergen(allergen);
+            await this.allergenService.AddAllergenAsync(allergen);
 
             return this.RedirectToAction("Index");
         }
@@ -153,9 +153,9 @@
         }
 
         [HttpPost]
-        public IActionResult EditDish(EditDishViewModel editDish)
+        public async Task<IActionResult> EditDish(EditDishViewModel editDish)
         {
-            this.dishService.EditDish(editDish, this.webHostEnvironment.WebRootPath);
+            await this.dishService.EditDishAsync(editDish, this.webHostEnvironment.WebRootPath);
             return this.RedirectToAction("Index", "Menu");
         }
 
@@ -167,23 +167,23 @@
         }
 
         [HttpPost]
-        public IActionResult EditDrink(EditDrinkViewModel editDrink)
+        public async Task<IActionResult> EditDrink(EditDrinkViewModel editDrink)
         {
-            this.drinkService.EditDrink(editDrink, this.webHostEnvironment.WebRootPath);
+            await this.drinkService.EditDrinkAsync(editDrink, this.webHostEnvironment.WebRootPath);
             return this.RedirectToAction("Index", "Menu");
         }
 
         [HttpPost]
-        public IActionResult DeleteDish(string id)
+        public async Task<IActionResult> DeleteDish(string id)
         {
-            this.dishService.DeleteDishById(id);
+            await this.dishService.DeleteDishByIdAsync(id);
             return this.RedirectToAction("Index", "Menu");
         }
 
         [HttpPost]
-        public IActionResult DeleteDrink(string id)
+        public async Task<IActionResult> DeleteDrink(string id)
         {
-            this.drinkService.DeleteDrinkById(id);
+            await this.drinkService.DeleteDrinkByIdAsync(id);
             return this.RedirectToAction("Index", "Menu");
         }
 
@@ -202,9 +202,9 @@
         }
 
         [HttpPost]
-        public IActionResult EditUser(EditUserViewModel editUser)
+        public async Task<IActionResult> EditUser(EditUserViewModel editUser)
         {
-            this.userService.EditUserData(editUser);
+            await this.userService.EditUserDataAsync(editUser);
             return this.RedirectToAction("Users");
         }
 
@@ -225,9 +225,9 @@
         }
 
         [HttpPost]
-        public IActionResult AddTable(AddTableViewModel tableViewModel)
+        public async Task<IActionResult> AddTable(AddTableViewModel tableViewModel)
         {
-            this.tableService.AddTable(tableViewModel);
+            await this.tableService.AddTableAsync(tableViewModel);
             return this.RedirectToAction("Tables");
         }
 
@@ -238,33 +238,25 @@
         }
 
         [HttpPost]
-        public IActionResult EditTable(AddTableViewModel tableViewModel)
+        public async Task<IActionResult> EditTable(AddTableViewModel tableViewModel)
         {
-            this.tableService.EditTable(tableViewModel);
+            await this.tableService.EditTableAsync(tableViewModel);
             return this.RedirectToAction("Tables");
         }
 
         [HttpPost]
-        public IActionResult RemoveTable(int id)
+        public async Task<IActionResult> RemoveTable(int id)
         {
-            this.tableService.RemoveTable(id);
+            await this.tableService.RemoveTableAsync(id);
             return this.RedirectToAction("Tables");
         }
 
         [HttpPost]
-        public IActionResult RefreshTables()
+        public async Task<IActionResult> RefreshTables()
         {
-            this.tableService.RefreshTableCodes();
+            await this.tableService.RefreshTableCodesAsync();
             return this.RedirectToAction("Tables");
         }
-
-        //public IActionResult EditOrder(string id)
-        //{
-        //    var ordersItems = this.orderService.GetAllFoodItemsById(id);
-
-        //    var price = ordersItems.Sum(x => x.Price * x.Quantity);
-        //    return this.View(ordersItems);
-        //}
 
         // TODO REMOVE DYNAMIC SOMEHOW
         private void SetValuesToDishViewModel(dynamic addDishViewModel)
