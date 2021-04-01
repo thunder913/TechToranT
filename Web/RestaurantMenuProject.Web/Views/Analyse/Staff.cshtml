@@ -1,40 +1,119 @@
 ﻿@model ICollection<StaffAnalyseViewModel>
-<canvas id="myChart" width="400" height="200"></canvas>
+        <canvas id="ordersChart"></canvas>
+        <canvas id="itemsDeliveredChart" width="50" height="25"></canvas>
 
-@section Scripts{
-    <script src="~/lib/chartJS/dist/Chart.js"></script>
-    <script>
-        var ctx = document.getElementById('myChart').getContext('2d');
+        @section Scripts{
+            <script src="~/lib/chartJS/dist/Chart.js"></script>
+            <script>
+                function getRGBColor(name) {
+                    var hash = 0;
+                    if (String.length === 0) return hash;
+                    for (var i = 0; i < name.length; i++) {
+                        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+                        hash = hash & hash;
+                    }
+                    var rgb = [0, 0, 0];
+                    for (var i = 0; i < 3; i++) {
+                        var value = (hash >> (i * 8)) & 255;
+                        rgb[i] = value;
+                    }
+                    return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.6)`;
+                };
+            </script>
+            <script>
+        var ctx = document.getElementById('ordersChart').getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'line',
         });
 
         var mixedChart = new Chart(ctx, {
-            type: 'bar',
+            type: 'line',
             data: {
-                datasets: [{
-                    label: 'Bar Dataset',
-                    data: [300, 500, 100, 200, 400, 700, 1000],
-                    backgroundColor: getRGBColor(),
-                }, {
-                    label: 'Bar Dataset',
-                    data: [1, 150, 87, 140, 522],
-                    type: 'line',
-                        backgroundColor: getRGBColor(),
-                    fill: false,
-                        borderColor: getRGBColor(),
-
-                }],
-                labels: ['January', 'February', 'March', 'April', 'May']
+                datasets: [
+                    @foreach (var item in Model)
+                    {
+                        @:{
+                        @:label: '@item.FullName',
+                        @:data: [@string.Join(",", item.OrdersData.Select(x => x.OrdersCount))],
+                        @:borderColor: getRGBColor('@item.FullName'),
+                        @:fill: false,
+                        @:},
+                    }
+                ],
+                labels: [@Html.Raw((string.Join(",", Model.FirstOrDefault().OrdersData.Select(x => "\'" + x.Date + "\'"))))]
             },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                title: {
+                    display: true,
+                    text: "Waiters orders in the last year",
+                    fontSize: 50,
+                    position: 'top'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        },
+                    }],
+                    xAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Month/Year'
+                        }
+                    }]
+                }
+            }
+        });
+            </script>
+
+            <script>
+        var ctx = document.getElementById('itemsDeliveredChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
         });
 
-        function getRGBColor() {
-                var r = Math.floor(Math.random() * 255);
-                var g = Math.floor(Math.random() * 255);
-                var b = Math.floor(Math.random() * 255);
-                return "rgba(" + r + "," + g + "," + b + ", 0.6)";
-            };
-    </script>
+        var mixedChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [
+                    @foreach (var item in Model)
+                    {
+                        @:{
+                        @:label: '@item.FullName',
+                        @:data:[@string.Join(",", item.OrdersData.Select(x => x.ItemsDeliveredCount))],
+                        @:fill: false,
+                        @:    borderColor: getRGBColor('@item.FullName'),
+                        @:},
+                    }
+                ],
+                labels: [@Html.Raw((string.Join(",", Model.FirstOrDefault().OrdersData.Select(x => "\'" + x.Date + "\'"))))]
+            },
 
-}
+            options: {
+                title: {
+                    display: true,
+                    text: "Waiters delivered items last year",
+                    fontSize: 50,
+                    position: 'top'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        },
+                    }],
+                    xAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Month/Year'
+                        }
+                    }]
+                }
+            }
+        });
+            </script>
+
+        }

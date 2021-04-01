@@ -11,5 +11,7 @@
         public const string ChefRoleName = "Chef";
 
         public const string ClientRoleName = "Client";
+
+        public const string Email = "restaurant.menu.project.asp@gmail.com";
     }
 }

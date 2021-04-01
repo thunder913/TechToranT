@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RestaurantMenuProject.Services.Data.Contracts;
 using System;
+using System.Threading.Tasks;
 
 namespace RestaurantMenuProject.Web.Controllers
 {
@@ -22,9 +23,11 @@ namespace RestaurantMenuProject.Web.Controllers
             return this.View(sales);
         }
 
-        public IActionResult Staff()
+        public async Task<IActionResult> Staff()
         {
-            var staff = this.orderService.GetAllStaffForAnalyse();
+            var date = DateTime.UtcNow;
+            date = date.AddYears(-1);
+            var staff = await this.orderService.GetAllStaffForAnalyseAsync(date);
             return this.View(staff);
         }
     }

@@ -50,6 +50,6 @@
 
         public SalesViewModel GetSalesDataForPeriod(DateTime startDate, DateTime endDate, string period);
 
-        ICollection<StaffAnalyseViewModel> GetAllStaffForAnalyse();
+        public Task<ICollection<StaffAnalyseViewModel>> GetAllStaffForAnalyseAsync(DateTime startDate);
     }
 }

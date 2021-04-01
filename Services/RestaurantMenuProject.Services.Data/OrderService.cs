@@ -501,25 +501,110 @@
 
         }
 
-        public ICollection<StaffAnalyseViewModel> GetAllStaffForAnalyse()
+        public async Task<ICollection<StaffAnalyseViewModel>> GetAllStaffForAnalyseAsync(DateTime startDate)
         {
-            var oneYearAgo = DateTime.UtcNow;
-            oneYearAgo = oneYearAgo.AddYears(-1);
+            var dates = new List<string>();
+            var currentDate = DateTime.UtcNow;
+            for (var dt = startDate; dt.Year < currentDate.Year || (dt.Year <= currentDate.Year && dt.Month <= currentDate.Month); dt = dt.AddMonths(1))
+            {
+                dates.Add(dt.ToString("MM/yyyy"));
+            }
 
-            var roleIds = this.roleManager.Roles
-                .Where(x => x.Name == GlobalConstants.ChefRoleName || x.Name == GlobalConstants.WaiterRoleName)
-                .Select(x => x.Id)
-                .ToArray();
 
-            var waiterIds = this.orderRepository
+            var waiterIds =
+                this.orderRepository
                 .All()
-                .Where(x => x.DeliveredOn >= oneYearAgo && x.Waiter.Roles.Any(y => roleIds.Contains(y.RoleId)))
+                .Where(x => x.CreatedOn >= startDate && x.ProcessType == ProcessType.Completed)
                 .GroupBy(x => x.WaiterId)
                 .Select(x => x.Key)
                 .ToList();
 
-            // TODO complete the staff analyses algorithm
-            return null;
+            var waiters = new List<StaffAnalyseViewModel>();
+
+            foreach (var id in waiterIds)
+            {
+                var waiterOrderCount = await this.orderRepository
+                    .All()
+                    .Where(x => x.ProcessType == ProcessType.Completed && x.WaiterId == id && ((x.CreatedOn >= startDate)
+                    || (x.CreatedOn.Month == startDate.Month && x.CreatedOn.Year == startDate.Year)))
+                    .GroupBy(x => new { x.CreatedOn.Year, x.CreatedOn.Month } )
+                    .Select(x => new
+                    {
+                        Date = new DateTime(x.Key.Year, x.Key.Month, 1).ToString("MM/yyyy", CultureInfo.InvariantCulture),
+                        OrdersCount = x.Count(),
+                    })
+                    .ToListAsync();
+
+                var dishesCount = await this.orderDishRepository
+                    .All()
+                    .Where(x => x.Order.ProcessType == ProcessType.Completed && x.Order.WaiterId == id && ((x.Order.CreatedOn >= startDate)
+                    || (x.Order.CreatedOn.Month == startDate.Month && x.Order.CreatedOn.Year == startDate.Year)))
+                    .GroupBy(x => new { x.Order.CreatedOn.Year, x.Order.CreatedOn.Month })
+                    .Select(x => new
+                    {
+                        Date = new DateTime(x.Key.Year, x.Key.Month, 1).ToString("MM/yyyy", CultureInfo.InvariantCulture),
+                        DishesCount = x.Sum(y => y.DeliveredCount),
+                    })
+                    .ToListAsync();
+
+                var drinksCount = await this.orderDrinkRepository
+                    .All()
+                    .Where(x => x.Order.ProcessType == ProcessType.Completed && x.Order.WaiterId == id && ((x.Order.CreatedOn >= startDate)
+                    || (x.Order.CreatedOn.Month == startDate.Month && x.Order.CreatedOn.Year == startDate.Year)))
+                    .GroupBy(x => new { x.Order.CreatedOn.Year, x.Order.CreatedOn.Month })
+                    .Select(x => new
+                    {
+                        Date = new DateTime(x.Key.Year, x.Key.Month, 1).ToString("MM/yyyy", CultureInfo.InvariantCulture),
+                        DrinksCount = x.Sum(y => y.DeliveredCount),
+                    })
+                    .ToListAsync();
+
+                var waiterName = this.orderRepository.All().Where(x => x.WaiterId == id).Select(x => x.Waiter.FirstName + " " + x.Waiter.LastName).FirstOrDefault();
+
+                var staffToAdd = new StaffAnalyseViewModel()
+                {
+                    FullName = waiterName,
+                };
+
+                foreach (var date in dates)
+                {
+                    var ordersThisMonth = waiterOrderCount.FirstOrDefault(x => x.Date == date);
+
+                    var dishesThisMonth = dishesCount.FirstOrDefault(x => x.Date == date);
+
+                    var drinksThisMonth = drinksCount.FirstOrDefault(x => x.Date == date);
+
+                    var orders = 0;
+                    var totalItemsDelivered = 0;
+
+                    if (dishesThisMonth != null)
+                    {
+                        totalItemsDelivered += dishesThisMonth.DishesCount;
+                    }
+
+                    if (drinksThisMonth != null)
+                    {
+                        totalItemsDelivered += drinksThisMonth.DrinksCount;
+                    }
+
+                    if (ordersThisMonth != null)
+                    {
+                        orders += ordersThisMonth.OrdersCount;
+                    }
+
+                    var orderInfo = new StaffAnalyseOrdersViewModel()
+                    {
+                        Date = date,
+                        ItemsDeliveredCount = totalItemsDelivered,
+                        OrdersCount = orders,
+                    };
+                    staffToAdd.OrdersData.Add(orderInfo);
+                }
+
+                waiters.Add(staffToAdd);
+            }
+
+            return waiters;
         }
 
 

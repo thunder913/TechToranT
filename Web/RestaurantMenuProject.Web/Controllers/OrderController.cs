@@ -3,30 +3,36 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using RestaurantMenuProject.Common;
     using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Services.Data.Contracts;
+    using RestaurantMenuProject.Services.Messaging;
     using RestaurantMenuProject.Web.ViewModels;
 
     [Authorize]
     public class OrderController : Controller
     {
+
         private readonly IOrderService orderService;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IUserService userService;
+        private readonly IEmailSender emailSender;
 
         public OrderController(
             IOrderService orderService,
             UserManager<ApplicationUser> userManager,
-            IUserService userService
+            IUserService userService,
+            IEmailSender emailSender
             )
         {
             this.orderService = orderService;
             this.userManager = userManager;
             this.userService = userService;
+            this.emailSender = emailSender;
         }
 
         [Route("Order/All/{userId}/{id?}")]
@@ -48,7 +54,10 @@
         public async Task<IActionResult> MakeOrder(string tableCode)
         {
             var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var user = await this.userManager.FindByIdAsync(userId);
             await this.orderService.MakeOrderAsync(userId, tableCode);
+            await this.emailSender.SendMakeOrderEmailAsync(GlobalConstants.Email, "Techtorant", user.Email, user.FirstName + " " + user.LastName);
+
             return this.RedirectToAction("Index", "Menu");
         }
 

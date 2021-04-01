@@ -12,5 +12,8 @@
             string subject,
             string htmlContent,
             IEnumerable<EmailAttachment> attachments = null);
+
+        public Task SendMakeOrderEmailAsync(string from, string fromName, string to, string receiverName);
     }
+
 }

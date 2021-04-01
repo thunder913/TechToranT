@@ -15,5 +15,10 @@
         {
             return Task.CompletedTask;
         }
+
+        public Task SendMakeOrderEmailAsync(string from, string fromName, string to, string receiverName)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
