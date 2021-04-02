@@ -3,10 +3,10 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
     using RestaurantMenuProject.Common;
     using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Services.Data.Contracts;
@@ -26,7 +26,7 @@
             IOrderService orderService,
             UserManager<ApplicationUser> userManager,
             IUserService userService,
-            IEmailSender emailSender
+            IEmailSender emailSender,
             )
         {
             this.orderService = orderService;
@@ -57,7 +57,6 @@
             var user = await this.userManager.FindByIdAsync(userId);
             await this.orderService.MakeOrderAsync(userId, tableCode);
             await this.emailSender.SendMakeOrderEmailAsync(GlobalConstants.Email, "Techtorant", user.Email, user.FirstName + " " + user.LastName);
-
             return this.RedirectToAction("Index", "Menu");
         }
 
