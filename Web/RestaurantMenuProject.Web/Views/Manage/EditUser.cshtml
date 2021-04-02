@@ -1,5 +1,7 @@
 ﻿@model EditUserViewModel
 
+<link href="~/css/addItemForm.css" rel="stylesheet" />
+<link href="~/css/editDish.css" rel="stylesheet" />
 
 <form asp-controller="Manage" asp-action="EditUser" method="post">
     <div asp-validation-summary="All" class="text-danger"></div>
@@ -43,29 +45,8 @@
     <button type="submit" class="btn btn-info col-md-2">Edit</button>
 </form>
 
-
-    <style>
-        form {
-            display: inline;
-        }
-
-        button {
-            margin-left: 2%;
-        }
-
-        img {
-            width: 200px;
-            border: 5px solid turquoise;
-            border-radius: 3%;
-        }
-
-        #imageInfo {
-            font-style: italic;
-        }
-    </style>
-
-    @section Scripts{
-        <script>
+@section Scripts{
+    <script>
         $('#roles').selectpicker('val', [@(string.Join(", ", Model.Roles))]);
-        </script>
-    }
+    </script>
+}

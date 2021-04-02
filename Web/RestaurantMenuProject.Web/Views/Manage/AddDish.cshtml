@@ -1,5 +1,6 @@
 ﻿@model AddDishViewModel
 
+<link href="~/css/addItemForm.css" rel="stylesheet" />
 
 <form asp-controller="Manage" asp-action="AddDish" method="post" enctype="multipart/form-data">
     <div asp-validation-summary="All" class="text-danger"></div>
@@ -51,16 +52,9 @@
 
     <div class="form-group col-md-6">
         <label asp-for="Image">Additional Informatin</label>
-        <input rows="4" asp-for="Image" class="form-control"/>
+        <input rows="4" asp-for="Image" class="form-control" />
         <span asp-validation-for="Image" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-success col-md-2">Add</button>
 </form>
-
-
-<style>
-    button{
-        margin-left: 2%;
-    }
-</style>

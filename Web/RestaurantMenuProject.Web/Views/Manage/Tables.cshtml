@@ -1,10 +1,6 @@
 ﻿@model ICollection<TableDisplayViewModel>
 @using RestaurantMenuProject.Common
-<style>
-    body {
-        text-align: center;
-    }
-</style>
+<link href="~/css/manageTables.css" rel="stylesheet" />
 
 <form asp-controller="Manage" asp-action="RefreshTables" method="post">
     <button class="btn btn-success">Refresh table codes</button>

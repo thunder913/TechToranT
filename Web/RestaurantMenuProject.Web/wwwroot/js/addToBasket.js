@@ -1,4 +1,9 @@
-﻿$('.add').click(function (e) {
+﻿$("li form").click(function (e) {
+    // Do something
+    e.stopPropagation();
+});
+
+$('.add').click(function (e) {
 
     var form = e.target.parentElement;
     var formdata = {

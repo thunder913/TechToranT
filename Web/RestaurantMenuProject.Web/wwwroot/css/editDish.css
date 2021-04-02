@@ -1,0 +1,13 @@
+﻿form {
+    display: inline;
+}
+
+img {
+    width: 200px;
+    border: 5px solid turquoise;
+    border-radius: 3%;
+}
+
+#imageInfo {
+    font-style: italic;
+}

@@ -31,25 +31,22 @@
                         </li>
                         @if (this.User.IsInRole(GlobalConstants.ChefRoleName))
                         {
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Chef" asp-action="Index">Chef</a>
-                    </li>
-}
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Chef" asp-action="Index">Chef</a>
+            </li>}
                         @if (this.User.IsInRole(GlobalConstants.WaiterRoleName))
                         {
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Waiter" asp-action="Index">Waiter</a>
-                    </li>
-}
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Waiter" asp-action="Index">Waiter</a>
+            </li>}
                         @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
                         {
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Manage" asp-action="Index">Manage</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Manage" asp-action="Tables">Tables</a>
-                    </li>
-}
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Manage" asp-action="Index">Manage</a>
+            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Manage" asp-action="Tables">Tables</a>
+                            </li>}
                     </ul>
                 </div>
             </div>
@@ -77,6 +74,8 @@
     <script src="~/lib/bootstrap-notify/bootstrap-notify.js"></script>
     <script src="~/lib/jquery.datatables/js/jquery.dataTables.min.js"></script>
     <script src="~/js/site.min.js" asp-append-version="true"></script>
+    <script src="~/lib/chartJS/dist/Chart.js"></script>
+    <script src="~/js/notifications.js"></script>
     @await this.RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

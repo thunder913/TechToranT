@@ -1,0 +1,17 @@
+﻿.newOrders {
+    height: 200px;
+    border: 1px solid black;
+}
+
+.foodItem {
+    height: 200px;
+    flex: 1;
+    border: 2px solid gray;
+}
+
+.activeOrders {
+    overflow-x: hidden;
+    background: #bab5b5;
+    text-align: center;
+    border: 5px solid gray;
+}

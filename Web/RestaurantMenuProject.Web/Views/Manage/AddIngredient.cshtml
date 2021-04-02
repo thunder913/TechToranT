@@ -1,5 +1,6 @@
 ﻿@model AddIngredientViewModel
 
+<link href="~/css/addItemForm.css" rel="stylesheet" />
 
 <form asp-controller="Manage" asp-action="AddIngredient" method="post">
     <div asp-validation-summary="All" class="text-danger"></div>
@@ -20,9 +21,3 @@
     <button type="submit" class="btn btn-success col-md-2">Add</button>
 </form>
 
-
-<style>
-    button {
-        margin-left: 2%;
-    }
-</style>

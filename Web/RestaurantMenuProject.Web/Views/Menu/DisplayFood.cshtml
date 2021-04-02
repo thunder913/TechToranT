@@ -1,38 +1,6 @@
 ﻿@model DishViewModel
-<style>
-    .bg {
-        height: 700px;
-        background-size: 1100px;
-        background-repeat: no-repeat;
-        border: 5px solid turquoise;
-        border-radius: 3%;
-    }
 
-    .right {
-        margin-top: 48%;
-        float: right;
-        margin-right: 1%;
-    }
-
-    .gray-bg {
-        background-color: gainsboro;
-        border: 1px solid black;
-        line-height: 35px;
-    }
-
-    .left {
-        margin-top: 45%;
-        display: inline-block;
-        margin-left: 3%;
-    }
-
-    .foodName {
-        background-color: turquoise;
-        text-align: -webkit-center;
-        border-top-left-radius: 15px;
-        border-top-right-radius: 15px;
-    }
-</style>
+    <link href="~/css/displayFood.css" rel="stylesheet" />
 <link rel="stylesheet" runat="server" media="screen" href="~/css/menu.css" />
 <div id="@Model.Id" class="bg" style="background-image: url(/img/Dishes/@(Model.Image.Id).@(Model.Image.Extension))">
     <h1 class="foodName">@Model.Name</h1>
@@ -66,12 +34,5 @@
 
 @section Scripts
 {
-    <script>
-        $("li form").click(function (e) {
-            // Do something
-            e.stopPropagation();
-        });
-    </script>
     <script src="~/js/addToBasket.js"></script>
-    <script src="~/js/notifications.js"></script>
 }
