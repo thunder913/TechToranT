@@ -26,7 +26,7 @@
             IOrderService orderService,
             UserManager<ApplicationUser> userManager,
             IUserService userService,
-            IEmailSender emailSender,
+            IEmailSender emailSender
             )
         {
             this.orderService = orderService;
