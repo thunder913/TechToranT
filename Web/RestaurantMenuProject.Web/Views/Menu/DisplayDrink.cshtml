@@ -1,5 +1,5 @@
 ﻿@model DrinkItemViewModel
-    <link href="~/css/displayFood.css" rel="stylesheet" />
+<link href="~/css/displayFood.css" rel="stylesheet" />
 
 <link rel="stylesheet" runat="server" media="screen" href="~/css/menu.css" />
 <div id="@Model.Id" class="bg" style="background-image: url(/img/Drinks/@(Model.Image.Id).@(Model.Image.Extension))">
@@ -15,8 +15,7 @@
     <input type="hidden" name="Type" value="Drink" />
     <input id="count" name="Count" type="text" style="width: 50px" placeholder="Count" />
     <button type="button" class="btn btn-success add">Add</button>
-</form>
-    }
+</form>}
 </div>
 <h1>@Model.AdditionalInfo</h1>
 <span>Ingredients: @string.Join(", ", Model.Ingredients.Select(x => x.Name))</span>
@@ -29,8 +28,6 @@
         }
 @string.Join(", ", allergens.Select(x => x.Name)); }
 </span>
-
-@* TODO move the styles and scripts in different files*@
 
 
 @section Scripts

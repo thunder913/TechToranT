@@ -81,10 +81,15 @@
                     return this.View("AddIngredient", ingredientViewModel);
                 case "Allergen":
                     return this.View("AddAllergen", new AllergenViewModel());
+                case "DishCategory":
+                    return this.View("AddDishCategory", new AddCategoryViewModel());
+                case "DrinkCategory":
+                    return this.View("AddDrinkCategory", new AddCategoryViewModel());
             }
 
             return this.View();
         }
+
 
         [HttpPost]
         public async Task<IActionResult> AddDish(AddDishViewModel dish)
@@ -145,6 +150,31 @@
             return this.RedirectToAction("Index");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddDishCategory(AddCategoryViewModel category)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return this.View(category);
+            }
+
+            await this.dishTypeService.AddDishTypeAsync(category, this.webHostEnvironment.WebRootPath);
+            return this.RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddDrinkCategory(AddCategoryViewModel category)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return this.View(category);
+            }
+
+            await this.drinkTypeService.AddDrinkTypeAsync(category, this.webHostEnvironment.WebRootPath);
+            return this.RedirectToAction("Index");
+        }
+
+
         public IActionResult EditDish(string type, string id)
         {
             var dish = this.dishService.GetEditDishViewModelById(id);
@@ -172,6 +202,64 @@
             await this.drinkService.EditDrinkAsync(editDrink, this.webHostEnvironment.WebRootPath);
             return this.RedirectToAction("Index", "Menu");
         }
+
+        public IActionResult EditDishType(string type, int id)
+        {
+            var dishType = this.dishTypeService.GetDishTypeById(id);
+            var dishTypeViewModel = new EditCategoryViewModel()
+            {
+                Description = dishType.Description,
+                Image = dishType.Image,
+                Name = dishType.Name,
+                Id = dishType.Id,
+            };
+            return this.View(dishTypeViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditDishType(EditCategoryViewModel dishType)
+        {
+            await this.dishTypeService.EditDishTypeAsync(dishType, this.webHostEnvironment.WebRootPath);
+            return this.RedirectToAction("Index", "Menu");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteDishType(int id)
+        {
+            // TODO find a way to delete images
+            await this.dishTypeService.DeleteDishTypeAsync(id);
+            return this.RedirectToAction("Index", "Menu");
+        }
+
+        public IActionResult EditDrinkType(string type, int id)
+        {
+            var drinkType = this.drinkTypeService.GetDrinkTypeById(id);
+            var drinkTypeViewModel = new EditCategoryViewModel()
+            {
+                Description = drinkType.Description,
+                Image = drinkType.Image,
+                Name = drinkType.Name,
+                Id = drinkType.Id,
+            };
+            return this.View(drinkTypeViewModel);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> EditDrinkType(EditCategoryViewModel drinkType)
+        {
+            await this.drinkTypeService.EditDrinkTypeAsync(drinkType, this.webHostEnvironment.WebRootPath);
+            return this.RedirectToAction("Index", "Menu");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteDrinkType(int id)
+        {
+            // TODO find a way to delete images
+            await this.drinkTypeService.DeleteDrinkTypeAsync(id);
+            return this.RedirectToAction("Index", "Menu");
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> DeleteDish(string id)

@@ -1,17 +1,26 @@
 ﻿@model List<MenuItemViewModel>
+@using RestaurantMenuProject.Common
+
 <link rel="stylesheet" runat="server" media="screen" href="~/css/menu.css" />
 <ul id="menu" class="row">
     @foreach (var item in Model)
     {
-        <li id="@item.Name" onclick="window.location = '/Menu/Drinks/@item.Name'" class="col-md-5 h-100">
-            <div id="@item.Name" class="bg" style="background-image: url(/img/Menu/@item.Image.Id.@item.Image.Extension)"></div>
-            <h1>@item.Name</h1>
-            <br />
-            <br />
-            <span>@item.Description</span>
-            <br />
-            <br />
-        </li>
+    <li id="@item.Name" onclick="window.location = '/Menu/Drinks/@item.Name'" class="col-md-5 menuItem">
+        <div id="@item.Name" class="bg" style="background-image: url(/img/Menu/@item.Image.Id.@item.Image.Extension)"></div>
+        <h1>@item.Name</h1>
+        <br />
+        <br />
+        <span>@item.Description</span>
+        <br />
+        <br />
+        @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+        {
+    <form asp-controller="Manage" asp-action="EditDrinkType" method="get">
+        <input type="hidden" name="type" value="Drink" />
+        <input type="hidden" name="id" value="@item.Id" />
+        <button type="submit" class="btn btn-info edit">Edit</button>
+    </form>}
+    </li>
     }
 </ul>
 

@@ -84,6 +84,8 @@
             services.AddTransient<ITableService, TableService>();
             services.AddTransient<IOrderService, OrderService>();
             services.AddTransient<IPickupItemService, PickupItemService>();
+
+            services.Configure<AuthMessageSenderOptions>(this.configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

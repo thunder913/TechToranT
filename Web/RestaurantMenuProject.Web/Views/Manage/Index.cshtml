@@ -3,15 +3,17 @@
 
 <div id="manage">
     <form method="post">
-        <select name="Type" class="form-select col-md-5" size="4" aria-label="size 3 select example">
+        <select name="Type" class="form-select col-md-5" size="6" aria-label="size 4 select example">
             <option value="Dish">Dish</option>
             <option value="Drink">Drink</option>
             <option value="Ingredient">Ingredient</option>
             <option value="Allergen">Allergen</option>
+            <option value="DishCategory">Dish Category</option>
+            <option value="DrinkCategory">Drink Category</option>
         </select>
         <br />
         <br />
-        <input class="btn btn-success" type="submit" asp-controller="Manage" asp-action="Add" value="Add product" />
+        <input class="btn btn-success" type="submit" asp-controller="Manage" asp-action="Add" value="Add" />
         <input class="btn btn-primary" type="submit" asp-controller="Manage" asp-action="Users" value="Users" />
         <input class="btn btn-danger" type="submit" asp-controller="Manage" asp-action="Orders" value="Orders" />
 

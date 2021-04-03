@@ -98,9 +98,7 @@ function getTotalPrice() {
     var result;
     $.ajax({
         type: 'GET',
-        
-        
-        : false,
+        async: false,
         url: '/api/Basket/GetPrice',
         success: function (res) {
             result = Number.parseFloat(res).toFixed(2) + '$';
