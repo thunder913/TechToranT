@@ -1,0 +1,29 @@
+﻿@model AddCategoryViewModel
+
+
+
+<link href="~/css/addItemForm.css" rel="stylesheet" />
+
+<form asp-controller="Manage" asp-action="AddDrinkCategory" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="Description"></label>
+        <textarea rows="4" asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="Image">Additional Informatin</label>
+        <input rows="4" asp-for="Image" class="form-control" />
+        <span asp-validation-for="Image" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success col-md-2">Add</button>
+</form>

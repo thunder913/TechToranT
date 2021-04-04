@@ -1,0 +1,40 @@
+﻿@model EditCategoryViewModel
+
+<link href="~/css/addItemForm.css" rel="stylesheet" />
+<link href="~/css/editDish.css" rel="stylesheet" />
+<form asp-controller="Manage" asp-action="EditDishType" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group col-md-6" hidden>
+        <label asp-for="Id"></label>
+        <input asp-for="Id" value="@Model.Id" class="form-control" />
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="Description"></label>
+        <textarea rows="4" asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label asp-for="NewImage"></label>
+        <br />
+        <img class="img-fluid" src="~/img/Menu/@Model.Image.Id.@Model.Image.Extension" />
+        <input id="image" rows="4" asp-for="NewImage" class="form-control" />
+        <label id="imageInfo">If you like the currently selected file, do not upload a new one.</label>
+        <span asp-validation-for="NewImage" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-info col-md-2">Edit</button>
+</form>
+
+<form method="post" asp-controller="Manage" asp-action="DeleteDishType">
+    <input hidden asp-for="Id" value="@Model.Id" />
+    <button type="submit" class="btn btn-danger col-md-2">Delete</button>
+</form>

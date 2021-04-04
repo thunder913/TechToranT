@@ -33,12 +33,3 @@ ul li span {
     color: midnightblue;
 }
 
-.menuItem {
-    height: 166px;
-}
-
-.edit {
-    position: absolute;
-    top: 120px;
-    right: 10px;
-}

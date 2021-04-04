@@ -2,6 +2,7 @@
 @using RestaurantMenuProject.Common
 
 <link rel="stylesheet" runat="server" media="screen" href="~/css/menu.css" />
+<link href="~/css/menuIndex.css" rel="stylesheet" />
 
 <ul id="menu" class="row">
     <li id="Drinks" onclick="window.location = '/Menu/Drinks'" class="col-md-5 menuItem">
@@ -27,6 +28,5 @@
     <input type="hidden" name="id" value="@item.Id" />
     <button type="submit" class="btn btn-info edit">Edit</button>
 </form>}
-</li>
-}
+</li>}
 </ul>
