@@ -4,6 +4,10 @@
 
     public class CookFinishItemViewModel
     {
+        public int PickupItemId { get; set; }
+
+        public string ClientName { get; set; }
+
         public string OrderId { get; set; }
 
         public string FoodId { get; set; }

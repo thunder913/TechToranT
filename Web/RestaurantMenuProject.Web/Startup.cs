@@ -21,6 +21,7 @@
     using RestaurantMenuProject.Services.Data.Contracts;
     using RestaurantMenuProject.Services.Mapping;
     using RestaurantMenuProject.Services.Messaging;
+    using RestaurantMenuProject.Web.Hubs;
     using RestaurantMenuProject.Web.ViewModels;
 
     public class Startup
@@ -86,6 +87,7 @@
             services.AddTransient<IPickupItemService, PickupItemService>();
 
             services.Configure<AuthMessageSenderOptions>(this.configuration);
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -128,6 +130,7 @@
                         endpoints.MapControllerRoute("drinkRoute", "Menu/Drinks/{type}/{id?}", new { controller = "Menu", action = "DisplayDrink" });
                         endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                         endpoints.MapControllerRoute("menuRoute", "Menu/{type}/{id?}", new { controller = "Menu", action = "DisplayFood", });
+                        endpoints.MapHub<OrderHub>("/orderHub");
                         endpoints.MapRazorPages();
                     });
         }

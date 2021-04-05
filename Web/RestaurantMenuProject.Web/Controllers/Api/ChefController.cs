@@ -29,7 +29,7 @@ namespace RestaurantMenuProject.Web.Controllers.Api
         public async Task<ActionResult<bool>> FinishOne(CookFinishItemViewModel foodItem)
         {
             foodItem.DishType = (FoodType) Enum.Parse(typeof(FoodType), foodItem.FoodType);
-            return await this.pickupItemService.AddPickupItemAsync(foodItem);
+            return await this.pickupItemService.AddPickupItemAsync(foodItem) != null;
         }
 
         [HttpPost("AcceptOrder/{id}")]

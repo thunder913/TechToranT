@@ -86,8 +86,8 @@
         <tbody>
             @foreach (var item in Model.PickupItems)
             {
-                <tr>
-                    <th class="th-sm">
+                <tr data-id="@item.Id">
+                    <th class="th-sm count">
                         @item.Count
                     </th>
                     <th class="th-sm">
@@ -163,5 +163,82 @@
 
 
 @section Scripts{
+    <script src="~/lib/signalR/dist/browser/signalr.js"></script>   
     <script src="~/js/waiterIndex.js"></script>
+    
+    <script>
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/orderHub")
+            .build();
+
+        connection.on("NewPickup", function (item) {
+            let tbodyElement = document.querySelector(".pickupTable tbody");
+            let tBodyElements = tbodyElement.querySelectorAll('tr');
+            for (var i = 0; i < tBodyElements.length; i++) {
+                let element = tBodyElements[i];
+                if (element.dataset.id === item.id) {
+                    element.querySelector('.count').innerHTML = item.count;
+                    return;
+                }
+            }
+            let trElement = getTrElement(item);
+            tbodyElement.appendChild(trElement);
+        });
+
+        $(".pickupTable").on('click', '.pickupDone', function (e) {
+            e.preventDefault();
+            let form = e.target.parentElement;
+            let id = form.querySelector('input[name=id]').value;
+            connection.invoke("FinishPickupItem", id);
+            form.parentElement.parentElement.remove();
+        });
+
+        connection.start().catch(function (err) {
+            return console.error(err.toString());
+        });
+
+
+
+        function getTrElement(item) {
+            let trElement = document.createElement('tr');
+            trElement.dataset.id = item.id;
+            let th1 = getThElement(item.count);
+            th1.classList.add('count');
+            let th2 = getThElement(item.name);
+            let th3 = getThElement(item.tableNumber);
+            let th4 = getThElement(item.clientName);
+
+            let th5 = document.createElement('th');
+            let formElement = document.createElement('form');
+            let inputElement = document.createElement('input');
+            inputElement.name = 'id';
+            inputElement.defaultValue = item.id;
+            inputElement.hidden = true;
+            let buttonElement = document.createElement('button');
+            buttonElement.classList.add('btn', 'btn-success', 'pickupDone');
+            buttonElement.classList.add('btn-success');
+            buttonElement.classList.add('pickupDone');
+            buttonElement.innerHTML = 'Done';
+
+            formElement.appendChild(inputElement);
+            formElement.appendChild(buttonElement);
+            th5.appendChild(formElement);
+
+            trElement.appendChild(th1);
+            trElement.appendChild(th2);
+            trElement.appendChild(th3);
+            trElement.appendChild(th4);
+            trElement.appendChild(th5);
+
+            return trElement;
+        }
+
+        function getThElement(value) {
+            let th1 = document.createElement('th');
+            th1.classList.add('th-sm')
+            th1.innerHTML = value;
+            return th1;
+        }
+
+    </script>
 }

@@ -90,11 +90,11 @@
                             <th class="th-sm">
                                 @item.FoodName
                             </th>
-                            <th class="th-sm">
+                            <th class="th-sm count">
                                 @item.Count
                             </th>
                             <th class="th-sm">
-                                <form method="post" data-orderId="@item.OrderId" data-foodId="@item.FoodId" data-dishType="@foodType.FoodType">
+                                <form method="post" data-orderId="@item.OrderId" data-foodId="@item.FoodId" data-dishType="@foodType.FoodType" data-count="@item.Count">
                                     <button class="btn-success ready" style="display:inline;">Ready</button>
                                 </form>
                             </th>
@@ -107,34 +107,9 @@
 </div>
 
 @section Scripts{
+    <script src="~/lib/signalR/dist/browser/signalr.js"></script>   
     <script src="~/js/notifications.js"></script>
     <script>
-        $('.ready').on('click', function (e) {
-            let form = e.target.parentElement;
-            let orderId = form.dataset.orderid;
-            let foodId = form.dataset.foodid;
-            let dishType = form.dataset.dishtype;
-
-            var antiForgeryToken = form.querySelector('input[name=__RequestVerificationToken]').value;
-            $.ajax({
-                type: 'POST',
-                url: '/api/Chef/AddItem',
-                data: JSON.stringify({ orderId: orderId, foodId: foodId, foodType: dishType }),
-                headers: {
-                    'X-CSRF-TOKEN': antiForgeryToken
-                },
-                contentType: 'application/json',
-                success: function (res) {
-                    if (!!res) {
-                        successNotification("Succesfully accepted the order!");
-                    }
-                },
-                error: function (err) {
-                    dangerNotification('Something went wrong, try again!');
-                }
-            });
-            e.preventDefault();
-        })
 
         $('.accept').on('click', function (e) {
             let form = e.target.parentElement;
@@ -160,5 +135,31 @@
             e.preventDefault();
         })
 
+    </script>
+
+    <script>
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/orderHub")
+            .build();
+
+        $(".ready").click(function (e) {
+            e.preventDefault();
+            let form = e.target.parentElement;
+            let orderId = form.dataset.orderid;
+            let foodId = form.dataset.foodid;
+            let dishType = form.dataset.dishtype;
+            let count = --form.dataset.count;
+            var item = { orderId: orderId, foodId: foodId, foodType: dishType };
+            connection.invoke("AddPickupItem", item);
+            if (count == 0) {
+                form.parentElement.parentElement.remove();
+            } else {
+                form.parentElement.parentElement.querySelector(".count").innerHTML = count;
+            }
+        });
+
+        connection.start().catch(function (err) {
+            return console.error(err.toString());
+        });
     </script>
 }
