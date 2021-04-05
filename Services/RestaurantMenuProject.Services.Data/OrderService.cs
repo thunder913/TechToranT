@@ -607,6 +607,14 @@
             return waiters;
         }
 
+        public OrderInListViewModel GetOrderInListById(string id)
+        {
+            return this.orderRepository
+                .All()
+                .To<OrderInListViewModel>()
+                .FirstOrDefault(x => x.Id == id);
+        } 
+
 
         private SalesViewModel GetSales(List<string> dates, ICollection<SalesChartViewModel> dishIncome,  ICollection<SalesChartViewModel> drinkIncome, string period)
         {

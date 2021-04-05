@@ -190,8 +190,19 @@
             let form = e.target.parentElement;
             let id = form.querySelector('input[name=id]').value;
             connection.invoke("FinishPickupItem", id);
+            successNotification('Successfully picked the item up!');
             form.parentElement.parentElement.remove();
         });
+
+        $('#ordersTable').on('click', '.accept', function (e) {
+            e.preventDefault();
+            var form = e.target.parentElement;
+            var id = form.querySelector('input[name=id]').value;
+            let item = { newProcessingTypeId: 1, orderId: id, oldProcessingType: 'Pending' };
+            connection.invoke('AcceptOrder', item);
+            successNotification('You successfully accepted the order!');
+            form.parentElement.parentElement.remove();
+        })
 
         connection.start().catch(function (err) {
             return console.error(err.toString());

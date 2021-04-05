@@ -109,40 +109,66 @@
 @section Scripts{
     <script src="~/lib/signalR/dist/browser/signalr.js"></script>   
     <script src="~/js/notifications.js"></script>
-    <script>
 
-        $('.accept').on('click', function (e) {
-            let form = e.target.parentElement;
-            let orderId = form.dataset.orderid;
-
-            var antiForgeryToken = form.querySelector('input[name=__RequestVerificationToken]').value;
-            $.ajax({
-                type: 'POST',
-                url: '/api/Chef/AcceptOrder/' + orderId,
-                headers: {
-                    'X-CSRF-TOKEN': antiForgeryToken
-                },
-                contentType: 'application/json',
-                success: function (res) {
-                    if (!!res) {
-                        successNotification("Succesfully accepted the order!");
-                    }
-                },
-                error: function (err) {
-                    dangerNotification('Something went wrong, try again!');
-                }
-            });
-            e.preventDefault();
-        })
-
-    </script>
 
     <script>
         var connection = new signalR.HubConnectionBuilder()
             .withUrl("/orderHub")
             .build();
 
-        $(".ready").click(function (e) {
+        $('#ordersTable').on('click', '.accept', function (e) {
+            e.preventDefault();
+            let form = e.target.parentElement;
+            let orderId = form.dataset.orderid;
+            connection.invoke("ChefApproveOrder", orderId);
+            successNotification("You got the order!");
+            form.parentElement.parentElement.remove();
+        })
+
+        connection.on("NewChefOrder", function (item) {
+
+            let dateUtc = new Date(Date.parse(item.date));
+            let userTimeZoneOffset = new Date().getTimezoneOffset();
+            dateUtc.setMinutes(dateUtc.getMinutes() - userTimeZoneOffset);
+            let date = dateUtc.toLocaleString();
+            let name = item.name;
+            let status = item.statusName;
+            let price = item.price.toFixed(2);
+            let orderId = item.orderId;
+
+
+            let trHtml = `<tr>
+                    <th class="th-sm" >
+                        1
+                        </th >
+                        <th class="th-sm">
+                        ${date}
+                        </th>
+                        <th class="th-sm">
+                        ${name}
+                        </th>
+                        <th class="th-sm">
+                        ${status}
+                        </th>
+                        <th class="th-sm">
+                        ${price}$
+                        </th>
+                        <th class="th-sm">
+                            <form method="post" style="display: inline-block;" data-orderId="${orderId}">
+                                <button class="btn btn-success accept">Accept</button>
+                            </form>
+                            <form method="get" style='display:inline-block;' action="/Order/Index/${orderId}">
+                                <button class="btn btn-info">Info</button>
+                            </form>
+                        </th>
+                    </tr >`;
+
+            let tbodyElement = document.querySelector('#ordersTable tbody');
+
+            tbodyElement.insertAdjacentHTML('beforeend', trHtml);
+        })
+
+        $(".activeOrders").on('click', '.ready', function (e) {
             e.preventDefault();
             let form = e.target.parentElement;
             let orderId = form.dataset.orderid;
@@ -156,6 +182,7 @@
             } else {
                 form.parentElement.parentElement.querySelector(".count").innerHTML = count;
             }
+            successNotification('Successfully made the ' + dishType.toLowerCase() + '!');
         });
 
         connection.start().catch(function (err) {

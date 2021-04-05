@@ -70,6 +70,7 @@
             {
                 throw new InvalidOperationException("There was an error changing the status of the order!");
             }
+
             var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             await this.orderService.AddWaiterToOrderAsync(editStatus.OrderId, userId);
