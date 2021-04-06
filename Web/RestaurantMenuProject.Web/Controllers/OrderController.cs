@@ -6,11 +6,13 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.SignalR;
     using Microsoft.Extensions.Configuration;
     using RestaurantMenuProject.Common;
     using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Services.Data.Contracts;
     using RestaurantMenuProject.Services.Messaging;
+    using RestaurantMenuProject.Web.Hubs;
     using RestaurantMenuProject.Web.ViewModels;
 
     [Authorize]
@@ -21,18 +23,21 @@
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IUserService userService;
         private readonly IEmailSender emailSender;
+        private readonly IHubContext<OrderHub> orderHub;
 
         public OrderController(
             IOrderService orderService,
             UserManager<ApplicationUser> userManager,
             IUserService userService,
-            IEmailSender emailSender
+            IEmailSender emailSender,
+            IHubContext<OrderHub> orderHub
             )
         {
             this.orderService = orderService;
             this.userManager = userManager;
             this.userService = userService;
             this.emailSender = emailSender;
+            this.orderHub = orderHub;
         }
 
         [Route("Order/All/{userId}/{id?}")]
@@ -55,8 +60,16 @@
         {
             var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var user = await this.userManager.FindByIdAsync(userId);
-            await this.orderService.MakeOrderAsync(userId, tableCode);
+            var orderId = await this.orderService.MakeOrderAsync(userId, tableCode);
             await this.emailSender.SendMakeOrderEmailAsync(GlobalConstants.Email, "Techtorant", user.Email, user.FirstName + " " + user.LastName);
+
+            var waiterIds = this.userManager.GetUsersInRoleAsync(GlobalConstants.WaiterRoleName).Result.Select(x => x.Id);
+
+            var orderInListItem = this.orderService.GetOrderInListById(orderId);
+            await this.orderHub.Clients.Users(waiterIds).SendAsync("AddItemsToPickup", new
+            {
+                Order = orderInListItem,
+            });
             return this.RedirectToAction("Index", "Menu");
         }
 

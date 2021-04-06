@@ -30,7 +30,7 @@
         <tbody>
             @foreach (var item in Model.NewOrders)
             {
-                <tr>
+                <tr id="@item.Id">
                     <th class="th-sm">
                         @item.TableNumber
                     </th>
@@ -125,6 +125,21 @@
             form.parentElement.parentElement.remove();
         })
 
+        connection.on("RemoveNewChefOrder", function (order) {
+            let elementToRemove = document.querySelector(`.newOrders #${order.orderId}`);
+            elementToRemove.remove();
+        })
+
+        connection.on("RemoveFoodToPrepare", function (item) {
+            let element = document.querySelector(`[data-orderid="${item.orderId}"][data-foodid="${item.foodId}"]`);
+            let trElement = element.parentElement.parentElement;
+            if (Number(trElement.querySelector('.count').innerHTML)-1 == 0) {
+                trElement.remove();
+            } else {
+                trElement.querySelector('.count').innerHTML--;
+            }
+        })
+
         connection.on("AddItemsToPickup", function (items) {
             let tableDivs = document.querySelectorAll('.activeOrders div');
 
@@ -189,7 +204,7 @@
             let orderId = item.orderId;
 
 
-            let trHtml = `<tr>
+            let trHtml = `<tr id="${orderId}">
                         <th class="th-sm" >
                             1
                             </th >
@@ -219,6 +234,8 @@
 
             tbodyElement.insertAdjacentHTML('beforeend', trHtml);
         })
+
+
 
         $(".activeOrders").on('click', '.ready', function (e) {
             e.preventDefault();

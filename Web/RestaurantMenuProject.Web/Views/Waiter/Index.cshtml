@@ -29,7 +29,7 @@
         <tbody>
             @foreach (var item in Model.NewOrders)
             {
-                <tr>
+                <tr id="@item.Id">
                     <th class="th-sm">
                         @item.TableNumber
                     </th>
@@ -185,9 +185,53 @@
             tbodyElement.appendChild(trElement);
         });
 
+        connection.on("AddItemsToPickup", function (item) {
+            let order = item.order;
+
+            let dateUtc = new Date(Date.parse(order.date));
+            let userTimeZoneOffset = new Date().getTimezoneOffset();
+            dateUtc.setMinutes(dateUtc.getMinutes() - userTimeZoneOffset);
+            let date = dateUtc.toLocaleString();
+
+            let orderBody = document.querySelector('#ordersTable tbody');
+            let trHtml = `<tr id="${order.id}">
+                    <th class="th-sm">
+                        ${order.tableNumber}
+                    </th>
+                    <th class="th-sm">
+                        ${date}
+                    </th>
+                    <th class="th-sm">
+                        ${order.fullName}
+                    </th>
+                    <th class="th-sm">
+                        ${order.statusName}
+                    </th>
+                    <th class="th-sm">
+                        ${order.price.toFixed(2)}
+                    </th>
+                    <th class="th-sm">
+                        <form method="post" style="display: inline-block;">
+                            <input name="id" value="${order.id}" hidden />
+                            <button class="btn btn-success accept">Accept</button>
+                        </form>
+                        <form method="get" action="/Order/Index/${order.id}" style='display:inline-block;'>
+                            <button class="btn btn-info">Info</button>
+                        </form>
+                    </th>
+                </tr>`
+
+            orderBody.insertAdjacentHTML('beforeend', trHtml);
+        })
+
         connection.on("NewOrderCookedPercent", function (item) {
             var trElement = document.querySelector(`.activeTable tr[id='${item.orderId}']`);
             trElement.querySelectorAll('th')[4].innerHTML = `${item.cookedPercent}%`;
+        })
+
+        connection.on("RemoveNewWaiterOrder", function (order) {
+            let elementToRemove = document.querySelector(`.newOrders #${order.orderId}`);
+            elementToRemove.remove();
         })
 
         $(".pickupTable").on('click', '.pickupDone', function (e) {

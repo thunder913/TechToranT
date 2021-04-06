@@ -17,6 +17,8 @@
 
         public ProcessType Status { get; set; }
 
+        public string StatusName { get; set; }
+
         public decimal Price { get; set; }
 
         public string FirstName { get; set; }

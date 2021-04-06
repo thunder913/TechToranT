@@ -56,10 +56,23 @@
                     });
             }
 
+
             await this.Clients.User(item.WaiterId).SendAsync(
                 "NewOrderCookedPercent",
                 new { OrderId = item.OrderId, CookedPercent = cookedPerCent }
                 );
+
+            var user = await this.userManager.GetUserAsync(this.Context.User);
+
+            var chefIds = (await this.userManager.GetUsersInRoleAsync(GlobalConstants.ChefRoleName)).Where(x => x.Id != user.Id).Select(x => x.Id).ToArray();
+            await this.Clients.Users(chefIds).SendAsync(
+                "RemoveFoodToPrepare",
+                new
+                {
+                    OrderId = foodItem.OrderId,
+                    FoodId = foodItem.FoodId,
+                });
+
         }
 
         public async Task FinishPickupItem(string id)
@@ -106,7 +119,7 @@
             await this.orderService.AddWaiterToOrderAsync(editStatus.OrderId, user.Id);
             var order = this.orderService.GetOrderInListById(editStatus.OrderId);
 
-            var chefIds = this.userManager.GetUsersInRoleAsync(GlobalConstants.ChefRoleName).Result.Select(x => x.Id);
+            var chefIds = (await this.userManager.GetUsersInRoleAsync(GlobalConstants.ChefRoleName)).Select(x => x.Id);
             await this.Clients.Users(chefIds).SendAsync("NewChefOrder", new
             {
                 Date = order.Date,
@@ -128,6 +141,15 @@
                     IsPaid = orderViewModel.IsPaid,
                     Id = orderViewModel.Id,
                     ReadyPercent = orderViewModel.ReadyPercent,
+                });
+
+            var waiterIds = this.userManager.GetUsersInRoleAsync(GlobalConstants.WaiterRoleName).Result.Select(x => x.Id);
+
+            await this.Clients.Users(waiterIds).SendAsync(
+                "RemoveNewWaiterOrder",
+                new
+                {
+                    OrderId = order.Id,
                 });
         }
 
@@ -151,6 +173,13 @@
             {
                 ItemsToCook = itemsToCook,
             });
+
+            await this.Clients.Users(chefIds).SendAsync(
+                "RemoveNewChefOrder",
+                new
+                {
+                    OrderId = orderViewModel.Id,
+                });
         }
 
         private async Task<ActionResult<bool>> EditStatusAsync(EditStatusDto editStatus)

@@ -70,7 +70,7 @@
             return this.orderRepository.AllAsNoTrackingWithDeleted().Where(x => x.ClientId == userId).Count();
         }
 
-        public async Task MakeOrderAsync(string userId, string tableCode)
+        public async Task<string> MakeOrderAsync(string userId, string tableCode)
         {
             var tableId = this.tableService.GetTableIdByCode(tableCode);
             var mapper = AutoMapperConfig.MapperInstance;
@@ -106,6 +106,8 @@
             await this.orderRepository.AddAsync(order);
             await this.orderRepository.SaveChangesAsync();
             await this.basketService.RemoveBasketItemsAsync(userId);
+
+            return order.Id;
         }
 
         public async Task<bool> CancelOrderAsync(string orderId)
@@ -609,10 +611,13 @@
 
         public OrderInListViewModel GetOrderInListById(string id)
         {
-            return this.orderRepository
+            var order = this.orderRepository
                 .All()
                 .To<OrderInListViewModel>()
                 .FirstOrDefault(x => x.Id == id);
+            order.StatusName = Enum.GetName(typeof(ProcessType), order.Status);
+
+            return order;
         } 
 
         public string GetWaiterId(string id)
