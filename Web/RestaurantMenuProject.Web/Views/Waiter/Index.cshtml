@@ -136,7 +136,7 @@
         <tbody>
             @foreach (var item in Model.ActiveOrders)
             {
-            <tr>
+            <tr id="@item.Id">
                 <th class="th-sm">
                     @item.TableNumber
                 </th>
@@ -185,6 +185,11 @@
             tbodyElement.appendChild(trElement);
         });
 
+        connection.on("NewOrderCookedPercent", function (item) {
+            var trElement = document.querySelector(`.activeTable tr[id=${item.orderId}]`);
+            trElement.querySelectorAll('th')[4].innerHTML = `${item.cookedPercent}%`;
+        })
+
         $(".pickupTable").on('click', '.pickupDone', function (e) {
             e.preventDefault();
             let form = e.target.parentElement;
@@ -202,6 +207,49 @@
             connection.invoke('AcceptOrder', item);
             successNotification('You successfully accepted the order!');
             form.parentElement.parentElement.remove();
+        })
+
+        connection.on('UpdateTableStatus', function (item) {
+            let trElement = document.querySelector(`.activeTable tr[id='${item.id}']`);
+            trElement.querySelectorAll('th')[1].innerHTML = item.processType;
+        })
+
+        connection.on('NewActiveTable', function (item) {
+            let tbodyElement = document.querySelector('.activeTable tbody');
+            let th1 = getThElement(item.tableNumber);
+            let th2 = getThElement(item.processType);
+            let th3 = getThElement(item.isPaid);
+
+            let th4 = document.createElement('th');
+            th1.classList.add('th-sm')
+            let formElement = document.createElement('form');
+
+            let inputElement = document.createElement('input');
+            inputElement.name = 'id';
+            inputElement.value = item.id;
+            inputElement.hidden = true;
+            let buttonElement = document.createElement('button');
+            buttonElement.classList.add('btn', 'btn-success', 'pickupDone');
+            buttonElement.innerHTML = 'Done';
+
+            formElement.appendChild(inputElement);
+            formElement.appendChild(buttonElement);
+            th4.appendChild(formElement);
+
+            let th5 = getThElement(`${item.readyPercent}%`);
+
+            let trElement = document.createElement('tr');
+            trElement.id = item.id;
+            trElement.appendChild(th1);
+            trElement.appendChild(th2);
+            trElement.appendChild(th3);
+            trElement.appendChild(th4);
+            trElement.appendChild(th5);
+
+            // TODO make the paid with some sort of checkmark
+
+            tbodyElement.appendChild(trElement);
+
         })
 
         connection.start().catch(function (err) {
@@ -227,8 +275,6 @@
             inputElement.hidden = true;
             let buttonElement = document.createElement('button');
             buttonElement.classList.add('btn', 'btn-success', 'pickupDone');
-            buttonElement.classList.add('btn-success');
-            buttonElement.classList.add('pickupDone');
             buttonElement.innerHTML = 'Done';
 
             formElement.appendChild(inputElement);

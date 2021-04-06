@@ -53,5 +53,9 @@
         public Task<ICollection<StaffAnalyseViewModel>> GetAllStaffForAnalyseAsync(DateTime startDate);
 
         public OrderInListViewModel GetOrderInListById(string id);
+
+        public string GetWaiterId(string id);
+
+        public ActiveOrderViewModel GetActiveOrderById(string id);
     }
 }

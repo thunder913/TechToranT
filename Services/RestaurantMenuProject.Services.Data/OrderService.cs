@@ -615,6 +615,26 @@
                 .FirstOrDefault(x => x.Id == id);
         } 
 
+        public string GetWaiterId(string id)
+        {
+            return this.orderRepository
+                .All()
+                .FirstOrDefault(x => x.Id == id)
+                .WaiterId;
+        }
+
+        public ActiveOrderViewModel GetActiveOrderById(string id)
+        {
+            var order = this.orderRepository
+                .All()
+                .Where(x => x.ProcessType != ProcessType.Completed && x.ProcessType != ProcessType.Pending && x.Id == id)
+                .To<ActiveOrderViewModel>()
+                .FirstOrDefault();
+
+            order.ReadyPercent = this.GetOrderDeliveredPerCent(id);
+
+            return order;
+        }
 
         private SalesViewModel GetSales(List<string> dates, ICollection<SalesChartViewModel> dishIncome,  ICollection<SalesChartViewModel> drinkIncome, string period)
         {

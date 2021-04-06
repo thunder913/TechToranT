@@ -40,11 +40,18 @@
                 "NewPickup",
                 new { Id = item.Id, Count = item.Count, Name = item.Name, TableNumber = item.TableNumber, ClientName = item.ClientName }
                 );
+
+            var cookedPerCent = this.orderService.GetOrderDeliveredPerCent(item.OrderId);
+            await this.Clients.User(item.WaiterId).SendAsync(
+                "NewOrderCookedPercent",
+                new { OrderId = item.OrderId, CookedPercent = cookedPerCent }
+                );
         }
 
         public async Task FinishPickupItem(string id)
         {
             await this.pickupItemService.DeleteItemAsync(id);
+
         }
 
         public async Task AcceptOrder(EditStatusDto editStatus)
@@ -69,11 +76,33 @@
                 Price = order.Price,
                 OrderId = order.Id,
             });
+            var waiterId = this.orderService.GetWaiterId(editStatus.OrderId);
+            var orderViewModel = this.orderService.GetActiveOrderById(order.Id);
+
+            await this.Clients.User(waiterId).SendAsync(
+                "NewActiveTable",
+                new
+                {
+                    TableNumber = orderViewModel.TableNumber,
+                    ProcessType = Enum.GetName(typeof(ProcessType), orderViewModel.ProcessType),
+                    IsPaid = orderViewModel.IsPaid,
+                    Id = orderViewModel.Id,
+                    ReadyPercent = orderViewModel.ReadyPercent,
+                });
         }
 
         public async Task ChefApproveOrder(string orderId)
         {
             await this.orderService.ChangeOrderStatusAsync(ProcessType.InProcess, ProcessType.Cooking, orderId);
+            var waiterId = this.orderService.GetWaiterId(orderId);
+            var orderViewModel = this.orderService.GetActiveOrderById(orderId);
+
+            await this.Clients.User(waiterId).SendAsync(
+                "UpdateTableStatus",
+                new {
+                    ProcessType = Enum.GetName(typeof(ProcessType), orderViewModel.ProcessType),
+                    Id = orderViewModel.Id,
+                });
         }
 
         private async Task<ActionResult<bool>> EditStatusAsync(EditStatusDto editStatus)
