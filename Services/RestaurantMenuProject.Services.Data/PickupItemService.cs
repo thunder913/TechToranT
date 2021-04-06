@@ -87,5 +87,13 @@
                 .AllWithDeleted()
                 .FirstOrDefault(x => x.Id == id);
         }
+
+        public bool IsOrderFullyDelivered(string id)
+        {
+            var isOrderCooked = this.orderService.IsOrderCooked(id);
+            var hasItemsToPickup = this.pickupItemRepository.All().Any(x => x.OrderId == id);
+
+            return isOrderCooked && !hasItemsToPickup;
+        }
     }
 }

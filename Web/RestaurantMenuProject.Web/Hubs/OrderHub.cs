@@ -42,6 +42,20 @@
                 );
 
             var cookedPerCent = this.orderService.GetOrderDeliveredPerCent(item.OrderId);
+            if (cookedPerCent == 100)
+            {
+                await this.orderService.ChangeOrderStatusAsync(ProcessType.Cooking, ProcessType.Cooked, item.OrderId);
+
+                var waiterId = this.orderService.GetWaiterId(item.OrderId);
+                await this.Clients.User(waiterId).SendAsync(
+                    "UpdateTableStatus",
+                    new
+                    {
+                        ProcessType = Enum.GetName(typeof(ProcessType), ProcessType.Cooked),
+                        Id = item.OrderId,
+                    });
+            }
+
             await this.Clients.User(item.WaiterId).SendAsync(
                 "NewOrderCookedPercent",
                 new { OrderId = item.OrderId, CookedPercent = cookedPerCent }
@@ -50,7 +64,32 @@
 
         public async Task FinishPickupItem(string id)
         {
+            var orderId = this.pickupItemService.GetPickupItemById(id).OrderId;
             await this.pickupItemService.DeleteItemAsync(id);
+            if (this.pickupItemService.IsOrderFullyDelivered(orderId))
+            {
+                var oldProcessType = ProcessType.Cooked;
+                var newProcessType = ProcessType.Delivered;
+
+                await this.orderService.ChangeOrderStatusAsync(oldProcessType, newProcessType, orderId);
+
+
+                if (this.orderService.IsOrderPaid(orderId))
+                {
+                    oldProcessType = ProcessType.Delivered;
+                    newProcessType = ProcessType.Completed;
+                    await this.orderService.ChangeOrderStatusAsync(oldProcessType, newProcessType, orderId);
+                }
+
+                var waiterId = this.orderService.GetWaiterId(orderId);
+                await this.Clients.User(waiterId).SendAsync(
+                    "UpdateTableStatus",
+                    new
+                    {
+                        ProcessType = Enum.GetName(typeof(ProcessType), newProcessType),
+                        Id = orderId,
+                    });
+            }
 
         }
 
@@ -68,7 +107,7 @@
             var order = this.orderService.GetOrderInListById(editStatus.OrderId);
 
             var chefIds = this.userManager.GetUsersInRoleAsync(GlobalConstants.ChefRoleName).Result.Select(x => x.Id);
-            await this.Clients.All.SendAsync("NewChefOrder", new
+            await this.Clients.Users(chefIds).SendAsync("NewChefOrder", new
             {
                 Date = order.Date,
                 Name = order.FullName,
@@ -76,6 +115,7 @@
                 Price = order.Price,
                 OrderId = order.Id,
             });
+
             var waiterId = this.orderService.GetWaiterId(editStatus.OrderId);
             var orderViewModel = this.orderService.GetActiveOrderById(order.Id);
 
@@ -103,6 +143,14 @@
                     ProcessType = Enum.GetName(typeof(ProcessType), orderViewModel.ProcessType),
                     Id = orderViewModel.Id,
                 });
+
+            var itemsToCook = this.orderService.GetCookFoodTypes(orderViewModel.Id).Where(x => x.ItemsToCook.Any()).ToArray();
+
+            var chefIds = this.userManager.GetUsersInRoleAsync(GlobalConstants.ChefRoleName).Result.Select(x => x.Id);
+            await this.Clients.Users(chefIds).SendAsync("AddItemsToPickup", new
+            {
+                ItemsToCook = itemsToCook,
+            });
         }
 
         private async Task<ActionResult<bool>> EditStatusAsync(EditStatusDto editStatus)

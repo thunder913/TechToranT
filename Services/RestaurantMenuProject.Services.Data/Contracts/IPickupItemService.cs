@@ -14,5 +14,7 @@ namespace RestaurantMenuProject.Services.Data.Contracts
         public Task<string> AddPickupItemAsync(CookFinishItemViewModel viewModel);
 
         public PickupItem GetPickupItemById(string id);
+
+        public bool IsOrderFullyDelivered(string id);
     }
 }

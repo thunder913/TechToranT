@@ -36,7 +36,7 @@
 
         public ChefViewModel GetChefViewModel();
 
-        public ICollection<CookFoodCategoriesViewModel> GetCookFoodTypes();
+        public ICollection<CookFoodCategoriesViewModel> GetCookFoodTypes(string id);
 
         public Task AddDeliveredCountToOrderDrinkAsync(int count, CookFinishItemViewModel itemViewModel);
 
@@ -57,5 +57,9 @@
         public string GetWaiterId(string id);
 
         public ActiveOrderViewModel GetActiveOrderById(string id);
+
+        public bool IsOrderCooked(string orderId);
+
+        public bool IsOrderPaid(string orderId);
     }
 }

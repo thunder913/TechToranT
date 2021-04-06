@@ -300,11 +300,11 @@
             return viewModel;
         }
 
-        public ICollection<CookFoodCategoriesViewModel> GetCookFoodTypes()
+        public ICollection<CookFoodCategoriesViewModel> GetCookFoodTypes(string orderId = null)
         {
             var allDrinks = this.orderDrinkRepository
                 .All()
-                .Where(x => x.Order.ProcessType == ProcessType.Cooking && x.Count - x.DeliveredCount > 0)
+                .Where(x => x.Order.ProcessType == ProcessType.Cooking && x.Count - x.DeliveredCount > 0 && (orderId == null || x.OrderId == orderId))
                 .OrderBy(x => x.Order.CreatedOn)
                 .Select(x => new CookItemViewModel()
                 {
@@ -331,7 +331,7 @@
             foreach (var type in dishTypes)
             {
                 var typeItems = this.orderDishRepository.All()
-                    .Where(x => x.Dish.DishTypeId == type && x.Order.ProcessType == ProcessType.Cooking && x.Count - x.DeliveredCount > 0)
+                    .Where(x => (x.Dish.DishTypeId == type && x.Order.ProcessType == ProcessType.Cooking && x.Count - x.DeliveredCount > 0) && (orderId == null || x.OrderId == orderId))
                     .OrderBy(x => x.Order.CreatedOn)
                     .Select(x => new CookItemViewModel()
                     {
@@ -634,6 +634,29 @@
             order.ReadyPercent = this.GetOrderDeliveredPerCent(id);
 
             return order;
+        }
+
+        public bool IsOrderCooked(string orderId)
+        {
+            var drinksDelivered = this.orderDrinkRepository
+                    .All()
+                    .Where(x => x.OrderId == orderId)
+                    .All(x => x.DeliveredCount >= x.Count);
+
+            var dishesDelivered = this.orderDishRepository
+                .All()
+                .Where(x => x.OrderId == orderId)
+                .All(x => x.DeliveredCount >= x.Count);
+
+            
+
+            return drinksDelivered && dishesDelivered;
+
+        }
+
+        public bool IsOrderPaid(string orderId)
+        {
+            return this.orderRepository.All().FirstOrDefault(x => x.Id == orderId).PaidOn != null;
         }
 
         private SalesViewModel GetSales(List<string> dates, ICollection<SalesChartViewModel> dishIncome,  ICollection<SalesChartViewModel> drinkIncome, string period)

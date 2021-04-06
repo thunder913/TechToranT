@@ -186,7 +186,7 @@
         });
 
         connection.on("NewOrderCookedPercent", function (item) {
-            var trElement = document.querySelector(`.activeTable tr[id=${item.orderId}]`);
+            var trElement = document.querySelector(`.activeTable tr[id='${item.orderId}']`);
             trElement.querySelectorAll('th')[4].innerHTML = `${item.cookedPercent}%`;
         })
 
