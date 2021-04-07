@@ -40,8 +40,13 @@
             services.AddDbContext<ApplicationDbContext>(
                 options => options.UseSqlServer(this.configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
-                .AddRoles<ApplicationRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddDefaultIdentity<ApplicationUser>(opts => {
+                opts.SignIn.RequireConfirmedAccount = true;
+                opts.Password.RequireNonAlphanumeric = false;
+                opts.Password.RequireDigit = true;
+            }).AddRoles<ApplicationRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+
 
             services.Configure<CookiePolicyOptions>(
                 options =>
