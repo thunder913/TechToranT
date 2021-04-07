@@ -182,6 +182,11 @@
                 });
         }
 
+        public async Task PayOrder(string id)
+        {
+            await this.orderService.PayOrderByIdAsync(id);
+        }
+
         private async Task<ActionResult<bool>> EditStatusAsync(EditStatusDto editStatus)
         {
             var oldProcessingTypeId = (ProcessType)Enum.Parse(typeof(ProcessType), editStatus.OldProcessingType);

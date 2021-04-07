@@ -117,7 +117,7 @@
         <thead>
             <tr>
                 <th class="th-sm">
-                    Table
+                    #
                 </th>
                 <th class="th-sm">
                     Status
@@ -144,7 +144,14 @@
                     @item.ProcessType
                 </th>
                 <th class="th-sm">
-                    @item.IsPaid
+                    @if (item.IsPaid)
+                    {
+                        <button class="btn btn-success pay" disabled>Pay</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-danger pay">Pay</button>
+                    }
                 </th>
                 <th class="th-sm">
                     <form method="post">
@@ -195,31 +202,31 @@
 
             let orderBody = document.querySelector('#ordersTable tbody');
             let trHtml = `<tr id="${order.id}">
-                    <th class="th-sm">
-                        ${order.tableNumber}
-                    </th>
-                    <th class="th-sm">
-                        ${date}
-                    </th>
-                    <th class="th-sm">
-                        ${order.fullName}
-                    </th>
-                    <th class="th-sm">
-                        ${order.statusName}
-                    </th>
-                    <th class="th-sm">
-                        ${order.price.toFixed(2)}
-                    </th>
-                    <th class="th-sm">
-                        <form method="post" style="display: inline-block;">
-                            <input name="id" value="${order.id}" hidden />
-                            <button class="btn btn-success accept">Accept</button>
-                        </form>
-                        <form method="get" action="/Order/Index/${order.id}" style='display:inline-block;'>
-                            <button class="btn btn-info">Info</button>
-                        </form>
-                    </th>
-                </tr>`
+                        <th class="th-sm">
+                            ${order.tableNumber}
+                        </th>
+                        <th class="th-sm">
+                            ${date}
+                        </th>
+                        <th class="th-sm">
+                            ${order.fullName}
+                        </th>
+                        <th class="th-sm">
+                            ${order.statusName}
+                        </th>
+                        <th class="th-sm">
+                            ${order.price.toFixed(2)}
+                        </th>
+                        <th class="th-sm">
+                            <form method="post" style="display: inline-block;">
+                                <input name="id" value="${order.id}" hidden />
+                                <button class="btn btn-success accept">Accept</button>
+                            </form>
+                            <form method="get" action="/Order/Index/${order.id}" style='display:inline-block;'>
+                                <button class="btn btn-info">Info</button>
+                            </form>
+                        </th>
+                    </tr>`
 
             orderBody.insertAdjacentHTML('beforeend', trHtml);
         })
@@ -232,6 +239,19 @@
         connection.on("RemoveNewWaiterOrder", function (order) {
             let elementToRemove = document.querySelector(`.newOrders #${order.orderId}`);
             elementToRemove.remove();
+        })
+
+        $(".activeTable").on('click', '.pay', function (e) {
+            e.preventDefault();
+
+            let trElement = e.target.parentElement.parentElement;
+
+            let id = trElement.id;
+
+            connection.invoke('PayOrder', id);
+
+            e.target.parentElement.innerHTML = `<button class="btn btn-success pay" disabled>Pay</button>`
+
         })
 
         $(".pickupTable").on('click', '.pickupDone', function (e) {
@@ -255,6 +275,10 @@
 
         connection.on('UpdateTableStatus', function (item) {
             let trElement = document.querySelector(`.activeTable tr[id='${item.id}']`);
+            if (item.processType == 'Completed') {
+                trElement.remove();
+                successNotification('You finished an order!');
+            }
             trElement.querySelectorAll('th')[1].innerHTML = item.processType;
         })
 
@@ -262,10 +286,12 @@
             let tbodyElement = document.querySelector('.activeTable tbody');
             let th1 = getThElement(item.tableNumber);
             let th2 = getThElement(item.processType);
-            let th3 = getThElement(item.isPaid);
+            let th3 = document.createElement('th');
+            th3.classList.add('th-sm');
+            th3.innerHTML = `<button class="btn btn-danger pay">Pay</button>`;
+
 
             let th4 = document.createElement('th');
-            th1.classList.add('th-sm')
             let formElement = document.createElement('form');
 
             let inputElement = document.createElement('input');
@@ -299,7 +325,6 @@
         connection.start().catch(function (err) {
             return console.error(err.toString());
         });
-
 
 
         function getTrElement(item) {

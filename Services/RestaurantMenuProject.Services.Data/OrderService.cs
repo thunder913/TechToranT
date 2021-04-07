@@ -664,6 +664,22 @@
             return this.orderRepository.All().FirstOrDefault(x => x.Id == orderId).PaidOn != null;
         }
 
+        public async Task PayOrderByIdAsync(string id)
+        {
+            var order = this.orderRepository.All().FirstOrDefault(x => x.Id == id);
+            if (order == null)
+            {
+                throw new ArgumentNullException("There is no order with the given id!");
+            }
+
+            if (order.PaidOn != null)
+            {
+                throw new InvalidOperationException("The given order is already paid!");
+            }
+
+            await this.orderRepository.SaveChangesAsync();
+        }
+
         private SalesViewModel GetSales(List<string> dates, ICollection<SalesChartViewModel> dishIncome,  ICollection<SalesChartViewModel> drinkIncome, string period)
         {
             var salesViewModel = new SalesViewModel();

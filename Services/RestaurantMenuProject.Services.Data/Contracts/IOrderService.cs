@@ -61,5 +61,7 @@
         public bool IsOrderCooked(string orderId);
 
         public bool IsOrderPaid(string orderId);
+
+        public Task PayOrderByIdAsync(string id);
     }
 }

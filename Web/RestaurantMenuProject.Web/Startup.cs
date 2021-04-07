@@ -40,10 +40,11 @@
             services.AddDbContext<ApplicationDbContext>(
                 options => options.UseSqlServer(this.configuration.GetConnectionString("DefaultConnection")));
 
+            // Make it to yes in production
             services.AddDefaultIdentity<ApplicationUser>(opts => {
-                opts.SignIn.RequireConfirmedAccount = true;
+                opts.SignIn.RequireConfirmedAccount = false;
                 opts.Password.RequireNonAlphanumeric = false;
-                opts.Password.RequireDigit = true;
+                opts.Password.RequireDigit = false;
             }).AddRoles<ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 

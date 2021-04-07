@@ -11,7 +11,8 @@
         contentType: 'application/json',
         success: function (res) {
             if (!!res) {
-                successNotification("Succesfully accepted the order!");
+                successNotification("Succesfully finished the order!");
+                form.parentElement.parentElement.remove();
             } else {
                 dangerNotification("Something went wrong, try again!");
             }
