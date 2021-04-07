@@ -677,7 +677,11 @@
                 throw new InvalidOperationException("The given order is already paid!");
             }
 
+            order.PaidOn = DateTime.UtcNow;
+
             await this.orderRepository.SaveChangesAsync();
+
+            
         }
 
         private SalesViewModel GetSales(List<string> dates, ICollection<SalesChartViewModel> dishIncome,  ICollection<SalesChartViewModel> drinkIncome, string period)
