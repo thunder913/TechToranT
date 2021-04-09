@@ -94,5 +94,13 @@
             this.drinkTypeRepository.Delete(typeToDelete);
             await this.drinkTypeRepository.SaveChangesAsync();
         }
+
+        public ICollection<DrinkType> GetAllDrinkTypesWithIds(int[] ids)
+        {
+            return this.drinkTypeRepository
+                .All()
+                .Where(x => ids.Contains(x.Id))
+                .ToList();
+        }
     }
 }

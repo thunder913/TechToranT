@@ -10,6 +10,7 @@
     public interface IOrderService
     {
         public ICollection<OrderInListViewModel> GetOrderViewModelsByUserId(int page, int itemsPerPage, string userId = null);
+        
         public Task<string> MakeOrderAsync(string userId, string tableCode);
 
         public Task<bool> CancelOrderAsync(string orderId);

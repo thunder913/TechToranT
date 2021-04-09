@@ -111,7 +111,6 @@ namespace RestaurantMenuProject.Services.Data
         {
             Random random = new Random();
 
-        // TODO use some other generation method
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             var randomCode = new string (Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());

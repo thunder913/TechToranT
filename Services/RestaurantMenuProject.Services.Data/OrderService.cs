@@ -205,7 +205,6 @@
                                             || m.FullName.ToLower().Contains(searchValue)).ToList(); // TODO fix it again to make it do it all as Queryable
             }
 
-
             return dataToReturn;
         }
 
@@ -652,8 +651,6 @@
                 .All()
                 .Where(x => x.OrderId == orderId)
                 .All(x => x.DeliveredCount >= x.Count);
-
-            
 
             return drinksDelivered && dishesDelivered;
 

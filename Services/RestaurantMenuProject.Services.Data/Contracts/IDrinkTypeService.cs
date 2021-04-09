@@ -18,5 +18,7 @@
         public Task EditDrinkTypeAsync(EditCategoryViewModel editCategory, string wwwroot);
 
         public Task DeleteDrinkTypeAsync(int id);
+
+        public ICollection<DrinkType> GetAllDrinkTypesWithIds(int[] ids);
     }
 }

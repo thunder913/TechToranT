@@ -18,5 +18,7 @@
         public Task EditDishTypeAsync(EditCategoryViewModel editCategory, string wwwroot);
 
         public Task DeleteDishTypeAsync(int id);
+
+        public ICollection<DishType> GetAllDishTypesWithIds(int[] ids);
     }
 }

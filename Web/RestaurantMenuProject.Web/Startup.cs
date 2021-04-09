@@ -90,6 +90,7 @@
             services.AddTransient<IImageService, ImageService>();
             services.AddTransient<ITableService, TableService>();
             services.AddTransient<IOrderService, OrderService>();
+            services.AddTransient<IPromoCodeService, PromoCodeService>();
             services.AddTransient<IPickupItemService, PickupItemService>();
 
             services.Configure<AuthMessageSenderOptions>(this.configuration);

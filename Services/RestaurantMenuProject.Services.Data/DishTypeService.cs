@@ -94,5 +94,13 @@
             this.dishTypeRepository.Delete(typeToDelete);
             await this.dishTypeRepository.SaveChangesAsync();
         }
+
+        public ICollection<DishType> GetAllDishTypesWithIds(int[] ids)
+        {
+            return this.dishTypeRepository
+                .All()
+                .Where(x => ids.Contains(x.Id))
+                .ToList();
+        }
     }
 }

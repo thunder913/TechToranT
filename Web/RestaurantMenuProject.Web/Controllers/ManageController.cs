@@ -30,6 +30,7 @@
         private readonly IUserService userService;
         private readonly IOrderService orderService;
         private readonly ITableService tableService;
+        private readonly IPromoCodeService promoCodeService;
 
         public ManageController(
             IDishTypeService dishTypeService,
@@ -42,7 +43,8 @@
             IDrinkService drinkService,
             IUserService userService,
             IOrderService orderService,
-            ITableService tableService)
+            ITableService tableService,
+            IPromoCodeService promoCodeService)
         {
             this.dishTypeService = dishTypeService;
             this.ingredientService = ingredientService;
@@ -55,6 +57,7 @@
             this.userService = userService;
             this.orderService = orderService;
             this.tableService = tableService;
+            this.promoCodeService = promoCodeService;
         }
 
         public IActionResult Index()
@@ -289,6 +292,11 @@
             return this.View();
         }
 
+        public IActionResult PromoCodes()
+        {
+            return this.View();
+        }
+
         [HttpPost]
         public async Task<IActionResult> EditUser(EditUserViewModel editUser)
         {
@@ -346,11 +354,40 @@
             return this.RedirectToAction("Tables");
         }
 
+        public IActionResult AddPromoCode()
+        {
+            var promoCode = new AddPromoCodeViewModel();
+            this.SetValuesToPromoCodeViewModel(promoCode);
+            return this.View(promoCode);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddPromoCode(AddPromoCodeViewModel promoCodeModel)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                this.SetValuesToPromoCodeViewModel(promoCodeModel);
+                return this.View(promoCodeModel);
+            }
+
+            await this.promoCodeService.AddPromoCodeAsync(promoCodeModel);
+
+            // TODO ADD MORE CHECKS AND BETTER ERROR MESSAGES
+
+            return this.RedirectToAction("Index");
+        }
+
         // TODO REMOVE DYNAMIC SOMEHOW
         private void SetValuesToDishViewModel(dynamic addDishViewModel)
         {
             addDishViewModel.Ingredients = this.ingredientService.GetAllAsDishIngredientViewModel().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
             addDishViewModel.DishType = this.dishTypeService.GetAllDishTypesWithId().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
+        }
+
+        private void SetValuesToPromoCodeViewModel(AddPromoCodeViewModel addPromoCodeModel)
+        {
+            addPromoCodeModel.ValidDrinkCategories = this.drinkTypeService.GetAllDrinkTypes().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
+            addPromoCodeModel.ValidDishCategories = this.dishTypeService.GetAllDishTypesWithId().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
         }
 
         private void SetValuesToUserViewModel(dynamic editUserViewModel)
