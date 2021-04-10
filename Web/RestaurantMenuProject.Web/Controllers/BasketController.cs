@@ -23,10 +23,14 @@
             var drinks = this.basketService.GetDrinksInUserBasket(userId);
             var dishes = this.basketService.GetDishesInUserBasket(userId);
 
+            var basketViewModel = new BasketViewModel();
             var food = new List<FoodItemViewModel>();
             food.AddRange(dishes);
             food.AddRange(drinks);
-            return this.View(food);
+
+            basketViewModel.Foods = food;
+            basketViewModel.PromoCode = this.basketService.GetBasketPromoCodeById(userId);
+            return this.View(basketViewModel);
         }
     }
 }

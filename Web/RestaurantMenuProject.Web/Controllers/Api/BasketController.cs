@@ -1,5 +1,6 @@
 ﻿namespace RestaurantMenuProject.Web.Controllers.Api
 {
+    using System;
     using System.Security.Claims;
     using System.Threading.Tasks;
 
@@ -76,6 +77,34 @@
         {
             var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             return this.basketService.GetTotalPrice(userId);
+        }
+
+        [HttpPost("AddPromoCode")]
+        public async Task<BasketPromoCodeViewModel> AddPromoCode(BasketPromoCodeDto code)
+        {
+            var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            try
+            {
+                var promoCode = await this.basketService.AddPromoCodeAsync(code.Code, userId);
+                var toReturn = new BasketPromoCodeViewModel()
+                {
+                    Code = promoCode.Code,
+                    ExpirationDate = promoCode.ExpirationDate.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"),
+                };
+
+                return toReturn;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        [HttpPost("RemovePromoCode")]
+        public async Task RemovePromoCode()
+        {
+            var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            await this.basketService.RemovePromoCodeByIdAsync(userId);
         }
     }
 }

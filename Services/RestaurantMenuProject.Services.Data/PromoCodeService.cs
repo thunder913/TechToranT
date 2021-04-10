@@ -3,8 +3,10 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Linq.Dynamic.Core;
     using System.Threading.Tasks;
-
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.EntityFrameworkCore;
     using RestaurantMenuProject.Data.Common.Repositories;
     using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Services.Data.Contracts;
@@ -66,32 +68,130 @@
             return randomCode;
         }
 
-        public ICollection<ManageOrderViewModel> GetAllPromoCodes(string sortColumn, string sortDirection, string searchValue)
+        public ICollection<PromoCodeViewModel> GetAllPromoCodes(string sortColumn, string sortDirection, string searchValue)
         {
-            var promoCode = this.promoCodeRepository
+            var promoCodes = this.promoCodeRepository
                 .AllAsNoTrackingWithDeleted()
-                .AsQueryable();
-
-            // TODO Fix this code
+                .To<PromoCodeViewModel>();
 
             if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortDirection)))
             {
-                promoCode = promoCode.OrderBy(sortColumn + " " + sortDirection);
+                promoCodes = promoCodes.OrderBy(sortColumn + " " + sortDirection);
             }
 
-            var dataToReturn = promoCode.To<ManageOrderViewModel>().ToList();
+            var dataToReturn = promoCodes.ToList();
 
             if (!string.IsNullOrEmpty(searchValue))
             {
                 dataToReturn = dataToReturn.Where(m =>
-                                            m.Price.ToString().Contains(searchValue)
-                                            || m.Email.ToLower().Contains(searchValue.ToLower())
-                                            || m.Status.ToString().ToLower().Contains(searchValue.ToLower())
-                                            || m.Date.ToLocalTime().ToString("dd/MM/yyyy, HH:mm:ss").Contains(searchValue)
-                                            || m.FullName.ToLower().Contains(searchValue)).ToList(); // TODO fix it again to make it do it all as Queryable
+                                            m.Code.ToString().Contains(searchValue)
+                                            || m.ExpirationDate.ToLocalTime().ToString("dd/MM/yyyy, HH:mm:ss").Contains(searchValue)
+                                            || m.MaxUsageTimes.ToString().Contains(searchValue)
+                                            || m.UsedTimes.ToString().Contains(searchValue)
+                                            || m.PromoPercent.ToString().Contains(searchValue))
+                                            .ToList();
             }
 
             return dataToReturn;
+        }
+
+        public EditPromoCodeViewModel GetPromoCodeById(int id)
+        {
+            var promoCode = this.promoCodeRepository.AllWithDeleted().Include(x => x.ValidDrinkCategories).Include(x => x.ValidDishCategories).FirstOrDefault(x => x.Id == id);
+
+            if (promoCode == null)
+            {
+                throw new InvalidOperationException("There is no promo code with this id!");
+            }
+
+            var toReturn = new EditPromoCodeViewModel()
+            {
+                ExpirationDate = promoCode.ExpirationDate,
+                MaxUsageTimes = promoCode.MaxUsageTimes,
+                PromoPercent = promoCode.PromoPercent,
+                ValidDishCategoriesId = promoCode.ValidDishCategories.Select(x => x.Id).ToList(),
+                ValidDrinkCategoriesId = promoCode.ValidDrinkCategories.Select(x => x.Id).ToList(),
+                Code = promoCode.Code,
+            };
+
+            return toReturn;
+        }
+
+        public async Task EditPromoCodeAsync(EditPromoCodeViewModel editViewModel)
+        {
+            var promoCode = this.promoCodeRepository.AllWithDeleted().Include(x => x.ValidDrinkCategories).Include(x => x.ValidDishCategories).FirstOrDefault(x => x.Id == editViewModel.Id);
+
+            if (promoCode == null)
+            {
+                throw new InvalidOperationException("There is no promo code with this id!");
+            }
+
+            // Removing the items that are not containted in the new promo code
+            foreach (var dish in promoCode.ValidDishCategories)
+            {
+                if (!editViewModel.ValidDishCategoriesId.Contains(dish.Id))
+                {
+                    promoCode.ValidDishCategories.Remove(dish);
+                }
+            }
+
+            foreach (var drink in promoCode.ValidDrinkCategories)
+            {
+                if (!editViewModel.ValidDrinkCategoriesId.Contains(drink.Id))
+                {
+                    promoCode.ValidDrinkCategories.Remove(drink);
+                }
+            }
+
+            // Adding the items that are not containted in the old promo code
+
+            foreach (var id in editViewModel.ValidDishCategoriesId)
+            {
+                if (!promoCode.ValidDishCategories.Any(x => x.Id == id))
+                {
+                    var dishType = this.dishTypeService.GetDishTypeById(id);
+                    promoCode.ValidDishCategories.Add(dishType);
+                }
+            }
+
+            foreach (var id in editViewModel.ValidDrinkCategoriesId)
+            {
+                if (!promoCode.ValidDrinkCategories.Any(x => x.Id == id))
+                {
+                    var drinkType = this.drinkTypeService.GetDrinkTypeById(id);
+                    promoCode.ValidDrinkCategories.Add(drinkType);
+                }
+            }
+
+            promoCode.ExpirationDate = editViewModel.ExpirationDate;
+            promoCode.MaxUsageTimes = editViewModel.MaxUsageTimes;
+            promoCode.PromoPercent = editViewModel.PromoPercent;
+
+            await this.promoCodeRepository.SaveChangesAsync();
+            }
+
+        public async Task<PromoCode> GetPromoCodeByCodeAsync(string code)
+        {
+            var promoCode = this.promoCodeRepository.All().FirstOrDefault(x => x.Code == code);
+
+            if (promoCode == null)
+            {
+                throw new InvalidOperationException("There is no promo code with the given code!");
+            }
+            else if (promoCode.ExpirationDate <= DateTime.UtcNow)
+            {
+                this.promoCodeRepository.Delete(promoCode);
+                await this.promoCodeRepository.SaveChangesAsync();
+                throw new Exception("The promo code has expired!");
+            }
+            else if (promoCode.UsedTimes >= promoCode.MaxUsageTimes)
+            {
+                this.promoCodeRepository.Delete(promoCode);
+                await this.promoCodeRepository.SaveChangesAsync();
+                throw new Exception("This is no longer valid!");
+            }
+
+            return promoCode;
         }
     }
 }

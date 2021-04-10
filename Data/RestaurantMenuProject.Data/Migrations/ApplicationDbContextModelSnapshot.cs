@@ -378,9 +378,14 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("PromoCodeId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IsDeleted");
+
+                    b.HasIndex("PromoCodeId");
 
                     b.ToTable("Baskets");
                 });
@@ -1170,6 +1175,15 @@ namespace RestaurantMenuProject.Data.Migrations
                         .HasForeignKey("RestaurantMenuProject.Data.Models.ApplicationUser", "BasketId");
 
                     b.Navigation("Basket");
+                });
+
+            modelBuilder.Entity("RestaurantMenuProject.Data.Models.Basket", b =>
+                {
+                    b.HasOne("RestaurantMenuProject.Data.Models.PromoCode", "PromoCode")
+                        .WithMany()
+                        .HasForeignKey("PromoCodeId");
+
+                    b.Navigation("PromoCode");
                 });
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.BasketDish", b =>

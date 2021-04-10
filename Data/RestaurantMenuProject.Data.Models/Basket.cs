@@ -17,6 +17,8 @@
             this.Id = user.Id;
         }
 
+        public virtual PromoCode PromoCode { get; set; }
+
         public virtual ApplicationUser User { get; set; }
 
         public virtual ICollection<BasketDish> Dishes { get; set; } = new HashSet<BasketDish>();

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using RestaurantMenuProject.Services.Data.Contracts;
 using System;
 using System.Linq;
 
@@ -8,6 +9,13 @@ namespace RestaurantMenuProject.Web.Controllers.Api
     [ApiController]
     public class PromoCodeController : ControllerBase
     {
+        private readonly IPromoCodeService promoCodeService;
+
+        public PromoCodeController(IPromoCodeService promoCodeService)
+        {
+            this.promoCodeService = promoCodeService;
+        }
+
         [HttpPost("All")]
         public ActionResult GetAllPromoCodes()
         {
@@ -20,7 +28,7 @@ namespace RestaurantMenuProject.Web.Controllers.Api
             int pageSize = length != null ? Convert.ToInt32(length) : 0;
             int skip = start != null ? Convert.ToInt32(start) : 0;
 
-            var orders = this.orderService.GetAllOrders(sortColumn, sortColumnDirection, searchValue);
+            var orders = this.promoCodeService.GetAllPromoCodes(sortColumn, sortColumnDirection, searchValue);
 
             var recordsTotal = orders.Count();
             var data = orders.Skip(skip).Take(pageSize).ToList();

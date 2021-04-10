@@ -1,4 +1,10 @@
-﻿<form method="post">
+﻿<style>
+    .action{
+        margin-left: 5px;
+    }
+</style>
+
+<form method="post">
 </form>
 
 <table id="ordersTable" class="table table-striped table-bordered" style="width:100%">
@@ -8,21 +14,24 @@
                 Id
             </th>
             <th class="th-sm">
-                Client Email
+                Code
             </th>
             <th class="th-sm">
-                Client Name
+                Used times
             </th>
             <th class="th-sm">
-                Date
+                Max usage times
             </th>
             <th class="th-sm">
-                Total Price
+                Promo%
             </th>
             <th class="th-sm">
-                Status
+                Deleted
             </th>
-            <th class="th-sm" width="20px">
+            <th class="th-sm">
+                Expiration Date
+            </th>
+            <th class="th-sm" width="120px">
                 Actions
             </th>
         </tr>
@@ -30,5 +39,5 @@
 </table>
 
 @section Scripts{
-    <script src="~/js/manageOrders.js"></script>
+    <script src="~/js/managePromoCodes.js"></script>
 }

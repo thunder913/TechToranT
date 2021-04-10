@@ -34,5 +34,11 @@
         public BasketDto GetBasket(string userId);
 
         public Task RemoveBasketItemsAsync(string userId);
+
+        public Task<PromoCode> AddPromoCodeAsync(string code, string userId);
+
+        public BasketPromoCodeViewModel GetBasketPromoCodeById(string id);
+
+        public Task RemovePromoCodeByIdAsync(string id);
     }
 }

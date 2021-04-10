@@ -304,6 +304,21 @@
             return this.RedirectToAction("Users");
         }
 
+        [HttpGet("Manage/EditPromoCode/{id}")]
+        public IActionResult EditPromoCode(int id)
+        {
+            var promoCode = this.promoCodeService.GetPromoCodeById(id);
+            this.SetValuesToPromoCodeViewModel(promoCode);
+            return this.View(promoCode);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditPromoCode(EditPromoCodeViewModel promoCode)
+        {
+            await this.promoCodeService.EditPromoCodeAsync(promoCode);
+            return this.RedirectToAction("PromoCodes");
+        }
+
         public IActionResult Users(int id = 1)
         {
             return this.View();

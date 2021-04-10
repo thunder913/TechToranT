@@ -107,3 +107,70 @@ function getTotalPrice() {
 
     return result;
 }
+$('tr').on('click', '.addPromoCode', function (e) {
+    e.preventDefault();
+    let tdElement = e.target.parentElement.parentElement;
+    let antiForgeryToken = tdElement.querySelector('input[name=__RequestVerificationToken]').value;
+    var code = tdElement.querySelector('input[name=tableCode]').value;
+
+    $.ajax({
+        type: 'POST',
+        url: '/api/Basket/AddPromoCode',
+        data: JSON.stringify({ code: code }),
+        headers: {
+            'X-CSRF-TOKEN': antiForgeryToken
+        },
+        contentType: 'application/json',
+        success: function (res) {
+            if (res) {
+                tdElement.querySelector('input[name=tableCode]').remove();
+                tdElement.querySelector('.addPromoCode').remove();
+                let spanElement = document.createElement('span');
+                let buttonElement = document.createElement('button');
+                buttonElement.innerHTML = 'Remove';
+                buttonElement.classList.add('btn', 'btn-danger', 'removeCode');
+                spanElement.innerHTML = 'Code ' + res.code + ' has been used! It expires on ' + res.expirationDate + '!';
+
+                tdElement.appendChild(spanElement);
+                tdElement.appendChild(buttonElement);
+                successNotification(`Successfully added a promo code!`);
+            } else {
+                dangerNotification("Something went wrong, try again!");
+            }
+
+        }
+    });
+})
+
+$('tr').on('click', '.removeCode', function (e) {
+    e.preventDefault();
+    let antiForgeryToken = e.target.parentElement.querySelector('form input[name=__RequestVerificationToken]').value;
+
+    $.ajax({
+        type: 'POST',
+        url: '/api/Basket/RemovePromoCode',
+        headers: {
+            'X-CSRF-TOKEN': antiForgeryToken
+        },
+        contentType: 'application/json',
+        success: function (res) {
+            successNotification('You successfuly removed your promo code!');
+            let tdElement = e.target.parentElement;
+            tdElement.querySelector('span').remove();
+            tdElement.querySelector('button').remove();
+
+            let inputElement = document.createElement('input');
+            inputElement.name = 'tableCode';
+            inputElement.placeholder = 'Promo code';
+
+            let buttonElement = document.createElement('button');
+            buttonElement.type = 'submit';
+            buttonElement.classList.add('btn', 'btn-dark', 'addPromoCode');
+            buttonElement.innerHTML = 'Add';
+
+            let formElement = tdElement.querySelector('form');
+            formElement.appendChild(inputElement);
+            formElement.appendChild(buttonElement);
+        }
+    });
+})

@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-
+    using Microsoft.EntityFrameworkCore;
     using RestaurantMenuProject.Data.Common.Repositories;
     using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Data.Models.Dtos;
@@ -19,17 +19,20 @@
         private readonly IUserService userService;
         private readonly IRepository<BasketDrink> basketDrinkRepository;
         private readonly IRepository<BasketDish> basketDishRepository;
+        private readonly IPromoCodeService promoCodeService;
 
         public BasketService(
             IDeletableEntityRepository<Basket> basketRepository,
             IUserService userService,
             IRepository<BasketDrink> basketDrinkRepository,
-            IRepository<BasketDish> basketDishRepository)
+            IRepository<BasketDish> basketDishRepository,
+            IPromoCodeService promoCodeService)
         {
             this.basketRepository = basketRepository;
             this.userService = userService;
             this.basketDrinkRepository = basketDrinkRepository;
             this.basketDishRepository = basketDishRepository;
+            this.promoCodeService = promoCodeService;
         }
 
         // Adding item to basket (doesnt matter if dish or drink). Also creating the basket if non existing
@@ -134,7 +137,7 @@
         // Getting all the drinks from the user basket
         public ICollection<FoodItemViewModel> GetDrinksInUserBasket(string userId)
         {
-            return this.basketDrinkRepository
+            var drinks = this.basketDrinkRepository
                         .AllAsNoTracking()
                         .Where(x => x.Basket.User.Id == userId)
                         .Select(x => new FoodItemViewModel()
@@ -148,12 +151,26 @@
                             Image = x.Drink.Image,
                         })
                         .ToList();
+
+            var promoCode = this.GetPromoCodeInBasket(userId);
+            if (promoCode != null)
+            {
+                foreach (var drink in drinks)
+                {
+                    if (promoCode.ValidDrinkCategories.Any(x => x.Name == drink.FoodCategory))
+                    {
+                        drink.Price = Math.Round(drink.Price * (1 - (decimal.Parse(promoCode.PromoPercent.ToString()) / 100)), 2);
+                    }
+                }
+            }
+
+            return drinks;
         }
 
         // Getting all the dishes from the user basket
         public ICollection<FoodItemViewModel> GetDishesInUserBasket(string userId)
         {
-            return this.basketDishRepository
+            var dishes = this.basketDishRepository
                         .AllAsNoTracking()
                         .Where(x => x.Basket.User.Id == userId)
                         .Select(x => new FoodItemViewModel()
@@ -167,12 +184,27 @@
                             Image = x.Dish.Image,
                         })
                         .ToList();
+
+
+            var promoCode = this.GetPromoCodeInBasket(userId);
+            if (promoCode != null)
+            {
+                foreach (var dish in dishes)
+                {
+                    if (promoCode.ValidDishCategories.Any(x => x.Name == dish.FoodCategory))
+                    {
+                        dish.Price = Math.Round(dish.Price * (1 - (decimal.Parse(promoCode.PromoPercent.ToString()) / 100)), 2);
+                    }
+                }
+            }
+
+            return dishes;
         }
 
         // Getting a basketDishItem with ids
         public FoodItemViewModel GetBasketDishItemById(string dishId, string userId)
         {
-            return this.basketDishRepository
+            var dish = this.basketDishRepository
             .AllAsNoTracking()
             .Where(x => x.Basket.User.Id == userId && x.DishId == dishId)
             .Select(x => new FoodItemViewModel()
@@ -185,12 +217,20 @@
                 FoodCategory = x.Dish.DishType.Name,
             })
             .FirstOrDefault();
+
+            var promoCode = this.GetPromoCodeInBasket(userId);
+            if (promoCode.ValidDishCategories.Any(x => x.Name == dish.FoodCategory))
+            {
+                dish.Price = Math.Round(dish.Price * (1 - (decimal.Parse(promoCode.PromoPercent.ToString()) / 100)), 2);
+            }
+
+            return dish;
         }
 
         // getting a basketDrinkItem by ids
         public FoodItemViewModel GetBasketDrinkItemById(string drinkId, string userId)
         {
-            return this.basketDrinkRepository
+            var drink = this.basketDrinkRepository
              .AllAsNoTracking()
              .Where(x => x.Basket.User.Id == userId && x.DrinkId == drinkId)
              .Select(x => new FoodItemViewModel()
@@ -203,6 +243,15 @@
                  FoodCategory = x.Drink.DrinkType.Name,
              })
              .FirstOrDefault();
+
+            var promoCode = this.GetPromoCodeInBasket(userId);
+            if (promoCode.ValidDrinkCategories.Any(x => x.Name == drink.FoodCategory))
+            {
+                drink.Price = Math.Round(drink.Price * (1 - (decimal.Parse(promoCode.PromoPercent.ToString()) / 100)), 2);
+            }
+
+            return drink;
+
         }
 
         // Adding quantity to drink (by given ids)
@@ -279,19 +328,51 @@
         // Getting the total price
         public decimal GetTotalPrice(string userId)
         {
-            var dishPrice = this
+            var dishes = this
                 .basketDishRepository
                 .AllAsNoTracking()
                 .Where(x => x.BasketId == userId)
-                .Sum(x => x.Quantity * x.Dish.Price);
+                .Select(x => new FoodItemPriceDto
+                {
+                    Price = x.Dish.Price,
+                    Category = x.Dish.DishType.Name,
+                    Quantity = x.Quantity,
+                })
+                .ToArray();
 
-            var drinkPrice = this
+            var drinks = this
                 .basketDrinkRepository
                 .AllAsNoTracking()
                 .Where(x => x.BasketId == userId)
-                .Sum(x => x.Quantity * x.Drink.Price);
+                .Select(x => new FoodItemPriceDto
+                {
+                    Price = x.Drink.Price,
+                    Category = x.Drink.DrinkType.Name,
+                    Quantity = x.Quantity,
+                })
+                .ToArray();
 
-            return dishPrice + drinkPrice;
+            var promoCode = this.GetPromoCodeInBasket(userId);
+            if (promoCode != null)
+            {
+                foreach (var dish in dishes)
+                {
+                    if (promoCode.ValidDishCategories.Any(x => x.Name == dish.Category))
+                    {
+                        dish.Price = Math.Round(dish.Price * (1 - (decimal.Parse(promoCode.PromoPercent.ToString()) / 100)), 2);
+                    }
+                }
+
+                foreach (var drink in drinks)
+                {
+                    if (promoCode.ValidDrinkCategories.Any(x => x.Name == drink.Category))
+                    {
+                        drink.Price = Math.Round(drink.Price * (1 - (decimal.Parse(promoCode.PromoPercent.ToString()) / 100)), 2);
+                    }
+                }
+            }
+
+            return dishes.Sum(x => x.Price * x.Quantity) + drinks.Sum(x => x.Price * x.Quantity);
         }
 
         public BasketDto GetBasket(string userId)
@@ -334,6 +415,43 @@
 
             await this.basketDishRepository.SaveChangesAsync();
             await this.basketDrinkRepository.SaveChangesAsync();
+        }
+
+        public async Task<PromoCode> AddPromoCodeAsync(string code, string userId)
+        {
+            var promoCode = await this.promoCodeService.GetPromoCodeByCodeAsync(code);
+            var basket = this.basketRepository.All().FirstOrDefault(x => x.User.Id == userId);
+            basket.PromoCode = promoCode;
+            await this.basketRepository.SaveChangesAsync();
+            return promoCode;
+
+        }
+
+        public BasketPromoCodeViewModel GetBasketPromoCodeById(string id)
+        {
+            return this.basketRepository.All()
+                .Where(x => x.Id == id)
+                .Select(x => new BasketPromoCodeViewModel()
+                {
+                    Code = x.PromoCode.Code,
+                    ExpirationDate = x.PromoCode.ExpirationDate.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"),
+                })
+                .FirstOrDefault();
+        }
+
+        public async Task RemovePromoCodeByIdAsync(string id)
+        {
+            var basket = this.basketRepository.All().Include(x => x.PromoCode).FirstOrDefault(x => x.Id == id);
+            basket.PromoCode = null;
+            await this.basketRepository.SaveChangesAsync();
+        }
+
+        private PromoCode GetPromoCodeInBasket(string id)
+        {
+            return this.basketRepository.All()
+                .Include(x => x.PromoCode.ValidDishCategories)
+                .Include(x => x.PromoCode.ValidDrinkCategories)
+                .FirstOrDefault(x => x.Id == id).PromoCode;
         }
     }
 }

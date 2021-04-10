@@ -20,20 +20,42 @@ $(document).ready(function () {
             "searchable": false
         },
         {
-            "targets": [6],
+            "targets": [5],
+            "searchable": false,
+            "orderable": true
+        },
+        {
+            "targets": [7],
             "searchable": false,
             "orderable": false
         }],
         "columns": [
             { "data": "id", "name": "Id", "autoWidth": true },
             { "data": "code", "name": "Code", "autoWidth": true },
-            { "data": "usedTimes", "name": "Times used", "autoWidth": true },
-            { "data": "maxUsageTimes", "name": "Max usage times", "autoWidth": true },
-            { "data": "promoPercent", "name": "Promo%", "autoWidth": true },
-            { "data": "expirationDate", "name": "Expiration Date", "autoWidth": true },
+            { "data": "usedTimes", "name": "UsedTimes", "autoWidth": true },
+            { "data": "maxUsageTimes", "name": "MaxUsageTimes", "autoWidth": true },
+            { "data": "promoPercent", "name": "PromoPercent", "autoWidth": true },
+            {
+                "data": "isDeleted", "name": "IsDeleted", "autoWidth": true,
+                render: function (data) {
+                    if (data) {
+                        return "Yes";
+                    }
+                    return "No";
+                }
+            },
+            {
+                "data": "expirationDate", "name": "ExpirationDate", "autoWidth": true,
+                render: function (data) {
+                    var date = new Date(Date.parse(data));
+                    var userTimeZoneOffset = new Date().getTimezoneOffset();
+                    date.setMinutes(date.getMinutes() - userTimeZoneOffset);
+                    return date.toLocaleString();
+                }
+            },
             {
                 data: "id",
-                "render": function (data) { return "<a href='/Order/Index/" + data + "' class='btn btn-info'>View</a>"; }
+                "render": function (data) { return "<a href='/Manage/EditPromoCode/" + data + "' class='btn btn-dark action'>Edit and view</a>"; }
             },
         ]
     });
