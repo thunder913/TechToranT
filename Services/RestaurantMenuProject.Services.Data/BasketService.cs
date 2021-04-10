@@ -219,9 +219,12 @@
             .FirstOrDefault();
 
             var promoCode = this.GetPromoCodeInBasket(userId);
-            if (promoCode.ValidDishCategories.Any(x => x.Name == dish.FoodCategory))
+            if (promoCode != null)
             {
-                dish.Price = Math.Round(dish.Price * (1 - (decimal.Parse(promoCode.PromoPercent.ToString()) / 100)), 2);
+                if (promoCode.ValidDishCategories.Any(x => x.Name == dish.FoodCategory))
+                {
+                    dish.Price = Math.Round(dish.Price * (1 - (decimal.Parse(promoCode.PromoPercent.ToString()) / 100)), 2);
+                }
             }
 
             return dish;
@@ -245,9 +248,12 @@
              .FirstOrDefault();
 
             var promoCode = this.GetPromoCodeInBasket(userId);
-            if (promoCode.ValidDrinkCategories.Any(x => x.Name == drink.FoodCategory))
+            if (promoCode != null)
             {
-                drink.Price = Math.Round(drink.Price * (1 - (decimal.Parse(promoCode.PromoPercent.ToString()) / 100)), 2);
+                if (promoCode.ValidDrinkCategories.Any(x => x.Name == drink.FoodCategory))
+                {
+                    drink.Price = Math.Round(drink.Price * (1 - (decimal.Parse(promoCode.PromoPercent.ToString()) / 100)), 2);
+                }
             }
 
             return drink;
@@ -380,6 +386,10 @@
             return this.basketRepository
                         .All()
                         .Where(x => x.User.Id == userId)
+                        .Include(x => x.PromoCode)
+                        .ThenInclude(x => x.ValidDishCategories)
+                        .Include(x => x.PromoCode)
+                        .ThenInclude(x => x.ValidDrinkCategories)
                         .Select(b => new BasketDto()
                         {
                             Id = b.User.Id,
@@ -388,13 +398,16 @@
                                 Id = d.DishId,
                                 Quantity = d.Quantity,
                                 Price = d.Dish.Price,
+                                CategoryName = d.Dish.DishType.Name,
                             }).ToList(),
                             Drinks = b.Drinks.Select(d => new FoodCountPriceDto()
                             {
                                 Id = d.DrinkId,
                                 Quantity = d.Quantity,
                                 Price = d.Drink.Price,
+                                CategoryName = d.Drink.DrinkType.Name,
                             }).ToList(),
+                            PromoCode = b.PromoCode,
                         })
                         .First(); // TODO use automapper
         }
@@ -412,9 +425,11 @@
             {
                 this.basketDrinkRepository.Delete(item);
             }
-
+            var basket = this.basketRepository.All().FirstOrDefault(x => x.Id == userId);
+            basket.PromoCode = null;
             await this.basketDishRepository.SaveChangesAsync();
             await this.basketDrinkRepository.SaveChangesAsync();
+            await this.basketRepository.SaveChangesAsync();
         }
 
         public async Task<PromoCode> AddPromoCodeAsync(string code, string userId)

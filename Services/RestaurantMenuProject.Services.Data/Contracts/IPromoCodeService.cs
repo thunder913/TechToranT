@@ -16,5 +16,7 @@
         public Task EditPromoCodeAsync(EditPromoCodeViewModel editViewModel);
 
         public Task<PromoCode> GetPromoCodeByCodeAsync(string code);
+
+        public Task UsePromoCodeAsync(int id, int count);
     }
 }

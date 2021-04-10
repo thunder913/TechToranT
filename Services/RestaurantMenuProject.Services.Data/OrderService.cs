@@ -28,6 +28,7 @@
         private readonly ITableService tableService;
         private readonly IDishTypeService dishTypeService;
         private readonly RoleManager<ApplicationRole> roleManager;
+        private readonly IPromoCodeService promoCodeService;
 
         public OrderService(
             IDeletableEntityRepository<Order> orderRepository,
@@ -38,7 +39,8 @@
             IDrinkService drinkService,
             ITableService tableService,
             IDishTypeService dishTypeService,
-            RoleManager<ApplicationRole> roleManager
+            RoleManager<ApplicationRole> roleManager,
+            IPromoCodeService promoCodeService
             )
         {
             this.orderRepository = orderRepository;
@@ -50,6 +52,7 @@
             this.tableService = tableService;
             this.dishTypeService = dishTypeService;
             this.roleManager = roleManager;
+            this.promoCodeService = promoCodeService;
         }
 
         public ICollection<OrderInListViewModel> GetOrderViewModelsByUserId(int itemsPerPage, int page, string userId = null)
@@ -90,12 +93,37 @@
             Order order = new Order();
             order.ClientId = basket.Id;
             order.TableId = tableId;
+
+            if (basket.PromoCode != null)
+            {
+                foreach (var dish in basket.Dishes)
+                {
+                    if (basket.PromoCode.ValidDishCategories.Any(x => x.Name == dish.CategoryName))
+                    {
+                        dish.Price = Math.Round(dish.Price * (1 - (decimal.Parse(basket.PromoCode.PromoPercent.ToString()) / 100)), 2);
+                    }
+                }
+
+                foreach (var drink in basket.Drinks)
+                {
+                    if (basket.PromoCode.ValidDrinkCategories.Any(x => x.Name == drink.CategoryName))
+                    {
+                        drink.Price = Math.Round(drink.Price * (1 - (decimal.Parse(basket.PromoCode.PromoPercent.ToString()) / 100)), 2);
+                    }
+                }
+
+                await this.promoCodeService.UsePromoCodeAsync(basket.PromoCode.Id, 1);
+
+                order.PromoCode = basket.PromoCode;
+            }
+
             order.OrderDrinks = basket.Drinks.Select(x => new OrderDrink()
             {
                 Count = x.Quantity,
                 DrinkId = x.Id,
                 PriceForOne = x.Price,
             }).ToList();
+
             order.OrderDishes = basket.Dishes.Select(x => new OrderDish()
             {
                 Count = x.Quantity,
@@ -528,7 +556,7 @@
                     .All()
                     .Where(x => x.ProcessType == ProcessType.Completed && x.WaiterId == id && ((x.CreatedOn >= startDate)
                     || (x.CreatedOn.Month == startDate.Month && x.CreatedOn.Year == startDate.Year)))
-                    .GroupBy(x => new { x.CreatedOn.Year, x.CreatedOn.Month } )
+                    .GroupBy(x => new { x.CreatedOn.Year, x.CreatedOn.Month })
                     .Select(x => new
                     {
                         Date = new DateTime(x.Key.Year, x.Key.Month, 1).ToString("MM/yyyy", CultureInfo.InvariantCulture),
@@ -617,7 +645,7 @@
             order.StatusName = Enum.GetName(typeof(ProcessType), order.Status);
 
             return order;
-        } 
+        }
 
         public string GetWaiterId(string id)
         {
@@ -678,10 +706,10 @@
 
             await this.orderRepository.SaveChangesAsync();
 
-            
+
         }
 
-        private SalesViewModel GetSales(List<string> dates, ICollection<SalesChartViewModel> dishIncome,  ICollection<SalesChartViewModel> drinkIncome, string period)
+        private SalesViewModel GetSales(List<string> dates, ICollection<SalesChartViewModel> dishIncome, ICollection<SalesChartViewModel> drinkIncome, string period)
         {
             var salesViewModel = new SalesViewModel();
             foreach (var date in dates)
@@ -802,7 +830,7 @@
             return this.orderDishRepository
                     .All()
                     .Where(x => x.Order.DeliveredOn.Value.Year >= startDate.Year && x.Order.DeliveredOn.Value.Year <= endDate.Year)
-                    .GroupBy(x => new {  x.Order.DeliveredOn.Value.Year })
+                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Year })
                     .Select(x => new SalesChartViewModel()
                     {
                         Date = new DateTime(x.Key.Year, 1, 1).ToString("yyyy", CultureInfo.InvariantCulture),

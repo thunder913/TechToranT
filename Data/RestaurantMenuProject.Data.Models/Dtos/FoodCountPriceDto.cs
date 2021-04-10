@@ -13,6 +13,8 @@ namespace RestaurantMenuProject.Data.Models.Dtos
 
         public decimal Price { get; set; }
 
+        public string CategoryName { get; set; }
+
         public void CreateMappings(IProfileExpression configuration)
         {
             configuration.CreateMap<ICollection<BasketDish>, ICollection<FoodCountPriceDto>>()

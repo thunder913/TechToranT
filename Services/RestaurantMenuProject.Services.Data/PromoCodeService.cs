@@ -193,5 +193,24 @@
 
             return promoCode;
         }
+
+        public async Task UsePromoCodeAsync(int id, int count)
+        {
+            var promoCode = this.promoCodeRepository.All().FirstOrDefault(x => x.Id == id);
+
+            if (promoCode == null)
+            {
+                throw new Exception("There is no promo code with this id!");
+            }
+
+            if (promoCode.ExpirationDate <= DateTime.UtcNow || promoCode.UsedTimes >= promoCode.MaxUsageTimes)
+            {
+                throw new Exception("The promo code is no longer valid!");
+            }
+
+            promoCode.UsedTimes += count;
+
+            await this.promoCodeRepository.SaveChangesAsync();
+        }
     }
 }

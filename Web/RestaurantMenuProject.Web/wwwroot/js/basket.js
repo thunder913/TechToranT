@@ -41,6 +41,7 @@ $('.removeAll').click(function (e) {
                 var removedName = trElement.querySelectorAll('td')[1].textContent;
                 successNotification(`Successfully removed "${removedName}" from the basket!`);
                 trElement.remove();
+                CheckIfAnyDishes();
             } else {
                 dangerNotification("Something went wrong, try again!");
             }
@@ -48,6 +49,19 @@ $('.removeAll').click(function (e) {
         }
     });
 })
+
+function CheckIfAnyDishes() {
+    let elementsCount = document.querySelectorAll('tbody tr').length;
+    if (elementsCount == 1) {
+        document.querySelector('tbody tr').remove();
+        let trElement = document.createElement('tr');
+        let tdElement = document.createElement('td');
+        tdElement.colSpan = '75';
+        tdElement.innerHTML = 'The basket is empty! Add some items by going to the menu page.'
+        trElement.appendChild(tdElement);
+        document.querySelector('tbody').appendChild(trElement);
+    }
+}
 
 $('.remove').click(function (e) {
     let tdElement = e.target.parentElement;
@@ -64,8 +78,9 @@ $('.remove').click(function (e) {
         contentType: 'application/json',
         success: function (res) {
             if (!res) {
+                successNotification(`Successfully removed an item from the basket!`);
                 trElement.remove();
-                successNotification(`Successfully removed "${res.name}" from the basket!`);
+                CheckIfAnyDishes();
             }
             else {
                 trElement.querySelector('td[class=name]').textContent = res.name;
@@ -134,6 +149,7 @@ $('tr').on('click', '.addPromoCode', function (e) {
                 tdElement.appendChild(spanElement);
                 tdElement.appendChild(buttonElement);
                 successNotification(`Successfully added a promo code!`);
+                location.reload();
             } else {
                 dangerNotification("Something went wrong, try again!");
             }
@@ -171,6 +187,7 @@ $('tr').on('click', '.removeCode', function (e) {
             let formElement = tdElement.querySelector('form');
             formElement.appendChild(inputElement);
             formElement.appendChild(buttonElement);
+            location.reload();
         }
     });
 })

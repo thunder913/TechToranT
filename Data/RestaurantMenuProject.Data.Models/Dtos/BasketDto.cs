@@ -13,6 +13,8 @@ namespace RestaurantMenuProject.Data.Models.Dtos
 
         public ICollection<FoodCountPriceDto> Drinks { get; set; } = new HashSet<FoodCountPriceDto>();
 
+        public PromoCode PromoCode { get; set; }
+
         public void CreateMappings(IProfileExpression configuration)
         {
             configuration.CreateMap<Basket, BasketDto>()

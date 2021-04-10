@@ -8,17 +8,23 @@
 
 <h4>Process type: @Model.ProcessType</h4>
 
-<h4>Promo code used: @if (Model.PromoCode != null)
-{ @Model.PromoCode.Code }
-else { <text>none</text> }</h4>
+<h4>
+    Promo code used: @if (Model.PromoCode != null)
+    {@Model.PromoCode.Code }
+else
+{ <text>none</text>}
+</h4>
 
-<h4>The order @if (Model.PaidOn != null)
-{
-    @Model.PaidOn?.ToLocalTime()
-}
-else {
-    <text> has not been paid.</text>
-}</h4>
+<h4>
+    The order @if (Model.PaidOn != null)
+    {
+        <text>was paid on: </text> @Model.PaidOn?.ToLocalTime()
+    }
+    else
+    {
+        <text> has not been paid.</text>
+    }
+</h4>
 
 <table class="table table-striped table-bordered table-hover">
     <thead class="thead-dark">
@@ -33,22 +39,22 @@ else {
     <tbody>
         @foreach (var item in Model.FoodItems)
         {
-        <tr data-id="@item.Id" data-type="@item.FoodType.ToString()">
-            <td>
-                @{
+            <tr data-id="@item.Id" data-type="@item.FoodType.ToString()">
+                <td>
+                    @{
                         var foodFolder = item.FoodType.ToString().ToLower() == "drink" ? "Drinks" : "Dishes";
-                    <img src="~/img/@(foodFolder)/@(item.Image.Id).@(item.Image.Extension) " class="img-fluid" />
+                        <img src="~/img/@(foodFolder)/@(item.Image.Id).@(item.Image.Extension) " class="img-fluid" />
 
-                }
-            </td>
-            <td class="name">@item.Name</td>
-            <td class="quantity">@item.Quantity</td>
-            <td class="price">@(item.Price)$</td>
-            <td class="totalPrice">@(item.Price*item.Quantity)$</td>
-        </tr>
+                    }
+                </td>
+                <td class="name">@item.Name</td>
+                <td class="quantity">@item.Quantity</td>
+                <td class="price">@(item.Price)$</td>
+                <td class="totalPrice">@(item.Price*item.Quantity)$</td>
+            </tr>
         }
 
-        
+
         <tr>
             <td></td>
             <td></td>
@@ -56,7 +62,7 @@ else {
             <td></td>
             <td>
                 <span class="price">
-                    @Model.FoodItems.Sum(x => x.Price*x.Quantity).ToString("0.00")$
+                    @Model.FoodItems.Sum(x => x.Price * x.Quantity).ToString("0.00")$
                 </span>
             </td>
         </tr>
