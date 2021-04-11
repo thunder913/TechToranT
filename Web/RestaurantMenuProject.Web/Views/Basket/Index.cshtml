@@ -5,12 +5,12 @@
 <table class="table table-striped table-bordered table-hover">
     <thead class="thead-dark">
         <tr>
-            <th scope="col">Image</th>
+            <th scope="col" style="width: 150px">Image</th>
             <th scope="col">Name</th>
-            <th scope="col">Quantity</th>
-            <th scope="col">Price for one</th>
-            <th scope="col">Total price</th>
-            <th scope="col"></th>
+            <th scope="col" style="width: 100px;">Quantity</th>
+            <th scope="col" style="width: 150px;">Price for one</th>
+            <th scope="col" style="width: 150px">Total price</th>
+            <th scope="col" style="width: ;">Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -23,11 +23,11 @@
                         <img src="~/img/@(foodFolder)/@(item.Image.Id).@(item.Image.Extension) " class="img-fluid" />
                     }
                 </td>
-                <td class="name">@item.Name</td>
-                <td class="quantity">@item.Quantity</td>
-                <td class="price">@(item.Price.ToString("0.00"))$</td>
-                <td class="totalPrice">@((item.Price*item.Quantity).ToString("0.00"))$</td>
-                <td style="width: 17%">
+                <td class="name" style="vertical-align: middle;" >@item.Name</td>
+                <td class="quantity"style="vertical-align: middle;">@item.Quantity</td>
+                <td class="price"style="vertical-align: middle;">@(item.Price.ToString("0.00"))$</td>
+                <td class="totalPrice"style="vertical-align: middle;">@((item.Price*item.Quantity).ToString("0.00"))$</td>
+                <td style="width: 17%" >
                     <form method="post" class="hide">
                     </form>
                     <button type="button" class="btn btn-success add">➕</button>
@@ -39,37 +39,34 @@
 
         @if (Model.Foods.Any())
         {
-        <tr>
-            <td class="borderless-cell">
-                <form method="post">
-                    @if (Model.PromoCode.Code == null)
-                    {
-                        <input name="tableCode" placeholder="Promo code" />
-                        <button type="submit" class="btn btn-dark addPromoCode">Add</button>
-                    }
-                </form>
-                @if (Model.PromoCode.Code != null)
+    <tr>
+        <td class="borderless-cell" colspan="3">
+            <form method="post">
+                @if (Model.PromoCode.Code == null)
                 {
-                    <span>Code @Model.PromoCode.Code has been used! It expires on @Model.PromoCode.ExpirationDate!</span>
-                    <button class="btn btn-danger removeCode">Remove</button>
+                    <input name="tableCode" placeholder="Promo code" />
+                    <button type="submit" class="btn btn-dark addPromoCode">Add</button>
                 }
+            </form>
+            @if (Model.PromoCode.Code != null)
+            {
+                <span class="promoCode">Promo code used - @(Model.PromoCode.Code). It expires on @Model.PromoCode.ExpirationDate!</span>
+                <button class="btn btn-danger removeCode">Remove</button>
+            }
 
 
-            </td>
-            <td class="borderless-cell"></td>
-            <td class="borderless-cell"></td>
-            <td class="borderless-cell"></td>
-            <td class="borderless-cell">
-                <span class="price">
-                </span>
-            </td>
-            <td class="borderless-cell">
-                <form method="post" asp-controller="Order" asp-action="MakeOrder">
-                    <input name="tableCode" placeholder="Table code"/>
-                    <button type="submit" class="btn btn-info">ORDER</button>
-                </form>
-            </td>
-        </tr>
+        </td>
+        <td class="borderless-cell" style="text-align: right;" colspan="2">
+            Total price:
+            <span class="price"></span>
+        </td>
+        <td class="borderless-cell">
+            <form method="post" asp-controller="Order" asp-action="MakeOrder">
+                <input class="tableCode" name="tableCode" placeholder="Table code" />
+                <button type="submit" class="btn btn-info order">ORDER</button>
+            </form>
+        </td>
+    </tr>
         }
         else
         {

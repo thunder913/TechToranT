@@ -1,7 +1,19 @@
 ﻿img {
-    width: 50px;
+    width: 70px;
 }
 
 .borderless-cell {
     border: 1px solid transparent !important;
+}
+
+.promoCode{
+    display: inline-block;
+}
+
+.tableCode{
+    width: 75px;
+}
+
+td{
+    vertical-align: middle;
 }

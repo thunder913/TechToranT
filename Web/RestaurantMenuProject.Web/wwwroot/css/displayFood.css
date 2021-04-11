@@ -2,7 +2,7 @@
     height: 700px;
     background-size: 1100px;
     background-repeat: no-repeat;
-    border: 5px solid turquoise;
+    border: 5px solid rgb(211, 171, 171);
     border-radius: 3%;
     background-size: 100% 100%;
     background-repeat: no-repeat;
@@ -27,7 +27,7 @@
 }
 
 .foodName {
-    background-color: turquoise;
+    background-color: rgb(211, 171, 171);
     text-align: -webkit-center;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;

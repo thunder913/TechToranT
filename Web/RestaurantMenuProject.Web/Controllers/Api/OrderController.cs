@@ -4,11 +4,16 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-
+    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.SignalR;
+    using RestaurantMenuProject.Common;
+    using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Data.Models.Dtos;
     using RestaurantMenuProject.Data.Models.Enums;
     using RestaurantMenuProject.Services.Data.Contracts;
+    using RestaurantMenuProject.Services.Messaging;
+    using RestaurantMenuProject.Web.Hubs;
 
     [Route("api/[Controller]")]
     [ApiController]
@@ -17,14 +22,26 @@
     {
         private readonly IOrderService orderService;
         private readonly IPickupItemService pickupItemService;
+        private readonly ITableService tableService;
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly IEmailSender emailSender;
+        private readonly IHubContext<OrderHub> orderHub;
 
         public OrderController(
             IOrderService orderService,
-            IPickupItemService pickupItemService
+            IPickupItemService pickupItemService,
+            ITableService tableService,
+            UserManager<ApplicationUser> userManager,
+            IEmailSender emailSender,
+            IHubContext<OrderHub> orderHub
             )
         {
             this.orderService = orderService;
             this.pickupItemService = pickupItemService;
+            this.tableService = tableService;
+            this.userManager = userManager;
+            this.emailSender = emailSender;
+            this.orderHub = orderHub;
         }
 
         [HttpPost("Delete")]
@@ -90,6 +107,32 @@
         {
             await this.orderService.FinishOrderAsync(id);
             return true;
+        }
+
+        [HttpPost("CheckTable/{code?}")]
+        public async Task<ActionResult<bool>> CheckTable(string code)
+        {
+            try
+            {
+                var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var user = await this.userManager.FindByIdAsync(userId);
+                var orderId = await this.orderService.MakeOrderAsync(userId, code);
+                await this.emailSender.SendMakeOrderEmailAsync(GlobalConstants.Email, "Techtorant", user.Email, user.FirstName + " " + user.LastName);
+
+                var waiterIds = this.userManager.GetUsersInRoleAsync(GlobalConstants.WaiterRoleName).Result.Select(x => x.Id);
+
+                var orderInListItem = this.orderService.GetOrderInListById(orderId);
+                await this.orderHub.Clients.Users(waiterIds).SendAsync("AddItemsToPickup", new
+                {
+                    Order = orderInListItem,
+                });
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return this.RedirectToAction("Index", "Menu");
         }
     }
 }

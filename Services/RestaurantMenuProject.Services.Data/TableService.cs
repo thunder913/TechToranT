@@ -97,7 +97,7 @@ namespace RestaurantMenuProject.Services.Data
             await this.tableRepository.SaveChangesAsync();
         }
 
-        private bool IsTableCodeFree(string code)
+        public bool IsTableCodeFree(string code)
         {
             if (this.tableRepository.All().Any(x => x.Code == code))
             {

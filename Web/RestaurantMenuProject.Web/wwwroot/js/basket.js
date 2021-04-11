@@ -22,6 +22,31 @@
         }
     });
 })
+
+$('.order').click(function (e) {
+    e.preventDefault();
+    let formElement = e.target.parentElement;
+    let antiForgeryToken = formElement.querySelector('input[name=__RequestVerificationToken]').value;
+    let code = formElement.querySelector('.tableCode').value;
+    $.ajax({
+        type: 'POST',
+        url: '/api/Order/CheckTable/'+code,
+        headers: {
+            'X-CSRF-TOKEN': antiForgeryToken
+        },
+        contentType: 'application/json',
+        success: function (res) {
+            if (!res) {
+                dangerNotification('There was an error with the table code, check it and try again!');
+                e.preventDefault();
+            } else {
+                history.pushState({}, null, window.location.origin + '/Menu');
+                location.reload();
+            }
+        }
+    });
+})
+
 $('.removeAll').click(function (e) {
     let tdElement = e.target.parentElement;
     let trElement = tdElement.parentElement;

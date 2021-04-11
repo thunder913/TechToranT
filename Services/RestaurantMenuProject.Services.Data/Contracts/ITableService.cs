@@ -20,5 +20,7 @@ namespace RestaurantMenuProject.Services.Data.Contracts
         public Task EditTableAsync(AddTableViewModel tableViewModel);
 
         public Task RefreshTableCodesAsync();
+
+        public bool IsTableCodeFree(string code);
     }
 }

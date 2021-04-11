@@ -17,8 +17,19 @@
     <button type="button" class="btn btn-success add">Add</button>
 </form>}
 </div>
-<h1>@Model.AdditionalInfo</h1>
-<span>Ingredients: @string.Join(", ", Model.Ingredients.Select(x => x.Name))</span>
+@if (Model.AdditionalInfo != null)
+{
+<h1>Description: @Model.AdditionalInfo</h1>
+}
+<span>Ingredients: @{
+    if (Model.Ingredients.Any()) {
+        @string.Join(", ", Model.Ingredients.Select(x => x.Name));
+    }
+    else
+    {
+        <text>None</text>
+    }
+}</span>
 <br />
 <span>
     Allergens: @{ var allergens = new List<AllergenViewModel>();
@@ -26,7 +37,15 @@
         {
             allergens.AddRange(ingr.Allergens);
         }
-@string.Join(", ", allergens.Select(x => x.Name)); }
+        if (allergens.Any())
+        {
+            @string.Join(", ", allergens.Select(x => x.Name));
+            }
+            else
+            {
+            <text>None</text>
+            }
+        }
 </span>
 
 @* TODO move the styles and scripts in different files*@

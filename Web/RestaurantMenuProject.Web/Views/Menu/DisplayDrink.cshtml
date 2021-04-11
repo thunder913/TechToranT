@@ -17,7 +17,16 @@
 </form>}
 </div>
 <h1>@Model.AdditionalInfo</h1>
-<span>Ingredients: @string.Join(", ", Model.Ingredients.Select(x => x.Name))</span>
+<span>
+    Ingredients: @{ if (Model.Ingredients.Any())
+                    {
+                        @string.Join(", ", Model.Ingredients.Select(x => x.Name));
+                    }
+                    else
+                    {
+                        <text>None</text>
+                    } }
+</span>
 <br />
 <span>
     Allergens: @{ var allergens = new List<AllergenViewModel>();
@@ -25,7 +34,15 @@
         {
             allergens.AddRange(ingr.Allergens);
         }
-@string.Join(", ", allergens.Select(x => x.Name)); }
+        if (allergens.Any())
+        {
+@string.Join(", ", allergens.Select(x => x.Name));
+}
+else
+{
+<text>None</text>
+}
+    }
 </span>
 
 
