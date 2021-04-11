@@ -59,11 +59,11 @@
         {
             return this.orderRepository
                     .AllAsNoTrackingWithDeleted()
+                    .Where(x => userId == null || x.ClientId == userId)
                     .Include(x => x.Client)
                     .OrderByDescending(x => x.CreatedOn)
                     .Skip((page - 1) * itemsPerPage)
                     .Take(itemsPerPage)
-                    .Where(x => userId == null || x.ClientId == userId)
                     .To<OrderInListViewModel>()
                     .ToList();
         }

@@ -1,0 +1,20 @@
+﻿.orderInfo{
+    margin-bottom: 30px;
+    display: block;
+    clear: both;
+    column-count: 2;
+    column-gap: 50px;
+    column-rule-style: solid;
+    column-rule-color: gray;
+}
+
+.id{
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.processType{
+}
+
+.promoCode{
+}

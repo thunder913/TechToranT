@@ -55,23 +55,23 @@
             return this.View(viewModel);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> MakeOrder(string tableCode)
-        {
-            var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var user = await this.userManager.FindByIdAsync(userId);
-            var orderId = await this.orderService.MakeOrderAsync(userId, tableCode);
-            await this.emailSender.SendMakeOrderEmailAsync(GlobalConstants.Email, "Techtorant", user.Email, user.FirstName + " " + user.LastName);
+        //[HttpPost]
+        //public async Task<IActionResult> MakeOrder(string tableCode)
+        //{
+        //    var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        //    var user = await this.userManager.FindByIdAsync(userId);
+        //    var orderId = await this.orderService.MakeOrderAsync(userId, tableCode);
+        //    await this.emailSender.SendMakeOrderEmailAsync(GlobalConstants.Email, "Techtorant", user.Email, user.FirstName + " " + user.LastName);
 
-            var waiterIds = this.userManager.GetUsersInRoleAsync(GlobalConstants.WaiterRoleName).Result.Select(x => x.Id);
+        //    var waiterIds = this.userManager.GetUsersInRoleAsync(GlobalConstants.WaiterRoleName).Result.Select(x => x.Id);
 
-            var orderInListItem = this.orderService.GetOrderInListById(orderId);
-            await this.orderHub.Clients.Users(waiterIds).SendAsync("AddItemsToPickup", new
-            {
-                Order = orderInListItem,
-            });
-            return this.RedirectToAction("Index", "Menu");
-        }
+        //    var orderInListItem = this.orderService.GetOrderInListById(orderId);
+        //    await this.orderHub.Clients.Users(waiterIds).SendAsync("AddItemsToPickup", new
+        //    {
+        //        Order = orderInListItem,
+        //    });
+        //    return this.RedirectToAction("Index", "Menu");
+        //}
 
         public IActionResult Index(string id)
         {

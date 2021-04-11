@@ -132,7 +132,7 @@
                 return false;
             }
 
-            return this.RedirectToAction("Index", "Menu");
+            return true;
         }
     }
 }

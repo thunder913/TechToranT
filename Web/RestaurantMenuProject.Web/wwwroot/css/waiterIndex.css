@@ -1,9 +1,10 @@
 ﻿.newOrders {
-    height: 300px;
+    height: 325px;
     border: 1px solid black;
 }
 
 .pickupTable, .activeTable {
-    height: 350px;
+    height: 425px;
     border: 1px solid black;
+    margin-top: 20px;
 }
