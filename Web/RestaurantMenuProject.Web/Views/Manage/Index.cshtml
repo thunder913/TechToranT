@@ -1,9 +1,9 @@
 ﻿<link href="~/css/manageIndex.css" rel="stylesheet" />
 
 <style>
+
     #select {
         border: 3px solid #fff;
-        padding: 20px;
     }
 
     .option {
@@ -13,9 +13,6 @@
         margin-bottom: 20px;
         padding: 50px;
         margin-left: 2%;
-        background-size: contain;
-        background-size: cover;
-        background-size: 100%;
         border-radius: 10px;
         border: 5px double rgba(121, 51, 51, 0.8);
         cursor: pointer;
@@ -38,10 +35,91 @@
     }
 
 
-    #add .btn{
+    #add .btn {
         position: relative;
         left: 350px;
-        bottom: 10px;
+        bottom: 0px;
+    }
+
+    .line {
+        width: 100%;
+        height: 0px;
+        border-bottom: 5px solid rgba(121, 51, 51, 0.8);
+        position: absolute;
+        left: 0px;
+    }
+
+    .verticalBox {
+        width: 20%;
+        float: left;
+        left: 300px;
+        border: 4px solid double brown;
+        padding-top: 280px;
+        margin-left: 2%;
+        background-size: contain;
+        background-size: cover;
+        background-size: 100%;
+        border-radius: 10px;
+        border: 5px double rgba(121, 51, 51, 0.8);
+        cursor: pointer;
+        background-size: contain;
+        background-size: cover;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+    }
+
+    .horizontalBox {
+        width: 33%;
+        float: left;
+        left: 300px;
+        border: 4px solid double brown;
+        padding-top: 110px;
+        margin-left: 5%;
+        background-size: contain;
+        background-size: cover;
+        background-size: 100%;
+        border-radius: 10px;
+        border: 5px double rgba(121, 51, 51, 0.8);
+        cursor: pointer;
+        background-size: contain;
+        background-size: cover;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        margin-bottom: 20px;
+    }
+
+    .verticalBox label {
+        position: relative;
+        left: 70px;
+        font-size: 25px;
+        background-color: rgba(128, 128, 128, 0.8);
+        color: navajowhite;
+        font: bold, italic;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .horizontalBox label {
+        position: relative;
+        float: right;
+        right: 10px;
+        font-size: 20px;
+        background-color: rgba(128, 128, 128, 0.8);
+        color: navajowhite;
+        font: bold, italic;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .lowerHalf {
+        margin-top: 40px;
+    }
+
+    .backgroundPhoto {
+        background-size: contain;
+        background-size: cover;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
     }
 </style>
 
@@ -49,27 +127,27 @@
     <form id="add" method="post" asp-controller="Manage" asp-action="Add">
 
         <div id="select">
-            <div class="option" style="background-image: url(/img/Manage/Dishes.jpg)">
-                <input type="radio" id="dish" name="type" value="Dish" hidden checked>
+            <div class="option backgroundPhoto" style="background-image: url(/img/Manage/Dishes.jpg)">
+                <input type="radio" id="dish" name="type" value="Dish" hidden>
                 <label for="dish">Dish</label>
             </div>
-            <div class="option" style="background-image: url(/img/Manage/Drinks.jpeg)">
+            <div class="option backgroundPhoto" style="background-image: url(/img/Manage/Drinks.jpeg)">
                 <input type="radio" id="drink" name="type" value="Drink" hidden>
                 <label for="drink">Drink</label>
             </div>
-            <div class="option" style="background-image: url(/img/Manage/Ingredients.jpg)">
+            <div class="option backgroundPhoto" style="background-image: url(/img/Manage/Ingredients.jpg)">
                 <input type="radio" id="ingredient" name="type" value="Ingredient" hidden>
                 <label for="ingredient">Ingredient</label>
             </div>
-            <div class="option" style="background-image: url(/img/Manage/Allergens.jpg)">
+            <div class="option backgroundPhoto" style="background-image: url(/img/Manage/Allergens.jpg)">
                 <input type="radio" id="allergen" name="type" value="Allergen" hidden>
                 <label for="allergen">Allergen</label>
             </div>
-            <div class="option" style="background-image: url(/img/Manage/DishTypes.jpg)">
+            <div class="option backgroundPhoto" style="background-image: url(/img/Manage/DishTypes.jpg)">
                 <input type="radio" id="dishCategory" name="type" value="DishCategory" hidden>
                 <label for="dishCategory">Dish Category</label>
             </div>
-            <div class="option" style="background-image: url(/img/Manage/DrinkTypes.jpg)">
+            <div class="option backgroundPhoto" style="background-image: url(/img/Manage/DrinkTypes.jpg)">
                 <input type="radio" id="drinkCategory" name="type" value="DrinkCategory" hidden>
                 <label for="drinkCategory">Drink Category</label>
             </div>
@@ -78,27 +156,44 @@
         <input class="btn btn-success btn-lg" type="submit" value="Add" />
 
     </form>
-    <form method="get">
-        <input class="btn btn-primary" type="submit" asp-controller="Manage" asp-action="Users" value="Users" />
-        <input class="btn btn-danger" type="submit" asp-controller="Manage" asp-action="Orders" value="Orders" />
-        <input class="btn btn-dark" type="submit" asp-controller="Manage" asp-action="PromoCodes" value="Promo codes" />
+
+    <hr class="line">
+    <form class="lowerHalf" method="get">
+        <div class="verticalBox" style="background-image: url(/img/Manage/Users.jpg)">
+            <input type="submit" asp-controller="Manage" asp-action="Users" value="Users" hidden />
+            <label>Users</label>
+        </div>
+        <div class="horizontalBox" style="background-image: url(/img/Manage/Orders.jpg)">
+            <input class="btn btn-danger" type="submit" asp-controller="Manage" asp-action="Orders" value="Orders" hidden />
+            <label>Orders</label>
+        </div>
+        <div class="horizontalBox" style="background-image: url(/img/Manage/PromoCode.jpg)">
+            <input class="btn btn-dark" type="submit" asp-controller="Manage" asp-action="PromoCodes" value="Promo codes" hidden/>
+            <label>Promo codes</label>
+        </div>
     </form>
     <br />
-    <div id="analyse">
+    <form id="analyse" class="lowerHalf" method="get">
+        <div class="horizontalBox" style="background-image: url(/img/Manage/Sales.jpg)">
+            <input type="submit" class="btn btn-primary" asp-area="" asp-controller="Analyse" asp-action="Sales" value="Analyse sales" hidden />
+            <label>Analyse sales</label>
+        </div>
+        <div class="horizontalBox" style="background-image: url(/img/Manage/Waiters.jpg)">
+            <input type="submit" class="btn btn-secondary" asp-area="" asp-controller="Analyse" asp-action="Staff" value="Analyse staff" hidden />
+            <label>Analyse staff</label>
+        </div>
 
-    </div>
-    <a type="button" class="btn btn-primary" asp-area="" asp-controller="Analyse" asp-action="Sales">Analyse income</a>
-    <a type="button" class="btn btn-secondary" asp-area="" asp-controller="Analyse" asp-action="Staff">Analyse waiters</a>
-</div>
+    </form>
 
-@section Scripts{
-    <script>
-        $('#select').on('click', `.option`, function (e) {
-            $('.option').removeClass('selected');
-            $(this).addClass('selected');
-            let asd = $(this).children('input');
-            $(this).children('input')[0].checked = true;
-        });
-
-    </script>
-}
+    @section Scripts{
+        <script>
+            $('#select').on('click', `.option`, function (e) {
+                $('.option').removeClass('selected');
+                $(this).addClass('selected');
+                $(this).children('input')[0].checked = true;
+            });
+            $('.lowerHalf').on('click', `div`, function (e) {
+                $(this).children()[0].click();
+            });
+        </script>
+    }
