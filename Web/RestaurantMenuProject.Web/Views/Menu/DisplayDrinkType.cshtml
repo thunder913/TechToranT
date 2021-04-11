@@ -7,7 +7,7 @@
     @foreach (var item in Model)
     {
         <li id="@item.Id" onclick="window.location = '/Menu/Drinks/@item.Name/@item.Id';" class="col-md-5 menuItem">
-            <h1>@item.Name</h1>
+            <h1 class="title">@item.Name</h1>
             <div id="@item.Id" class="bg h-100 col-md-12" style="background-image: url(/img/Drinks/@(item.Image.Id).@(item.Image.Extension))"></div>
             <div class="float-left">
                 <span id="weight" class="left gray-bg">@item.Weight mililitres</span>

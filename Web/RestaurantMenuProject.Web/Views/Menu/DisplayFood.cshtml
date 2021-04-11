@@ -1,13 +1,12 @@
 ﻿@model DishViewModel
 
 <link href="~/css/displayFood.css" rel="stylesheet" />
-<link rel="stylesheet" runat="server" media="screen" href="~/css/menu.css" />
 <div id="@Model.Id" class="bg" style="background-image: url(/img/Dishes/@(Model.Image.Id).@(Model.Image.Extension))">
-    <h1 class="foodName">@Model.Name</h1>
+    <h1 class="foodName title">@Model.Name</h1>
     <br />
     <br />
-    <span class="left gray-bg">@Model.Weight grams</span>
-    <span class="right gray-bg">@Model.Price$</span>
+    <span class="left gray-bg weigth">@Model.Weight grams</span>
+    <span class="right gray-bg price">@Model.Price$</span>
 
     @if (this.User.Identity.IsAuthenticated)
     {

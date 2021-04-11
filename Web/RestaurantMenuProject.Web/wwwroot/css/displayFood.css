@@ -4,6 +4,8 @@
     background-repeat: no-repeat;
     border: 5px solid turquoise;
     border-radius: 3%;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
 }
 
 .right {
@@ -30,3 +32,42 @@
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
 }
+
+.weigth{
+    position: relative;
+    right: 25px;
+    top: 25px;
+    border-radius: 0px 0px 0px 15px;
+    padding: 10px 10px 10px 10px;
+    font-size: 25px;
+}
+
+
+.add {
+    padding: 20px;
+    position: relative;
+    left: 22px;
+    bottom: 10px;
+    border-radius: 0px 0px 0px 0px;
+    border: 1px solid black;
+}
+
+.price{
+    position: relative;
+    padding: 15px;
+    font-size: 20px;
+    left: 11px;
+    bottom: 9px;
+    border-radius: 0px 0px 17px 0px;
+}
+
+#count {
+    height:65px;
+    min-width: 70px;
+    text-align: center;
+    position: relative;
+    left: 27px;
+    bottom: 7px;
+    border: 1px solid black;
+}
+

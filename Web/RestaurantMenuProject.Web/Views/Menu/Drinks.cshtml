@@ -8,12 +8,8 @@
     {
     <li id="@item.Name" onclick="window.location = '/Menu/Drinks/@item.Name'" class="col-md-5 menuItem">
         <div id="@item.Name" class="bg" style="background-image: url(/img/Menu/@item.Image.Id.@item.Image.Extension)"></div>
-        <h1>@item.Name</h1>
-        <br />
-        <br />
-        <span>@item.Description</span>
-        <br />
-        <br />
+        <h1 class="title">@item.Name</h1>
+        <span class="description">@item.Description</span>
         @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
         {
     <form asp-controller="Manage" asp-action="EditDrinkType" method="get">
