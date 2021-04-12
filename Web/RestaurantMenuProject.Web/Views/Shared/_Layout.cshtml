@@ -5,19 +5,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@this.ViewData["Title"] - @GlobalConstants.SystemName</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap-select/dist/css/bootstrap-select.min.css" asp-append-version="true" />
     <link href="~/css/animatecss/animate.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     <link href="~/lib/jquery.datatables/css/jquery.dataTables.min.css" rel="stylesheet" />
     <link href="~/css/siteBackground.css" rel="stylesheet" />
     <link href="~/css/layout.css" rel="stylesheet" />
+    <link href="~/css/navbar.css" rel="stylesheet" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-light border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">@GlobalConstants.SystemName</a>
+                <a class="navbar-brand siteTitle" asp-area="" asp-controller="Home" asp-action="Index">@GlobalConstants.SystemName</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -26,38 +27,41 @@
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark tab" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index">Menu</a>
+                            <a class="nav-link text-dark tab" asp-area="" asp-controller="Menu" asp-action="Index">Menu</a>
                         </li>
                         @if (this.User.IsInRole(GlobalConstants.ChefRoleName))
                         {
-            <li class="nav-item">
-                <a class="nav-link text-dark" asp-area="" asp-controller="Chef" asp-action="Index">Chef</a>
-            </li>}
+                            <li class="nav-item">
+                                <a class="nav-link text-dark tab" asp-area="" asp-controller="Chef" asp-action="Index">Chef</a>
+                            </li>
+                        }
                         @if (this.User.IsInRole(GlobalConstants.WaiterRoleName))
                         {
-            <li class="nav-item">
-                <a class="nav-link text-dark" asp-area="" asp-controller="Waiter" asp-action="Index">Waiter</a>
-            </li>}
+                            <li class="nav-item">
+                                <a class="nav-link text-dark tab" asp-area="" asp-controller="Waiter" asp-action="Index">Waiter</a>
+                            </li>
+                        }
                         @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
                         {
-            <li class="nav-item">
-                <a class="nav-link text-dark" asp-area="" asp-controller="Manage" asp-action="Index">Manage</a>
-            </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Manage" asp-action="Tables">Tables</a>
-                            </li>}
+                                <a class="nav-link text-dark tab" asp-area="" asp-controller="Manage" asp-action="Index">Manage</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark tab" asp-area="" asp-controller="Manage" asp-action="Tables">Tables</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-
     <div class="container">
         <partial name="_CookieConsentPartial" />
         <main role="main" class="pb-3">
+            <span class="glyphicon glyphicon-search"></span>
             @this.RenderBody()
         </main>
     </div>
@@ -77,7 +81,10 @@
     <script src="~/lib/jquery.datatables/js/jquery.dataTables.min.js"></script>
     <script src="~/js/site.min.js" asp-append-version="true"></script>
     <script src="~/lib/chartJS/dist/Chart.js"></script>
+    <script src="~/js/navbar.js"></script>
     <script src="~/js/notifications.js"></script>
+
+
     @await this.RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
