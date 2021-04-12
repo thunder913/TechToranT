@@ -107,6 +107,20 @@ namespace RestaurantMenuProject.Services.Data
             return true;
         }
 
+        public int GetFreeTable()
+        {
+            var tables = this.tableRepository.All().OrderByDescending(x => x.Number).ToArray();
+            for (int i = 1; i < tables[0].Number; i++)
+            {
+                if (!tables.Any(x => x.Number == i))
+                {
+                    return i;
+                }
+            }
+
+            return tables[0].Number + 1;
+        }
+
         private string RandomString(int length)
         {
             Random random = new Random();

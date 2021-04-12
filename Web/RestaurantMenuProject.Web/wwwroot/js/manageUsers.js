@@ -43,7 +43,10 @@ $(document).ready(function () {
                 "data": "deletedOn", "name": "DeletedOn", "autoWidth": true,
                 render: function (data) {
                     if (data) {
-                        return data;
+                        var date = new Date(Date.parse(data));
+                        var userTimeZoneOffset = new Date().getTimezoneOffset();
+                        date.setMinutes(date.getMinutes() - userTimeZoneOffset);
+                        return date.toLocaleString();
                     } else {
                         return "Account is active!"
                     }
@@ -51,7 +54,7 @@ $(document).ready(function () {
             },
             {
                 data: "id",
-                "render": function (data) { return "<a href='/Manage/EditUser/" + data + "' class='btn btn-info'>Edit</a> <a href='/Order/All/" + data + "' class='btn btn-info'>Orders</a>"; }
+                "render": function (data) { return "<a href='/Manage/EditUser/" + data + "' class='btn btn-primary'>Edit</a> <a href='/Order/All/" + data + "' class='btn btn-info'>Orders</a>"; }
             },
         ]
     });

@@ -22,5 +22,7 @@ namespace RestaurantMenuProject.Services.Data.Contracts
         public Task RefreshTableCodesAsync();
 
         public bool IsTableCodeFree(string code);
+
+        public int GetFreeTable();
     }
 }

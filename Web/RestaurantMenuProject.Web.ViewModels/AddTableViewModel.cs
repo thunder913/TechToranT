@@ -12,7 +12,7 @@
         [Required]
         public int Number { get; set; }
 
-        [Range(0,255)]
+        [Range(1,255)]
         public int Capacity { get; set; }
     }
 }

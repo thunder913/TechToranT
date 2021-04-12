@@ -45,8 +45,10 @@ namespace RestaurantMenuProject.Data.Models
 
         public string BasketId { get; set; }
 
+        [PersonalDataAttribute]
         public string FirstName { get; set; }
 
+        [PersonalDataAttribute]
         public string LastName { get; set; }
 
         public ICollection<Order> WaiterOrders { get; set; } = new HashSet<Order>();

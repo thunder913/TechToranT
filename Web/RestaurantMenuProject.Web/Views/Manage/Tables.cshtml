@@ -2,18 +2,17 @@
 @using RestaurantMenuProject.Common
 <link href="~/css/manageTables.css" rel="stylesheet" />
 
-<form asp-controller="Manage" asp-action="RefreshTables" method="post">
-    <button class="btn btn-success">Refresh table codes</button>
-</form>
-<form asp-controller="Manage" asp-action="AddTable" method="get">
-    <button class="btn btn-info">Add Table</button>
-</form>
+<div class="buttons">
+    <form class="refreshCodes" asp-controller="Manage" asp-action="RefreshTables" method="post">
+        <button class="btn btn-success">Refresh table codes</button>
+    </form>
+    <form class="addTable" asp-controller="Manage" asp-action="AddTable" method="get">
+        <button class="btn btn-info">Add Table</button>
+    </form>
+</div>
 <table id="usersTable" class="table table-striped table-bordered" style="width:100%">
     <thead>
         <tr>
-            <th class="th-sm">
-                Id
-            </th>
             <th class="th-sm">
                 Number
             </th>
@@ -38,9 +37,6 @@
         @foreach (var item in Model)
         {
             <tr>
-                <th>
-                    @item.Id
-                </th>
                 <th>
                     @item.Number
                 </th>

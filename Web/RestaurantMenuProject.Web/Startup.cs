@@ -41,7 +41,8 @@
                 options => options.UseSqlServer(this.configuration.GetConnectionString("DefaultConnection")));
 
             // Make it to yes in production
-            services.AddDefaultIdentity<ApplicationUser>(opts => {
+            services.AddDefaultIdentity<ApplicationUser>(opts =>
+            {
                 opts.SignIn.RequireConfirmedAccount = false;
                 opts.Password.RequireNonAlphanumeric = false;
                 opts.Password.RequireDigit = false;
@@ -99,7 +100,17 @@
             {
                 facebookOptions.AppId = this.configuration["Authentication:Facebook:AppId"];
                 facebookOptions.AppSecret = this.configuration["Authentication:Facebook:AppSecret"];
+            })
+            .AddGoogle(options =>
+            {
+                IConfigurationSection googleAuthNSection =
+                    this.configuration.GetSection("Authentication:Google");
+
+                options.ClientId = googleAuthNSection["ClientId"];
+                options.ClientSecret = googleAuthNSection["ClientSecret"];
             });
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

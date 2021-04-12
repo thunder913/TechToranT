@@ -116,6 +116,22 @@
             await this.userRepository.SaveChangesAsync();
         }
 
+        public async Task SetUserNamesAsync(string userId, string firstName, string lastName)
+        {
+            var user = this.userRepository.All().FirstOrDefault(x => x.Id == userId);
+            if (user.FirstName != firstName)
+            {
+                user.FirstName = firstName;
+            }
+
+            if (user.LastName != lastName)
+            {
+                user.LastName = lastName;
+            }
+
+            await this.userRepository.SaveChangesAsync();
+        }
+
         public ICollection<StaffAnalyseViewModel> GetUsersByIdsForanalyse(List<string> userIds)
         {
             return this.userRepository
@@ -125,6 +141,13 @@
                 {
                     // TODO finish the charts (many things to do)
                 }).ToList();
+        }
+
+        public async Task<bool> DeleteUserAsync(ApplicationUser user)
+        {
+            this.userRepository.Delete(user);
+            await this.userRepository.SaveChangesAsync();
+            return true;
         }
     }
 }

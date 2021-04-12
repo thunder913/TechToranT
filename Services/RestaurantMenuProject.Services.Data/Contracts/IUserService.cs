@@ -19,5 +19,9 @@
         public ICollection<ApplicationRole> GetUserRoles();
 
         public Task EditUserDataAsync(EditUserViewModel editUser);
+
+        public Task SetUserNamesAsync(string userId, string firstName, string lastName);
+
+        public Task<bool> DeleteUserAsync(ApplicationUser user);
     }
 }

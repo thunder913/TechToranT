@@ -117,7 +117,7 @@
                 var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 var user = await this.userManager.FindByIdAsync(userId);
                 var orderId = await this.orderService.MakeOrderAsync(userId, code);
-                await this.emailSender.SendMakeOrderEmailAsync(GlobalConstants.Email, "Techtorant", user.Email, user.FirstName + " " + user.LastName);
+                await this.emailSender.SendMakeOrderEmailAsync(GlobalConstants.Email, GlobalConstants.SystemName, user.Email, user.FirstName + " " + user.LastName);
 
                 var waiterIds = this.userManager.GetUsersInRoleAsync(GlobalConstants.WaiterRoleName).Result.Select(x => x.Id);
 
