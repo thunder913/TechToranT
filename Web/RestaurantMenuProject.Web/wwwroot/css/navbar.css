@@ -1,0 +1,22 @@
+﻿.tab:hover {
+    background: rgba(168, 164, 164, 0.4);
+    border-radius: 7px;
+    padding: 7px;
+    font-weight: bold;
+}
+
+.siteTitle{
+    font-size: 25px;
+    position: relative;
+    right: 5px;
+}
+
+.navbar {
+    box-shadow: 0 0.25rem 0.75rem rgb(0 0 0 / 25%);
+}
+
+.tab{
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 18px;
+}

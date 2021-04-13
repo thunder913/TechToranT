@@ -67,8 +67,10 @@
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; @DateTime.Now.Year - @GlobalConstants.SystemName - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        <div class="container" style="font-size:17px;">
+            &copy; @DateTime.Now.Year - @GlobalConstants.SystemName
+            <a class="footerButton text-dark" style="float: right;" asp-area="" asp-controller="Contact" asp-action="Index">Contact us</a>
+            <a class="footerButton text-dark" style="float: right;" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js" asp-append-version="true"></script>

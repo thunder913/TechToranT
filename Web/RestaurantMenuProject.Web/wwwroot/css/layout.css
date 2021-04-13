@@ -1,0 +1,24 @@
+﻿ *{
+    font-family: 'Times New Roman';
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+footer a{
+    margin-left: 15px;
+}
+
+.footerButton {
+    font-size: 20px;
+    margin-left: 50px;
+}
+
+    .footerButton:hover {
+        background: rgba(168, 164, 164, 0.4);
+        border-radius: 8px;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
