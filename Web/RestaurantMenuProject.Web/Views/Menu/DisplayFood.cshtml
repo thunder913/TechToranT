@@ -19,17 +19,17 @@
 </div>
 @if (Model.AdditionalInfo != null)
 {
-<h1>Description: @Model.AdditionalInfo</h1>
-}
-<span>Ingredients: @{
-    if (Model.Ingredients.Any()) {
-        @string.Join(", ", Model.Ingredients.Select(x => x.Name));
-    }
-    else
-    {
-        <text>None</text>
-    }
-}</span>
+<h1>Description: @Model.AdditionalInfo</h1>}
+<span>
+    Ingredients: @{ if (Model.Ingredients.Any())
+                    {
+                        @string.Join(", ", Model.Ingredients.Select(x => x.Name));
+                    }
+                    else
+                    {
+                        <text>None</text>
+                    } }
+</span>
 <br />
 <span>
     Allergens: @{ var allergens = new List<AllergenViewModel>();
@@ -39,16 +39,29 @@
         }
         if (allergens.Any())
         {
-            @string.Join(", ", allergens.Select(x => x.Name));
-            }
-            else
-            {
-            <text>None</text>
-            }
-        }
+@string.Join(", ", allergens.Select(x => x.Name));
+}
+else
+{
+<text>None</text>
+}
+    }
 </span>
+<br />
+<span>
+    Prepare time:
+    @{ if (Model.PrepareTime > 60 && Model.PrepareTime % 60 != 0)
+        {
+<text> @(Model.PrepareTime/60) @(Model.PrepareTime/60==1?"hour":"hours") and @(Model.PrepareTime%60) @(Model.PrepareTime%60==1?"minute":"minutes")</text>;
+}
+else if (Model.PrepareTime > 60 && Model.PrepareTime % 60 == 0)
+{
+<text>@(Model.PrepareTime/60) @(Model.PrepareTime/60==1?"hour":"hours")</text> }
+else if (Model.PrepareTime < 60)
+{
+<text> @Model.PrepareTime @(Model.PrepareTime%60==1?"minute":"minutes")</text> } }
 
-@* TODO move the styles and scripts in different files*@
+</span>
 
 @section Scripts
 {
