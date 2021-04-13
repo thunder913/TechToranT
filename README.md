@@ -8,12 +8,12 @@
 
 This website allows restaurant to go **full online**, making it extremely easy for customers to order from their phones and the staff to track all the orders.
 
-### **Guest**
+#### **Guest**
 
 Everyone who visits the site is a guest.
 Guests can only view the menu and see all the information about the dishes and drinks, which are offered.
 
-### **Client**
+#### **Client**
 
 Whenever a user creats an account he becomes a client.
 Clients have many functionalities:
@@ -22,7 +22,7 @@ Clients have many functionalities:
 * See all the orders he has made (with their statuses) and if the order is not approved by the staff, the client can cancel it;
 * Add comments on dishes and like/dislike other comments;
 
-### **Staff**
+#### **Staff**
 
 Waiters and chefs are considered staff.
 They have all the functionalities like the client, but also many more.
