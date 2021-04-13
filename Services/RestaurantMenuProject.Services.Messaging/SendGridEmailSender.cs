@@ -13,6 +13,7 @@
         private const string NewOrdeTemplate = "d-de9afe6e40c84d1b979384b12774c59e";
         private readonly SendGridClient client;
 
+
         public SendGridEmailSender(string apiKey)
         {
             this.client = new SendGridClient(apiKey);
