@@ -77,7 +77,6 @@ $(document).ready(function () {
                     buttonElement.classList.add(...['btn', 'btn-success', 'edit']);
                     buttonElement.type = 'button';
                     formElement.appendChild(buttonElement);
-                    // TODO make the onclick work!
                     return formElement.outerHTML;
                 }
             },

@@ -1,6 +1,7 @@
 ﻿@model AddPromoCodeViewModel
-
 <link href="~/css/addItemForm.css" rel="stylesheet" />
+
+<h2>Add promo code</h2>
 
 <form asp-controller="Manage" asp-action="AddPromoCode" method="post">
     <div asp-validation-summary="All" class="text-danger"></div>
@@ -19,7 +20,7 @@
 
     <div class="form-group col-md-6">
         <label asp-for="PromoPercent"></label>
-        <input asp-for="PromoPercent" class="form-control"/>
+        <input asp-for="PromoPercent" class="form-control" />
         <span asp-validation-for="PromoPercent" class="text-danger"></span>
     </div>
 

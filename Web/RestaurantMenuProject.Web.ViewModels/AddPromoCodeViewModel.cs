@@ -10,12 +10,15 @@
 
     public class AddPromoCodeViewModel
     {
-        [Range(0, int.MaxValue)]
+        [Range(1, int.MaxValue, ErrorMessage = "The maximum usage times cannot be less than 0!")]
+        [Display(Name = "Max usage times")]
         public int MaxUsageTimes { get; set; }
 
+        [Display(Name = "Expiration date")]
         public DateTime ExpirationDate { get; set; }
 
-        [Range(0, 100)]
+        [Range(0, 100, ErrorMessage = "The promotional percent must be between 0 and 100!")]
+        [Display(Name = "Promotion percent")]
         public int PromoPercent { get; set; }
 
         [DisplayName("Dish categories in the promo")]

@@ -7,7 +7,6 @@
 
     public class Allergen : BaseDeletableModel<int>
     {
-        // TODO make name Unique
         [Required]
         public string Name { get; set; }
 

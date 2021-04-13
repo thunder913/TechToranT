@@ -59,7 +59,6 @@
 
         public DbSet<BasketDish> BasketsDishes { get; set; }
 
-        // TODO make image to Images and also fix other casings
         public DbSet<Image> Images { get; set; }
 
         public DbSet<Table> Tables { get; set; }
@@ -144,6 +143,10 @@
             builder.Entity<Order>()
                 .HasOne(x => x.Waiter)
                 .WithMany(x => x.WaiterOrders);
+
+            builder.Entity<Allergen>()
+                .HasIndex(x => new { x.Name })
+                .IsUnique();
 
             // Needed for Identity models configuration
             base.OnModelCreating(builder);

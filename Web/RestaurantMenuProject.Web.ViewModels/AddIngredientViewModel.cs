@@ -10,6 +10,7 @@
         [Required]
         public string Name { get; set; }
 
+        [Display(Name = "Allergens")]
         public List<int> AllergensId { get; set; } = new List<int>();
 
         public List<SelectListItem> Allergens { get; set; }

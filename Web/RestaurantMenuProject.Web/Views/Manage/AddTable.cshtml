@@ -1,6 +1,7 @@
 ﻿@model AddTableViewModel
-
 <link href="~/css/addItemForm.css" rel="stylesheet" />
+
+<h2>Add table</h2>
 
 <form asp-controller="Manage" asp-action="AddTable" method="post">
     <div asp-validation-summary="All" class="text-danger"></div>
@@ -20,6 +21,6 @@
 
     <button type="submit" class="btn btn-success col-md-2">Add</button>
 </form>
-@section Scripts{ 
-<script src="~/js/addTable.js"></script>
+@section Scripts{
+    <script src="~/js/addTable.js"></script>
 }

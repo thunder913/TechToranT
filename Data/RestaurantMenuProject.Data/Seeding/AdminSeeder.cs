@@ -16,7 +16,6 @@
             IServiceProvider serviceProvider)
         {
             const string email = "admin@admin.com";
-            // TODO make it not upload to github
             var user = dbContext.Users.FirstOrDefault(x => x.Email == email);
             if (user == null)
             {

@@ -1,5 +1,6 @@
 ﻿namespace RestaurantMenuProject.Web.Controllers
 {
+    using System;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -105,7 +106,6 @@
 
             await this.dishService.AddDishAsync(dish, this.webHostEnvironment.WebRootPath);
 
-            // TODO ADD MORE CHECKS AND BETTER ERROR MESSAGES
             // TODO Check if the file is the right format
 
             return this.RedirectToAction("Index");
@@ -120,7 +120,6 @@
                 return this.View(drink);
             }
 
-            // TODO ADD MORE CHECKS AND BETTER ERROR MESSAGES
             // TODO Check if the file is the right format
             await this.drinkService.AddDrinkAsync(drink, this.webHostEnvironment.WebRootPath);
             return this.RedirectToAction("Index");
@@ -229,7 +228,6 @@
         [HttpPost]
         public async Task<IActionResult> DeleteDishType(int id)
         {
-            // TODO find a way to delete images
             await this.dishTypeService.DeleteDishTypeAsync(id);
             return this.RedirectToAction("Index", "Menu");
         }
@@ -258,7 +256,6 @@
         [HttpPost]
         public async Task<IActionResult> DeleteDrinkType(int id)
         {
-            // TODO find a way to delete images
             await this.drinkTypeService.DeleteDrinkTypeAsync(id);
             return this.RedirectToAction("Index", "Menu");
         }
@@ -338,7 +335,14 @@
         [HttpPost]
         public async Task<IActionResult> AddTable(AddTableViewModel tableViewModel)
         {
-            await this.tableService.AddTableAsync(tableViewModel);
+            try
+            {
+                await this.tableService.AddTableAsync(tableViewModel);
+            }
+            catch (Exception ex)
+            {
+                return this.BadRequest(ex.Message);
+            }
             return this.RedirectToAction("Tables");
         }
 
@@ -387,13 +391,10 @@
 
             await this.promoCodeService.AddPromoCodeAsync(promoCodeModel);
 
-            // TODO ADD MORE CHECKS AND BETTER ERROR MESSAGES
-
             return this.RedirectToAction("Index");
         }
 
-        // TODO REMOVE DYNAMIC SOMEHOW
-        private void SetValuesToDishViewModel(dynamic addDishViewModel)
+        private void SetValuesToDishViewModel(AddDishViewModel addDishViewModel)
         {
             addDishViewModel.Ingredients = this.ingredientService.GetAllAsDishIngredientViewModel().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
             addDishViewModel.DishType = this.dishTypeService.GetAllDishTypesWithId().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
@@ -405,12 +406,12 @@
             addPromoCodeModel.ValidDishCategories = this.dishTypeService.GetAllDishTypesWithId().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
         }
 
-        private void SetValuesToUserViewModel(dynamic editUserViewModel)
+        private void SetValuesToUserViewModel(EditUserViewModel editUserViewModel)
         {
             editUserViewModel.Roles = this.userService.GetUserRoles().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
         }
 
-        private void SetValuesToDrinkViewModel(dynamic addDrinkViewModel)
+        private void SetValuesToDrinkViewModel(AddDrinkViewModel addDrinkViewModel)
         {
             addDrinkViewModel.DrinkType = this.drinkTypeService.GetAllDrinkTypesWithId().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
             addDrinkViewModel.PackagingType = this.packagingService.GetAllPackagingTypes().Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();

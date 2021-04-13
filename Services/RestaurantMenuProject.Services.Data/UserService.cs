@@ -139,7 +139,7 @@
                 .Where(x => userIds.Contains(x.Id))
                 .Select(x => new StaffAnalyseViewModel()
                 {
-                    // TODO finish the charts (many things to do)
+                    // TODO .... make analyse user graphs
                 }).ToList();
         }
 

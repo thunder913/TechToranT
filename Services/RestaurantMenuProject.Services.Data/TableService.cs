@@ -55,7 +55,6 @@ namespace RestaurantMenuProject.Services.Data
             var mapper = AutoMapperConfig.MapperInstance;
             if (this.tableRepository.All().Any(x => x.Number == tableViewModel.Number))
             {
-                // TODO add it to the middlewares
                 throw new InvalidOperationException("The table number already exists!");
             }
 
