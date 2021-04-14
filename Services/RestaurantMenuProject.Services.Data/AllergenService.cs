@@ -21,6 +21,11 @@
 
         public async Task AddAllergenAsync(AllergenViewModel allergen)
         {
+            if (this.allergenRepository.All().Any(x => x.Name == allergen.Name))
+            {
+                throw new System.Exception("There is already an allergen with this name!");
+            }
+
             var allergenToAdd = new Allergen()
             {
                 Name = allergen.Name,
