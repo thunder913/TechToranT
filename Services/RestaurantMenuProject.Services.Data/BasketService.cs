@@ -439,7 +439,6 @@
             basket.PromoCode = promoCode;
             await this.basketRepository.SaveChangesAsync();
             return promoCode;
-
         }
 
         public BasketPromoCodeViewModel GetBasketPromoCodeById(string id)
