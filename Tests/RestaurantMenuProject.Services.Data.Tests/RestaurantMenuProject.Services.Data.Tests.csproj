@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="DeepEqual" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
     <PackageReference Include="Moq" Version="4.15.2" />
@@ -30,6 +31,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Data\RestaurantMenuProject.Data\RestaurantMenuProject.Data.csproj" />
     <ProjectReference Include="..\..\Services\RestaurantMenuProject.Services.Data\RestaurantMenuProject.Services.Data.csproj" />
+    <ProjectReference Include="..\..\Web\RestaurantMenuProject.Web\RestaurantMenuProject.Web.csproj" />
   </ItemGroup>
 
 </Project>
