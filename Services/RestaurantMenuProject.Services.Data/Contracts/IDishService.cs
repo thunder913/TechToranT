@@ -12,8 +12,6 @@
 
         public EditDishViewModel GetEditDishViewModelById(string id);
 
-        public void RemoveDish(Dish dish);
-
         public Dish GetDishById(string id);
 
         public Dish GetDishWithDeletedById(string id);

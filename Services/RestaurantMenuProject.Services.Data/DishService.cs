@@ -48,11 +48,6 @@
             await this.fileService.SaveImageAsync("Dishes", image.Id, dish.Image, wwwroot, extension);
         }
 
-        public void RemoveDish(Dish dish)
-        {
-            this.dishRepository.Delete(dish);
-        }
-
         public Dish GetDishById(string id)
         {
             return this.dishRepository.All().Include(x => x.Ingredients).Where(x => x.Id == id).FirstOrDefault();
