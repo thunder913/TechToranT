@@ -12,7 +12,7 @@
 
         public ICollection<Ingredient> GetAllIngredientsByIds(int[] ids);
 
-        public Task AddIngredient(AddIngredientViewModel ingredient);
+        public Task AddIngredientAsync(AddIngredientViewModel ingredient);
 
         public Ingredient GetIngredientById(int id);
     }

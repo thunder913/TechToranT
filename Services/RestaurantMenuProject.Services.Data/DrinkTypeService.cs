@@ -47,7 +47,7 @@
                     .All()
                     .Include(x => x.Image)
                     .Where(x => x.Id == id)
-                    .First();
+                    .FirstOrDefault();
         }
 
         public async Task AddDrinkTypeAsync(AddCategoryViewModel drinkCategory, string wwwroot)

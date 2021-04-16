@@ -134,7 +134,7 @@
                 return this.View(ingredient);
             }
 
-            await this.ingredientService.AddIngredient(ingredient);
+            await this.ingredientService.AddIngredientAsync(ingredient);
 
             return this.RedirectToAction("Index");
         }

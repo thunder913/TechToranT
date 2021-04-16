@@ -23,7 +23,7 @@ namespace RestaurantMenuProject.Services.Data
             this.allergenService = allergenService;
         }
 
-        public async Task AddIngredient(AddIngredientViewModel ingredient)
+        public async Task AddIngredientAsync(AddIngredientViewModel ingredient)
         {
             var ingredientToAdd = new Ingredient()
             {

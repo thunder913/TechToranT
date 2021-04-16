@@ -7,10 +7,8 @@
 
     using RestaurantMenuProject.Data.Common.Repositories;
     using RestaurantMenuProject.Data.Models;
-    using RestaurantMenuProject.Data.Models.Dtos;
     using RestaurantMenuProject.Data.Models.Enums;
     using RestaurantMenuProject.Services.Data.Contracts;
-    using RestaurantMenuProject.Services.Mapping;
     using RestaurantMenuProject.Web.ViewModels;
 
     public class PickupItemService : IPickupItemService

@@ -1,19 +1,20 @@
-﻿using DeepEqual.Syntax;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
-using RestaurantMenuProject.Data.Models;
-using RestaurantMenuProject.Services.Data.Contracts;
-using RestaurantMenuProject.Services.Mapping;
-using RestaurantMenuProject.Web.ViewModels;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace RestaurantMenuProject.Services.Data.Tests
+﻿namespace RestaurantMenuProject.Services.Data.Tests
 {
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using DeepEqual.Syntax;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.DependencyInjection;
+    using Moq;
+    using RestaurantMenuProject.Data.Models;
+    using RestaurantMenuProject.Services.Data.Contracts;
+    using RestaurantMenuProject.Services.Mapping;
+    using RestaurantMenuProject.Web.ViewModels;
+    using Xunit;
+
     public class DishTypeServiceTests : BaseServiceTests
     {
         private IDishTypeService DishTypeService => this.ServiceProvider.GetRequiredService<IDishTypeService>();
