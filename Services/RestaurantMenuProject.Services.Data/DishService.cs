@@ -101,11 +101,14 @@
             dish.DishTypeId = editDish.DishTypeId;
 
             // Removing the ingredients that are not containted in the new dish
-            foreach (var ingr in dish.Ingredients)
+
+            for (int i = 0; i < dish.Ingredients.Count; i++)
             {
+                var ingr = dish.Ingredients.ToList()[i];
                 if (!editDish.IngredientsId.Contains(ingr.Id))
                 {
                     dish.Ingredients.Remove(ingr);
+                    i--;
                 }
             }
 
@@ -142,11 +145,6 @@
             var dishToDelete = this.dishRepository.All().FirstOrDefault(x => x.Id == id);
             this.dishRepository.Delete(dishToDelete);
             await this.dishRepository.SaveChangesAsync();
-        }
-
-        private ICollection<Ingredient> GetDishIngredients(string id)
-        {
-            return this.dishRepository.All().First(x => x.Id == id).Ingredients;
         }
     }
 }
