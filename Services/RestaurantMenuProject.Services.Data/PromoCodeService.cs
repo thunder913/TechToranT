@@ -47,26 +47,7 @@
             await this.promoCodeRepository.SaveChangesAsync();
         }
 
-        private bool IsPromoCodeFree(string promoCode)
-        {
-            return this.promoCodeRepository.All().Any(x => x.Code == promoCode);
-        }
 
-        private string RandomString(int length)
-        {
-            Random random = new Random();
-
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            var randomCode = new string(Enumerable.Repeat(chars, length)
-              .Select(s => s[random.Next(s.Length)]).ToArray());
-
-            if (this.IsPromoCodeFree(randomCode))
-            {
-                randomCode = this.RandomString(length);
-            }
-
-            return randomCode;
-        }
 
         public ICollection<PromoCodeViewModel> GetAllPromoCodes(string sortColumn, string sortDirection, string searchValue)
         {
@@ -127,19 +108,22 @@
             }
 
             // Removing the items that are not containted in the new promo code
-            foreach (var dish in promoCode.ValidDishCategories)
+            for (int i = 0; i < promoCode.ValidDishCategories.Count; i++)
             {
+                var dish = promoCode.ValidDishCategories.ToList()[i];
                 if (!editViewModel.ValidDishCategoriesId.Contains(dish.Id))
                 {
                     promoCode.ValidDishCategories.Remove(dish);
+                    i--;
                 }
             }
-
-            foreach (var drink in promoCode.ValidDrinkCategories)
+            for (int i = 0; i < promoCode.ValidDrinkCategories.Count; i++)
             {
+                var drink = promoCode.ValidDrinkCategories.ToList()[i];
                 if (!editViewModel.ValidDrinkCategoriesId.Contains(drink.Id))
                 {
                     promoCode.ValidDrinkCategories.Remove(drink);
+                    i--;
                 }
             }
 
@@ -212,5 +196,27 @@
 
             await this.promoCodeRepository.SaveChangesAsync();
         }
+
+        private bool IsPromoCodeFree(string promoCode)
+        {
+            return this.promoCodeRepository.All().Any(x => x.Code == promoCode);
+        }
+
+        private string RandomString(int length)
+        {
+            Random random = new Random();
+
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var randomCode = new string(Enumerable.Repeat(chars, length)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
+
+            if (this.IsPromoCodeFree(randomCode))
+            {
+                randomCode = this.RandomString(length);
+            }
+
+            return randomCode;
+        }
+
     }
 }
