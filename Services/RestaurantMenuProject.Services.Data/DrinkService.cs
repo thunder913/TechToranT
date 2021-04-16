@@ -56,7 +56,7 @@
                     .AllAsNoTracking()
                     .Where(x => x.Id == id)
                     .To<DrinkItemViewModel>()
-                    .First();
+                    .FirstOrDefault();
         }
 
         public Drink GetDrinkById(string id)
@@ -98,12 +98,14 @@
             drink.AdditionalInfo = editDrink.AdditionalInfo;
             drink.DrinkTypeId = editDrink.DrinkTypeId;
 
-            // Removing the ingredients that are not containted in the new dish
-            foreach (var ingr in drink.Ingredients)
+
+            for (int i = 0; i < drink.Ingredients.Count; i++)
             {
+                var ingr = drink.Ingredients.ToList()[i];
                 if (!editDrink.IngredientsId.Contains(ingr.Id))
                 {
                     drink.Ingredients.Remove(ingr);
+                    i--;
                 }
             }
 

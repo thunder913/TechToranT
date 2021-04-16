@@ -82,6 +82,51 @@ namespace RestaurantMenuProject.Services.Data.Tests
             await Assert.ThrowsAsync<NullReferenceException>(async () => await this.DishTypeService.DeleteDishTypeAsync(9129312));
         }
 
+        [Fact]
+        public async Task AddDishTypeAsyncWorksCorrectly()
+        {
+            await this.AddDishTypesToDB();
+
+            var expectedCount = 3;
+            var actualCount = this.DbContext.DishTypes.Count();
+
+            Assert.Equal(expectedCount, actualCount);
+        }
+
+        [Fact]
+        public async Task GetAllDishTypesWithIdsWorksCorrectly()
+        {
+            await this.AddDishTypesToDB();
+            var dishNames = new string[] { "test1", "test2" };
+
+            var expected = this.DbContext.DishTypes.Where(x => dishNames.Contains(x.Name));
+            var ids = expected.Select(x => x.Id).ToArray();
+
+            var actual = this.DishTypeService.GetAllDishTypesWithIds(ids);
+            expected.IsDeepEqual(actual);
+        }
+
+        [Fact]
+        public async Task EditDishTypeAsyncWorksCorrectly()
+        {
+            await this.AddDishTypesToDB();
+
+            var dishType = this.DbContext.DishTypes.FirstOrDefault();
+            var imageId = dishType.Image.Id;
+            var editDishType = new EditCategoryViewModel()
+            {
+                Id = dishType.Id,
+                Name = "test99",
+                Description = "test999",
+                NewImage = this.GetFile("testimage"),
+            };
+            var actual = this.DbContext.DishTypes.FirstOrDefault(x => x.Id == editDishType.Id);
+            await this.DishTypeService.EditDishTypeAsync(editDishType, AppDomain.CurrentDomain.BaseDirectory);
+            Assert.Equal(editDishType.Name, actual.Name);
+            Assert.Equal(editDishType.Description, actual.Description);
+            Assert.NotEqual(imageId, actual.Image.Id);
+        }
+
         private async Task AddDishTypesToDB()
         {
             var dishtype1 = new AddCategoryViewModel()
@@ -108,24 +153,6 @@ namespace RestaurantMenuProject.Services.Data.Tests
             await this.DishTypeService.AddDishTypeAsync(dishtype1, AppDomain.CurrentDomain.BaseDirectory);
             await this.DishTypeService.AddDishTypeAsync(dishtype2, AppDomain.CurrentDomain.BaseDirectory);
             await this.DishTypeService.AddDishTypeAsync(dishtype3, AppDomain.CurrentDomain.BaseDirectory);
-        }
-
-        private IFormFile GetFile(string name)
-        {
-            var fileMock = new Mock<IFormFile>();
-            var content = "Hello World from a Fake File";
-            var fileName = $"{name}.jpeg";
-            var ms = new MemoryStream();
-            var writer = new StreamWriter(ms);
-            writer.Write(content);
-            writer.Flush();
-            ms.Position = 0;
-            fileMock.Setup(_ => _.OpenReadStream()).Returns(ms);
-            fileMock.Setup(_ => _.FileName).Returns(fileName);
-            fileMock.Setup(_ => _.Length).Returns(ms.Length);
-            var file = fileMock.Object;
-
-            return file;
         }
     }
 }

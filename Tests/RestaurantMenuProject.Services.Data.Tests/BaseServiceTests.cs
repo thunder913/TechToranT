@@ -1,12 +1,14 @@
 ﻿namespace RestaurantMenuProject.Services.Data.Tests
 {
     using System;
+    using System.IO;
     using System.Reflection;
     using Microsoft.AspNetCore.Http;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Moq;
     using RestaurantMenuProject.Data;
     using RestaurantMenuProject.Data.Common;
     using RestaurantMenuProject.Data.Common.Repositories;
@@ -35,6 +37,24 @@
         {
             this.DbContext.Database.EnsureDeleted();
             this.SetServices();
+        }
+
+        protected IFormFile GetFile(string name)
+        {
+            var fileMock = new Mock<IFormFile>();
+            var content = "Hello World from a Fake File";
+            var fileName = $"{name}.jpeg";
+            var ms = new MemoryStream();
+            var writer = new StreamWriter(ms);
+            writer.Write(content);
+            writer.Flush();
+            ms.Position = 0;
+            fileMock.Setup(_ => _.OpenReadStream()).Returns(ms);
+            fileMock.Setup(_ => _.FileName).Returns(fileName);
+            fileMock.Setup(_ => _.Length).Returns(ms.Length);
+            var file = fileMock.Object;
+
+            return file;
         }
 
         private ServiceCollection SetServices()
