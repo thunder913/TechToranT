@@ -345,7 +345,214 @@
                 .ToList();
 
             actual.IsDeepEqual(expected);
-            Assert.Equal(50, actual.FirstOrDefault().ReadyPercent);
+            Assert.Equal(38.1, actual.FirstOrDefault().ReadyPercent);
+        }
+
+        [Fact]
+        public async Task GetWaiterViewModelWorksCorrectly()
+        {
+            await this.PopulateDB();
+            var order = this.DbContext.Orders.FirstOrDefault();
+            order.ProcessType = ProcessType.Cooking;
+            await this.DbContext.SaveChangesAsync();
+
+            var expected = new WaiterViewModel();
+            var waiterId = "user2";
+            expected.NewOrders = this.OrderService.GetOrdersWithStatus(ProcessType.Pending);
+            expected.ActiveOrders = this.OrderService.GetActiveOrders(waiterId);
+            var actual = this.OrderService.GetWaiterViewModel(waiterId);
+
+            actual.IsDeepEqual(expected);
+        }
+
+        [Fact]
+        public async Task FinishOrderAsyncWorksCorrectly()
+        {
+            await this.PopulateDB();
+            var orderId = "order2";
+            var order = this.DbContext.Orders.FirstOrDefault(x => x.Id == orderId);
+            order.ProcessType = ProcessType.Delivered;
+            order.PaidOn = DateTime.UtcNow;
+            await this.DbContext.SaveChangesAsync();
+
+            await this.OrderService.FinishOrderAsync(orderId);
+
+            Assert.Equal(ProcessType.Completed, order.ProcessType);
+        }
+
+        [Fact]
+        public async Task FinishOrderAsynsThrowsWhenNotPaid()
+        {
+            await this.PopulateDB();
+            var orderId = "order2";
+            var order = this.DbContext.Orders.FirstOrDefault(x => x.Id == orderId);
+            order.ProcessType = ProcessType.Delivered;
+            await this.DbContext.SaveChangesAsync();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await this.OrderService.FinishOrderAsync(orderId));
+        }
+
+        [Fact]
+        public async Task FinishOrderAsynsThrowsWhenNotDelivered()
+        {
+            await this.PopulateDB();
+            var orderId = "order2";
+            var order = this.DbContext.Orders.FirstOrDefault(x => x.Id == orderId);
+            order.ProcessType = ProcessType.Cooking;
+            await this.DbContext.SaveChangesAsync();
+            order.PaidOn = DateTime.UtcNow;
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await this.OrderService.FinishOrderAsync(orderId));
+        }
+
+        [Fact]
+        public async Task GetChefViewModelAsync()
+        {
+            await this.PopulateDB();
+
+            var expected = new ChefViewModel();
+            expected.NewOrders = this.OrderService.GetOrdersWithStatus(ProcessType.InProcess);
+            expected.FoodTypes = this.OrderService.GetCookFoodTypes(null);
+            var actual = this.OrderService.GetChefViewModel();
+
+            actual.IsDeepEqual(expected);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("order2")]
+        public async Task GetCookFoodTypesWorksCorrectly(string orderId)
+        {
+            await this.PopulateDB();
+            var orders = this.DbContext.Orders.ToList();
+            foreach (var order in orders)
+            {
+                order.ProcessType = ProcessType.Cooking;
+            }
+            await this.DbContext.SaveChangesAsync();
+
+            var allDrinks = this.DbContext.OrderDrinks
+                .Where(x => x.Order.ProcessType == ProcessType.Cooking && x.Count - x.DeliveredCount > 0 && (orderId == null || x.OrderId == orderId))
+                .OrderBy(x => x.Order.CreatedOn)
+                .Select(x => new CookItemViewModel()
+                {
+                    Count = x.Count - x.DeliveredCount,
+                    FoodId = x.DrinkId,
+                    FoodName = x.Drink.Name,
+                    OrderId = x.OrderId,
+                }).ToList();
+            var drinks = new CookFoodCategoriesViewModel()
+            {
+                FoodType = FoodType.Drink,
+                CategoryName = "Drinks",
+                ItemsToCook = allDrinks,
+            };
+
+            var dishTypes = this.DbContext.OrdersDishes
+                .GroupBy(x => x.Dish.DishTypeId)
+                .Select(x => x.Key);
+            var dishes = new HashSet<CookFoodCategoriesViewModel>();
+
+            foreach (var type in dishTypes)
+            {
+                var typeDishes = this.DbContext.OrdersDishes.Where(x => (x.Dish.DishTypeId == type && x.Order.ProcessType == ProcessType.Cooking && x.Count - x.DeliveredCount > 0) && (orderId == null || x.OrderId == orderId))
+                    .OrderBy(x => x.Order.CreatedOn)
+                    .Select(x => new CookItemViewModel()
+                    {
+                        OrderId = x.OrderId,
+                        FoodId = x.Dish.Id,
+                        Count = x.Count - x.DeliveredCount,
+                        FoodName = x.Dish.Name,
+                    }).ToList();
+                dishes.Add(new CookFoodCategoriesViewModel()
+                {
+                    CategoryName = this.DbContext.DishTypes.FirstOrDefault(x => x.Id == type).Name,
+                    FoodType = FoodType.Dish,
+                    ItemsToCook = typeDishes,
+                });
+            }
+
+            var expected = new HashSet<CookFoodCategoriesViewModel>();
+            expected.Add(drinks);
+            foreach (var dish in dishes)
+            {
+                expected.Add(dish);
+            }
+            var actual = this.OrderService.GetCookFoodTypes(null);
+
+
+            actual.IsDeepEqual(expected);
+        }
+
+        [Fact]
+        public async Task AddDeliveredCountToOrderDishAsyncWorksCorrectly()
+        {
+            await this.PopulateDB();
+            var foodId = "test1";
+            var orderId = "order2";
+            var toAdd = 2;
+            var expectedCount = this.DbContext.OrdersDishes.FirstOrDefault(x => x.OrderId == orderId && x.DishId == foodId).DeliveredCount + toAdd;
+
+            var cookViewModel = new CookFinishItemViewModel()
+            {
+                FoodId = foodId,
+                OrderId = orderId,
+            };
+            await this.OrderService.AddDeliveredCountToOrderDishAsync(toAdd, cookViewModel);
+            var actualCount = this.DbContext.OrdersDishes.FirstOrDefault(x => x.OrderId == orderId && x.DishId == foodId).DeliveredCount;
+
+            Assert.Equal(expectedCount, actualCount);
+        }
+
+        [Fact]
+        public async Task AddDeliveredCountToOrderDrinkAsyncWorksCorrectly()
+        {
+            await this.PopulateDB();
+            var foodId = "test2";
+            var orderId = "order2";
+            var toAdd = 2;
+            var expectedCount = this.DbContext.OrderDrinks.FirstOrDefault(x => x.OrderId == orderId && x.DrinkId == foodId).DeliveredCount + toAdd;
+
+            var cookViewModel = new CookFinishItemViewModel()
+            {
+                FoodId = foodId,
+                OrderId = orderId,
+            };
+            await this.OrderService.AddDeliveredCountToOrderDrinkAsync(toAdd, cookViewModel);
+            var actualCount = this.DbContext.OrderDrinks.FirstOrDefault(x => x.OrderId == orderId && x.DrinkId == foodId).DeliveredCount;
+
+            Assert.Equal(expectedCount, actualCount);
+        }
+
+        [Fact]
+        public async Task AddDeliveredCountToOrderDishAsyncThrowsWhenItemHasAlreadyBeenMade()
+        {
+            await this.PopulateDB();
+
+            var orderDish = this.DbContext.OrdersDishes.FirstOrDefault();
+            orderDish.DeliveredCount = orderDish.Count;
+            var cookViewModel = new CookFinishItemViewModel()
+            {
+                FoodId = orderDish.Dish.Id,
+                OrderId = orderDish.OrderId,
+            };
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await this.OrderService.AddDeliveredCountToOrderDishAsync(1, cookViewModel));
+        }
+
+        [Fact]
+        public async Task AddDeliveredCountToOrderDrinkAsyncThrowsWhenItemHasAlreadyBeenMade()
+        {
+            await this.PopulateDB();
+
+            var orderDish = this.DbContext.OrderDrinks.FirstOrDefault();
+            orderDish.DeliveredCount = orderDish.Count;
+            var cookViewModel = new CookFinishItemViewModel()
+            {
+                FoodId = orderDish.DrinkId,
+                OrderId = orderDish.OrderId,
+            };
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await this.OrderService.AddDeliveredCountToOrderDrinkAsync(1, cookViewModel));
         }
 
         private async Task PopulateDB()
@@ -601,7 +808,7 @@
             await this.DbContext.OrderDrinks.AddAsync(new OrderDrink()
             {
                 OrderId = "order2",
-                Count = 3,
+                Count = 8,
                 DeliveredCount = 1,
                 DrinkId = "test2",
                 PriceForOne = 10,
