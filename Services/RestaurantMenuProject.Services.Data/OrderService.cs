@@ -20,9 +20,9 @@
     public class OrderService : IOrderService
     {
         private readonly IDeletableEntityRepository<Order> orderRepository;
+        private readonly IBasketService basketService;
         private readonly IRepository<OrderDrink> orderDrinkRepository;
         private readonly IRepository<OrderDish> orderDishRepository;
-        private readonly IBasketService basketService;
         private readonly IDishService dishService;
         private readonly IDrinkService drinkService;
         private readonly ITableService tableService;
@@ -32,9 +32,9 @@
 
         public OrderService(
             IDeletableEntityRepository<Order> orderRepository,
+            IBasketService basketService,
             IRepository<OrderDrink> orderDrinkRepository,
             IRepository<OrderDish> orderDishRepository,
-            IBasketService basketService,
             IDishService dishService,
             IDrinkService drinkService,
             ITableService tableService,
@@ -44,9 +44,9 @@
             )
         {
             this.orderRepository = orderRepository;
+            this.basketService = basketService;
             this.orderDrinkRepository = orderDrinkRepository;
             this.orderDishRepository = orderDishRepository;
-            this.basketService = basketService;
             this.dishService = dishService;
             this.drinkService = drinkService;
             this.tableService = tableService;
@@ -79,15 +79,10 @@
             var mapper = AutoMapperConfig.MapperInstance;
             BasketDto basket = this.basketService.GetBasket(userId);
 
-            if (tableId == 0)
-            {
-                throw new Exception("The table code is invalid!");
-            }
-
             // TODO use automapper
             if (!(basket.Drinks.Any() || basket.Dishes.Any()))
             {
-                throw new ArgumentException("The basket is empty!");
+                throw new Exception("The basket is empty!");
             }
 
             Order order = new Order();
@@ -160,40 +155,17 @@
             var orderDrinks = this.orderDrinkRepository
                 .AllAsNoTracking()
                 .Where(x => x.OrderId == orderId)
-                .Select(x => new
-                {
-                    Id = x.DrinkId,
-                    PriceForOne = x.PriceForOne,
-                    Count = x.Count,
-                })
+                .To<FoodItemViewModel>()
                 .ToList();
 
-            foreach (var item in orderDrinks)
-            {
-                var drink = mapper.Map<Drink, FoodItemViewModel>(this.drinkService.GetDrinkWithDeletedById(item.Id));
-                drink.Price = item.PriceForOne;
-                drink.Quantity = item.Count;
-                items.Add(drink);
-            }
-
-            var orderdishes = this.orderDishRepository
+            var orderDishes = this.orderDishRepository
                 .AllAsNoTracking()
                 .Where(x => x.OrderId == orderId)
-                .Select(x => new
-                {
-                    Id = x.DishId,
-                    PriceForOne = x.PriceForOne,
-                    Count = x.Count,
-                })
+                .To<FoodItemViewModel>()
                 .ToList();
 
-            foreach (var item in orderdishes)
-            {
-                var dish = mapper.Map<Dish, FoodItemViewModel>(this.dishService.GetDishWithDeletedById(item.Id));
-                dish.Price = item.PriceForOne;
-                dish.Quantity = item.Count;
-                items.Add(dish);
-            }
+            items.AddRange(orderDrinks);
+            items.AddRange(orderDishes);
 
             return items;
         }
@@ -216,14 +188,14 @@
                 .AllAsNoTrackingWithDeleted()
                 .To<OrderInListViewModel>();
 
-            if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortDirection)))
+            if (!(string.IsNullOrWhiteSpace(sortColumn) || string.IsNullOrWhiteSpace(sortDirection)))
             {
                 orders = orders.OrderBy(sortColumn + " " + sortDirection);
             }
 
             var dataToReturn = orders.To<ManageOrderViewModel>().ToList();
 
-            if (!string.IsNullOrEmpty(searchValue))
+            if (!string.IsNullOrWhiteSpace(searchValue))
             {
                 dataToReturn = dataToReturn.Where(m =>
                                             m.Price.ToString().Contains(searchValue)

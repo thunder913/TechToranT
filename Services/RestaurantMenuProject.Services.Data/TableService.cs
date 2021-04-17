@@ -71,7 +71,7 @@ namespace RestaurantMenuProject.Services.Data
 
         public async Task RemoveTableAsync(int id)
         {
-            var tableToDelete = this.tableRepository.AllAsNoTracking().First(x => x.Id == id);
+            var tableToDelete = this.tableRepository.All().First(x => x.Id == id);
             this.tableRepository.Delete(tableToDelete);
             await this.tableRepository.SaveChangesAsync();
         }

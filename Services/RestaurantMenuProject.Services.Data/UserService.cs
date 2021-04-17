@@ -44,14 +44,14 @@
         {
             var userData = this.GetAllUserDetails();
 
-            if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortDirection)))
+            if (!(string.IsNullOrWhiteSpace(sortColumn) || string.IsNullOrWhiteSpace(sortDirection)))
             {
                 userData = userData.OrderBy(sortColumn + " " + sortDirection);
             }
 
             var dataToReturn = userData.ToList();
 
-            if (!string.IsNullOrEmpty(searchValue))
+            if (!string.IsNullOrWhiteSpace(searchValue))
             {
                 dataToReturn = dataToReturn.Where(m => m.Email.ToLower().Contains(searchValue.ToLower())
                                             || m.Name.ToLower().Contains(searchValue.ToLower())
@@ -130,17 +130,6 @@
             }
 
             await this.userRepository.SaveChangesAsync();
-        }
-
-        public ICollection<StaffAnalyseViewModel> GetUsersByIdsForanalyse(List<string> userIds)
-        {
-            return this.userRepository
-                .All()
-                .Where(x => userIds.Contains(x.Id))
-                .Select(x => new StaffAnalyseViewModel()
-                {
-                    // TODO .... make analyse user graphs
-                }).ToList();
         }
 
         public async Task<bool> DeleteUserAsync(ApplicationUser user)

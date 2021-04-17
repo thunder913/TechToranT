@@ -383,6 +383,8 @@
 
         public BasketDto GetBasket(string userId)
         {
+            var basket = this.basketRepository.All().Include(x => x.Dishes).Include(x => x.Drinks).FirstOrDefault(x => x.User.Id == userId);
+
             return this.basketRepository
                         .All()
                         .Where(x => x.User.Id == userId)
@@ -421,6 +423,7 @@
             {
                 this.basketDishRepository.Delete(item);
             }
+
             foreach (var item in basketDrinks)
             {
                 this.basketDrinkRepository.Delete(item);

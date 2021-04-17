@@ -5,7 +5,7 @@
     using RestaurantMenuProject.Data.Models.Enums;
     using RestaurantMenuProject.Services.Mapping;
 
-    public class FoodItemViewModel : IMapFrom<Dish>, IMapFrom<Drink>, IHaveCustomMappings
+    public class FoodItemViewModel : IMapFrom<Dish>, IMapFrom<Drink>, IMapFrom<OrderDish>, IMapFrom<OrderDrink>, IHaveCustomMappings
     {
         public string Id { get; set; }
 
@@ -36,6 +36,24 @@
                 .ForMember(x => x.FoodType, y => y.MapFrom(x => FoodType.Drink))
                 .ForMember(x => x.FoodCategory, y => y.MapFrom(x => x.DrinkType.Name))
                 .ForMember(x => x.Image, y => y.MapFrom(x => x.Image));
+
+            configuration.CreateMap<OrderDish, FoodItemViewModel>()
+                .ForMember(x => x.Id, y => y.MapFrom(x => x.Dish.Id))
+                .ForMember(x => x.Name, y => y.MapFrom(x => x.Dish.Name))
+                .ForMember(x => x.Image, y => y.MapFrom(x => x.Dish.Image))
+                .ForMember(x => x.Price, y => y.MapFrom(x => x.PriceForOne))
+                .ForMember(x => x.Quantity, y => y.MapFrom(x => x.Count))
+                .ForMember(x => x.FoodType, y => y.MapFrom(x => FoodType.Dish))
+                .ForMember(x => x.FoodCategory, y => y.MapFrom(x => x.Dish.DishType.Name));
+
+            configuration.CreateMap<OrderDrink, FoodItemViewModel>()
+                .ForMember(x => x.Id, y => y.MapFrom(x => x.Drink.Id))
+                .ForMember(x => x.Name, y => y.MapFrom(x => x.Drink.Name))
+                .ForMember(x => x.Image, y => y.MapFrom(x => x.Drink.Image))
+                .ForMember(x => x.Price, y => y.MapFrom(x => x.PriceForOne))
+                .ForMember(x => x.Quantity, y => y.MapFrom(x => x.Count))
+                .ForMember(x => x.FoodType, y => y.MapFrom(x => FoodType.Drink))
+                .ForMember(x => x.FoodCategory, y => y.MapFrom(x => x.Drink.DrinkType.Name));
         }
     }
 }
