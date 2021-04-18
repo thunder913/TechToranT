@@ -98,6 +98,8 @@
             services.AddTransient<IOrderService, OrderService>();
             services.AddTransient<IPromoCodeService, PromoCodeService>();
             services.AddTransient<IPickupItemService, PickupItemService>();
+            services.AddTransient<IOrderDishService, OrderDishService>();
+            services.AddTransient<IOrderDrinkService, OrderDrinkService>();
 
             // AutoMapper
             AutoMapperConfig.RegisterMappings(typeof(ErrorViewModel).GetTypeInfo().Assembly);

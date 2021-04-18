@@ -8,7 +8,6 @@
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
-    using RestaurantMenuProject.Common;
     using RestaurantMenuProject.Data.Common.Repositories;
     using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Data.Models.Dtos;
@@ -21,38 +20,29 @@
     {
         private readonly IDeletableEntityRepository<Order> orderRepository;
         private readonly IBasketService basketService;
-        private readonly IRepository<OrderDrink> orderDrinkRepository;
-        private readonly IRepository<OrderDish> orderDishRepository;
-        private readonly IDishService dishService;
-        private readonly IDrinkService drinkService;
         private readonly ITableService tableService;
         private readonly IDishTypeService dishTypeService;
-        private readonly RoleManager<ApplicationRole> roleManager;
         private readonly IPromoCodeService promoCodeService;
+        private readonly IOrderDishService orderDishService;
+        private readonly IOrderDrinkService orderDrinkService;
 
         public OrderService(
             IDeletableEntityRepository<Order> orderRepository,
             IBasketService basketService,
-            IRepository<OrderDrink> orderDrinkRepository,
-            IRepository<OrderDish> orderDishRepository,
-            IDishService dishService,
-            IDrinkService drinkService,
             ITableService tableService,
             IDishTypeService dishTypeService,
-            RoleManager<ApplicationRole> roleManager,
-            IPromoCodeService promoCodeService
+            IPromoCodeService promoCodeService,
+            IOrderDishService orderDishService,
+            IOrderDrinkService orderDrinkService
             )
         {
             this.orderRepository = orderRepository;
             this.basketService = basketService;
-            this.orderDrinkRepository = orderDrinkRepository;
-            this.orderDishRepository = orderDishRepository;
-            this.dishService = dishService;
-            this.drinkService = drinkService;
             this.tableService = tableService;
             this.dishTypeService = dishTypeService;
-            this.roleManager = roleManager;
             this.promoCodeService = promoCodeService;
+            this.orderDishService = orderDishService;
+            this.orderDrinkService = orderDrinkService;
         }
 
         public ICollection<OrderInListViewModel> GetOrderViewModelsByUserId(int itemsPerPage, int page, string userId = null)
@@ -152,17 +142,9 @@
             var mapper = AutoMapperConfig.MapperInstance;
             var items = new List<FoodItemViewModel>();
 
-            var orderDrinks = this.orderDrinkRepository
-                .AllAsNoTracking()
-                .Where(x => x.OrderId == orderId)
-                .To<FoodItemViewModel>()
-                .ToList();
+            var orderDrinks = this.orderDrinkService.GetAllDrinksInOrderAsFoodItemViewModel(orderId);
 
-            var orderDishes = this.orderDishRepository
-                .AllAsNoTracking()
-                .Where(x => x.OrderId == orderId)
-                .To<FoodItemViewModel>()
-                .ToList();
+            var orderDishes = this.orderDishService.GetAllDishesInOrderAsFoodItemViewModel(orderId);
 
             items.AddRange(orderDrinks);
             items.AddRange(orderDishes);
@@ -303,17 +285,7 @@
 
         public ICollection<CookFoodCategoriesViewModel> GetCookFoodTypes(string orderId = null)
         {
-            var allDrinks = this.orderDrinkRepository
-                .All()
-                .Where(x => x.Order.ProcessType == ProcessType.Cooking && x.Count - x.DeliveredCount > 0 && (orderId == null || x.OrderId == orderId))
-                .OrderBy(x => x.Order.CreatedOn)
-                .Select(x => new CookItemViewModel()
-                {
-                    Count = x.Count - x.DeliveredCount,
-                    FoodId = x.DrinkId,
-                    FoodName = x.Drink.Name,
-                    OrderId = x.OrderId,
-                }).ToList();
+            var allDrinks = this.orderDrinkService.GetAllCookingDrinksInOrder(orderId);
 
             var drinks = new CookFoodCategoriesViewModel()
             {
@@ -322,25 +294,13 @@
                 ItemsToCook = allDrinks,
             };
 
-            var dishTypes = this.orderDishRepository
-                .All()
-                .GroupBy(x => x.Dish.DishTypeId)
-                .Select(x => x.Key);
+            var dishTypes = this.orderDishService.GetDishTypeIds();
 
             var dishes = new HashSet<CookFoodCategoriesViewModel>();
 
             foreach (var type in dishTypes)
             {
-                var typeItems = this.orderDishRepository.All()
-                    .Where(x => (x.Dish.DishTypeId == type && x.Order.ProcessType == ProcessType.Cooking && x.Count - x.DeliveredCount > 0) && (orderId == null || x.OrderId == orderId))
-                    .OrderBy(x => x.Order.CreatedOn)
-                    .Select(x => new CookItemViewModel()
-                    {
-                        OrderId = x.OrderId,
-                        FoodId = x.Dish.Id,
-                        Count = x.Count - x.DeliveredCount,
-                        FoodName = x.Dish.Name,
-                    }).ToList();
+                var typeItems = this.orderDishService.GetAllNotDeliveredCookedItemsByDishType(type, orderId);
 
                 dishes.Add(new CookFoodCategoriesViewModel()
                 {
@@ -364,90 +324,30 @@
 
         public async Task AddDeliveredCountToOrderDishAsync(int count, CookFinishItemViewModel itemViewModel)
         {
-            var orderDishItem = this.orderDishRepository
-                .All()
-                .FirstOrDefault(x => x.OrderId == itemViewModel.OrderId && x.DishId == itemViewModel.FoodId);
-
-            if (orderDishItem.Count - orderDishItem.DeliveredCount <= 0)
-            {
-                throw new InvalidOperationException("The item has already been made!");
-            }
-
-            orderDishItem.DeliveredCount += count;
-            await this.orderDishRepository.SaveChangesAsync();
+            await this.orderDishService.AddDeliveredCountToOrderDishAsync(itemViewModel.OrderId, itemViewModel.FoodId, count);
         }
 
         public async Task AddDeliveredCountToOrderDrinkAsync(int count, CookFinishItemViewModel itemViewModel)
         {
-            var orderDrinkItem = this.orderDrinkRepository
-                .All()
-                .FirstOrDefault(x => x.OrderId == itemViewModel.OrderId && x.DrinkId == itemViewModel.FoodId);
-
-            if (orderDrinkItem.Count - orderDrinkItem.DeliveredCount <= 0)
-            {
-                throw new InvalidOperationException("The item has already been made!");
-            }
-
-            orderDrinkItem.DeliveredCount += count;
-            await this.orderDrinkRepository.SaveChangesAsync();
+            await this.orderDrinkService.AddDeliveredCountToOrderDishAsync(itemViewModel.OrderId, itemViewModel.FoodId, count);
         }
 
         public PickupItem GetOrderDishAsPickupItem(CookFinishItemViewModel itemViewModel)
         {
-            return this.orderDishRepository
-                .All()
-                .Where(x => x.OrderId == itemViewModel.OrderId && x.DishId == itemViewModel.FoodId)
-                .Select(x => new PickupItem()
-                {
-                    ClientName = x.Order.Client.FirstName + " " + x.Order.Client.LastName,
-                    Name = x.Dish.Name,
-                    TableNumber = x.Order.Table.Number,
-                    WaiterId = x.Order.WaiterId,
-                    Count = 1,
-                    OrderId = itemViewModel.OrderId,
-                })
-                .FirstOrDefault();
+            return this.orderDishService.GetOrderDishAsPickupItem(itemViewModel.FoodId, itemViewModel.OrderId);
         }
 
         public PickupItem GetOrderDrinkAsPickupItem(CookFinishItemViewModel itemViewModel)
         {
-            return this.orderDrinkRepository
-                .All()
-                .Where(x => x.OrderId == itemViewModel.OrderId && x.DrinkId == itemViewModel.FoodId)
-                .Select(x => new PickupItem()
-                {
-                    ClientName = x.Order.Client.FirstName + " " + x.Order.Client.LastName,
-                    Name = x.Drink.Name,
-                    TableNumber = x.Order.Table.Number,
-                    WaiterId = x.Order.WaiterId,
-                    Count = 1,
-                    OrderId = itemViewModel.OrderId,
-                })
-                .FirstOrDefault();
+            return this.orderDrinkService.GetOrderDrinkAsPickupItem(itemViewModel.FoodId, itemViewModel.OrderId);
         }
 
         public double GetOrderDeliveredPerCent(string orderId)
         {
             var foodItems = new List<OrderDeliveredItemDto>();
             // Get all the items
-            foodItems.AddRange(this.orderDishRepository
-                .All()
-                .Where(x => x.OrderId == orderId)
-                .Select(x => new OrderDeliveredItemDto()
-                {
-                    Count = x.Count,
-                    DeliveredCount = x.DeliveredCount,
-                })
-                .ToArray());
-            foodItems.AddRange(this.orderDrinkRepository
-                .All()
-                .Where(x => x.OrderId == orderId)
-                .Select(x => new OrderDeliveredItemDto()
-                {
-                    Count = x.Count,
-                    DeliveredCount = x.DeliveredCount,
-                })
-                .ToArray());
+            foodItems.AddRange(this.orderDishService.GetDishesAsOrderDeliveredItemById(orderId));
+            foodItems.AddRange(this.orderDrinkService.GetDrinksAsOrderDeliveredItemById(orderId));
 
             // TODO use automapper
 
@@ -474,8 +374,8 @@
                         dates.Add(dt.ToString("dd/MM/yyyy"));
                     }
 
-                    dishIncome = this.GetDailyDishIncomeByPeriod(startDate, endDate).ToList();
-                    drinkIncome = this.GetDailyDrinkIncomeByPeriod(startDate, endDate).ToList();
+                    dishIncome = this.orderDishService.GetDailyDishIncomeByPeriod(startDate, endDate).ToList();
+                    drinkIncome = this.orderDrinkService.GetDailyDrinkIncomeByPeriod(startDate, endDate).ToList();
                     break;
                 case "monthly":
                     for (var dt = startDate; dt.Year < endDate.Year || (dt.Year <= endDate.Year && dt.Month <= endDate.Month); dt = dt.AddMonths(1))
@@ -483,8 +383,8 @@
                         dates.Add(dt.ToString("MM/yyyy"));
                     }
 
-                    dishIncome = this.GetMonthlyDishIncomeByPeriod(startDate, endDate).ToList();
-                    drinkIncome = this.GetMonthlyDrinkIncomeByPeriod(startDate, endDate).ToList();
+                    dishIncome = this.orderDishService.GetMonthlyDishIncomeByPeriod(startDate, endDate).ToList();
+                    drinkIncome = this.orderDrinkService.GetMonthlyDrinkIncomeByPeriod(startDate, endDate).ToList();
                     break;
                 case "yearly":
                     for (var dt = startDate; dt.Year <= endDate.Year; dt = dt.AddYears(1))
@@ -492,8 +392,8 @@
                         dates.Add(dt.ToString("yyyy"));
                     }
 
-                    dishIncome = this.GetYearlyDishIncomeByPeriod(startDate, endDate).ToList();
-                    drinkIncome = this.GetYearlyDrinkIncomeByPeriod(startDate, endDate).ToList();
+                    dishIncome = this.orderDishService.GetYearlyDishIncomeByPeriod(startDate, endDate).ToList();
+                    drinkIncome = this.orderDrinkService.GetYearlyDrinkIncomeByPeriod(startDate, endDate).ToList();
                     break;
                 default:
                     throw new InvalidOperationException("An invalid period was given!");
@@ -538,29 +438,9 @@
                     })
                     .ToListAsync();
 
-                var dishesCount = await this.orderDishRepository
-                    .All()
-                    .Where(x => x.Order.ProcessType == ProcessType.Completed && x.Order.WaiterId == id && ((x.Order.CreatedOn >= startDate)
-                    || (x.Order.CreatedOn.Month == startDate.Month && x.Order.CreatedOn.Year == startDate.Year)))
-                    .GroupBy(x => new { x.Order.CreatedOn.Year, x.Order.CreatedOn.Month })
-                    .Select(x => new
-                    {
-                        Date = new DateTime(x.Key.Year, x.Key.Month, 1).ToString("MM/yyyy", CultureInfo.InvariantCulture),
-                        DishesCount = x.Sum(y => y.DeliveredCount),
-                    })
-                    .ToListAsync();
+                var dishesCount = this.orderDishService.GetDishesForWaiterAnalyse(id, startDate);
 
-                var drinksCount = await this.orderDrinkRepository
-                    .All()
-                    .Where(x => x.Order.ProcessType == ProcessType.Completed && x.Order.WaiterId == id && ((x.Order.CreatedOn >= startDate)
-                    || (x.Order.CreatedOn.Month == startDate.Month && x.Order.CreatedOn.Year == startDate.Year)))
-                    .GroupBy(x => new { x.Order.CreatedOn.Year, x.Order.CreatedOn.Month })
-                    .Select(x => new
-                    {
-                        Date = new DateTime(x.Key.Year, x.Key.Month, 1).ToString("MM/yyyy", CultureInfo.InvariantCulture),
-                        DrinksCount = x.Sum(y => y.DeliveredCount),
-                    })
-                    .ToListAsync();
+                var drinksCount = this.orderDrinkService.GetDrinksForWaiterAnalyse(id, startDate);
 
                 var waiterName = this.orderRepository.All().Where(x => x.WaiterId == id).Select(x => x.Waiter.FirstName + " " + x.Waiter.LastName).FirstOrDefault();
 
@@ -582,12 +462,12 @@
 
                     if (dishesThisMonth != null)
                     {
-                        totalItemsDelivered += dishesThisMonth.DishesCount;
+                        totalItemsDelivered += dishesThisMonth.Count;
                     }
 
                     if (drinksThisMonth != null)
                     {
-                        totalItemsDelivered += drinksThisMonth.DrinksCount;
+                        totalItemsDelivered += drinksThisMonth.Count;
                     }
 
                     if (ordersThisMonth != null)
@@ -644,15 +524,9 @@
 
         public bool IsOrderCooked(string orderId)
         {
-            var drinksDelivered = this.orderDrinkRepository
-                    .All()
-                    .Where(x => x.OrderId == orderId)
-                    .All(x => x.DeliveredCount >= x.Count);
+            var drinksDelivered = this.orderDrinkService.AreAllDrinksDelivered(orderId);
 
-            var dishesDelivered = this.orderDishRepository
-                .All()
-                .Where(x => x.OrderId == orderId)
-                .All(x => x.DeliveredCount >= x.Count);
+            var dishesDelivered = this.orderDishService.AreAllDishesDelivered(orderId);
 
             return drinksDelivered && dishesDelivered;
 
@@ -741,88 +615,6 @@
             }
 
             return salesViewModel;
-        }
-
-        private ICollection<SalesChartViewModel> GetDailyDishIncomeByPeriod(DateTime startDate, DateTime endDate)
-        {
-            return this.orderDishRepository
-                    .All()
-                    .Where(x => x.Order.DeliveredOn.Value.Date >= startDate.Date && x.Order.DeliveredOn.Value.Date <= endDate.Date)
-                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Day, x.Order.DeliveredOn.Value.Month, x.Order.DeliveredOn.Value.Year })
-                    .Select(x => new SalesChartViewModel()
-                    {
-                        Date = new DateTime(x.Key.Year, x.Key.Month, x.Key.Day).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
-                        Income = x.Sum(y => y.PriceForOne * y.Count),
-                    }).ToList();
-        }
-
-        private ICollection<SalesChartViewModel> GetDailyDrinkIncomeByPeriod(DateTime startDate, DateTime endDate)
-        {
-            return this.orderDrinkRepository
-                    .All()
-                    .Where(x => x.Order.DeliveredOn.Value.Date >= startDate.Date && x.Order.DeliveredOn.Value.Date <= endDate.Date)
-                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Day, x.Order.DeliveredOn.Value.Month, x.Order.DeliveredOn.Value.Year })
-                    .Select(x => new SalesChartViewModel()
-                    {
-                        Date = new DateTime(x.Key.Year, x.Key.Month, x.Key.Day).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
-                        Income = x.Sum(y => y.PriceForOne * y.Count),
-                    }).ToList();
-        }
-
-        private ICollection<SalesChartViewModel> GetMonthlyDishIncomeByPeriod(DateTime startDate, DateTime endDate)
-        {
-            return this.orderDishRepository
-                    .All()
-                    .Where(x => (x.Order.DeliveredOn >= startDate && x.Order.DeliveredOn < endDate)
-                    || (x.Order.DeliveredOn.Value.Month == startDate.Month && x.Order.DeliveredOn.Value.Year == startDate.Year)
-                    || (x.Order.DeliveredOn.Value.Month == endDate.Month && x.Order.DeliveredOn.Value.Year == endDate.Year))
-                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Month, x.Order.DeliveredOn.Value.Year })
-                    .Select(x => new SalesChartViewModel()
-                    {
-                        Date = new DateTime(x.Key.Year, x.Key.Month, 1).ToString("MM/yyyy", CultureInfo.InvariantCulture),
-                        Income = x.Sum(y => y.PriceForOne * y.Count),
-                    }).ToList();
-        }
-
-        private ICollection<SalesChartViewModel> GetMonthlyDrinkIncomeByPeriod(DateTime startDate, DateTime endDate)
-        {
-            return this.orderDrinkRepository
-                    .All()
-                    .Where(x => (x.Order.DeliveredOn >= startDate && x.Order.DeliveredOn < endDate)
-                    || (x.Order.DeliveredOn.Value.Month == startDate.Month && x.Order.DeliveredOn.Value.Year == startDate.Year)
-                    || (x.Order.DeliveredOn.Value.Month == endDate.Month && x.Order.DeliveredOn.Value.Year == endDate.Year))
-                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Month, x.Order.DeliveredOn.Value.Year })
-                    .Select(x => new SalesChartViewModel()
-                    {
-                        Date = new DateTime(x.Key.Year, x.Key.Month, 1).ToString("MM/yyyy", CultureInfo.InvariantCulture),
-                        Income = x.Sum(y => y.PriceForOne * y.Count),
-                    }).ToList();
-        }
-
-        private ICollection<SalesChartViewModel> GetYearlyDishIncomeByPeriod(DateTime startDate, DateTime endDate)
-        {
-            return this.orderDishRepository
-                    .All()
-                    .Where(x => x.Order.DeliveredOn.Value.Year >= startDate.Year && x.Order.DeliveredOn.Value.Year <= endDate.Year)
-                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Year })
-                    .Select(x => new SalesChartViewModel()
-                    {
-                        Date = new DateTime(x.Key.Year, 1, 1).ToString("yyyy", CultureInfo.InvariantCulture),
-                        Income = x.Sum(y => y.PriceForOne * y.Count),
-                    }).ToList();
-        }
-
-        private ICollection<SalesChartViewModel> GetYearlyDrinkIncomeByPeriod(DateTime startDate, DateTime endDate)
-        {
-            return this.orderDrinkRepository
-                    .All()
-                    .Where(x => x.Order.DeliveredOn.Value.Year >= startDate.Year && x.Order.DeliveredOn.Value.Year <= endDate.Year)
-                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Year })
-                    .Select(x => new SalesChartViewModel()
-                    {
-                        Date = new DateTime(x.Key.Year, 1, 1).ToString("yyyy", CultureInfo.InvariantCulture),
-                        Income = x.Sum(y => y.PriceForOne * y.Count),
-                    }).ToList();
         }
     }
 }
