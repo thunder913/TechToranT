@@ -484,77 +484,12 @@
             actual.IsDeepEqual(expected);
         }
 
-        [Fact]
-        public async Task AddDeliveredCountToOrderDishAsyncWorksCorrectly()
-        {
-            await this.PopulateDB();
-            var foodId = "test1";
-            var orderId = "order2";
-            var toAdd = 2;
-            var expectedCount = this.DbContext.OrdersDishes.FirstOrDefault(x => x.OrderId == orderId && x.DishId == foodId).DeliveredCount + toAdd;
 
-            var cookViewModel = new CookFinishItemViewModel()
-            {
-                FoodId = foodId,
-                OrderId = orderId,
-            };
-            await this.OrderService.AddDeliveredCountToOrderDishAsync(toAdd, cookViewModel);
-            var actualCount = this.DbContext.OrdersDishes.FirstOrDefault(x => x.OrderId == orderId && x.DishId == foodId).DeliveredCount;
 
-            Assert.Equal(expectedCount, actualCount);
-        }
 
-        [Fact]
-        public async Task AddDeliveredCountToOrderDrinkAsyncWorksCorrectly()
-        {
-            await this.PopulateDB();
-            var foodId = "test2";
-            var orderId = "order2";
-            var toAdd = 2;
-            var expectedCount = this.DbContext.OrderDrinks.FirstOrDefault(x => x.OrderId == orderId && x.DrinkId == foodId).DeliveredCount + toAdd;
 
-            var cookViewModel = new CookFinishItemViewModel()
-            {
-                FoodId = foodId,
-                OrderId = orderId,
-            };
-            await this.OrderService.AddDeliveredCountToOrderDrinkAsync(toAdd, cookViewModel);
-            var actualCount = this.DbContext.OrderDrinks.FirstOrDefault(x => x.OrderId == orderId && x.DrinkId == foodId).DeliveredCount;
 
-            Assert.Equal(expectedCount, actualCount);
-        }
 
-        [Fact]
-        public async Task AddDeliveredCountToOrderDishAsyncThrowsWhenItemHasAlreadyBeenMade()
-        {
-            await this.PopulateDB();
-
-            var orderDish = this.DbContext.OrdersDishes.FirstOrDefault();
-            orderDish.DeliveredCount = orderDish.Count;
-            var cookViewModel = new CookFinishItemViewModel()
-            {
-                FoodId = orderDish.Dish.Id,
-                OrderId = orderDish.OrderId,
-            };
-
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await this.OrderService.AddDeliveredCountToOrderDishAsync(1, cookViewModel));
-        }
-
-        [Fact]
-        public async Task AddDeliveredCountToOrderDrinkAsyncThrowsWhenItemHasAlreadyBeenMade()
-        {
-            await this.PopulateDB();
-
-            var orderDish = this.DbContext.OrderDrinks.FirstOrDefault();
-            orderDish.DeliveredCount = orderDish.Count;
-            var cookViewModel = new CookFinishItemViewModel()
-            {
-                FoodId = orderDish.DrinkId,
-                OrderId = orderDish.OrderId,
-            };
-
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await this.OrderService.AddDeliveredCountToOrderDrinkAsync(1, cookViewModel));
-        }
 
         [Fact]
         public async Task GetSalesDataForPeriodWorksCorrectlyWithDaily()
@@ -866,59 +801,9 @@
             Assert.Throws<InvalidOperationException>(() => this.OrderService.GetSalesDataForPeriod(DateTime.UtcNow.AddDays(-1), DateTime.UtcNow, "invalid"));
         }
 
-        [Fact]
-        public async Task GetOrderDishAsPickupItemWorksCorrectly()
-        {
-            await this.PopulateDB();
-            var orderDish = this.DbContext.OrdersDishes.FirstOrDefault();
 
-            var expected = this.DbContext.OrdersDishes
-                .Where(x => x.OrderId == orderDish.OrderId && x.DishId == orderDish.Dish.Id)
-                .Select(x => new PickupItem()
-                {
-                    ClientName = x.Order.Client.FirstName + " " + x.Order.Client.LastName,
-                    Name = x.Dish.Name,
-                    TableNumber = x.Order.Table.Number,
-                    WaiterId = x.Order.WaiterId,
-                    Count = 1,
-                    OrderId = orderDish.OrderId,
-                })
-                .FirstOrDefault();
-            var actual = this.OrderService.GetOrderDishAsPickupItem(new CookFinishItemViewModel()
-            {
-                OrderId = orderDish.OrderId,
-                FoodId = orderDish.DishId,
-            });
 
-            actual.IsDeepEqual(expected);
-        }
 
-        [Fact]
-        public async Task GetOrderDrinkAsPickupItemWorksCorrectly()
-        {
-            await this.PopulateDB();
-            var orderDrink = this.DbContext.OrderDrinks.FirstOrDefault();
-
-            var expected = this.DbContext.OrderDrinks
-                .Where(x => x.OrderId == orderDrink.OrderId && x.DrinkId == orderDrink.DrinkId)
-                .Select(x => new PickupItem()
-                {
-                    ClientName = x.Order.Client.FirstName + " " + x.Order.Client.LastName,
-                    Name = x.Drink.Name,
-                    TableNumber = x.Order.Table.Number,
-                    WaiterId = x.Order.WaiterId,
-                    Count = 1,
-                    OrderId = orderDrink.OrderId,
-                })
-                .FirstOrDefault();
-            var actual = this.OrderService.GetOrderDrinkAsPickupItem(new CookFinishItemViewModel()
-            {
-                OrderId = orderDrink.OrderId,
-                FoodId = orderDrink.DrinkId,
-            });
-
-            actual.IsDeepEqual(expected);
-        }
 
         [Fact]
         public async Task GetOrderDeliveredPerCentWorksCorrectly()
@@ -1451,8 +1336,6 @@
             });
 
             await this.DbContext.SaveChangesAsync();
-
-
         }
     }
 }

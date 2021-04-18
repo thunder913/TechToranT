@@ -13,7 +13,7 @@ namespace RestaurantMenuProject.Services.Data.Contracts
 
         public ICollection<OrderDeliveredItemDto> GetDrinksAsOrderDeliveredItemById(string orderId);
 
-        public Task AddDeliveredCountToOrderDishAsync(string orderId, string foodId, int count);
+        public Task AddDeliveredCountToOrderDrinkAsync(string orderId, string foodId, int count);
 
         public ICollection<CookItemViewModel> GetAllCookingDrinksInOrder(string orderId);
 

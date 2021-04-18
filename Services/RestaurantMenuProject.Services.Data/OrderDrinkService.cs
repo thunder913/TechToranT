@@ -45,7 +45,7 @@ namespace RestaurantMenuProject.Services.Data
                 .ToArray();
         }
 
-        public async Task AddDeliveredCountToOrderDishAsync(string orderId, string foodId, int count)
+        public async Task AddDeliveredCountToOrderDrinkAsync(string orderId, string foodId, int count)
         {
             var orderDrinkItem = this.orderDrinkRepository
                 .All()

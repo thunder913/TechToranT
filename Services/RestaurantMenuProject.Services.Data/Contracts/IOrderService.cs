@@ -39,14 +39,6 @@
 
         public ICollection<CookFoodCategoriesViewModel> GetCookFoodTypes(string id);
 
-        public Task AddDeliveredCountToOrderDrinkAsync(int count, CookFinishItemViewModel itemViewModel);
-
-        public Task AddDeliveredCountToOrderDishAsync(int count, CookFinishItemViewModel itemViewModel);
-
-        public PickupItem GetOrderDishAsPickupItem(CookFinishItemViewModel itemViewModel);
-
-        public PickupItem GetOrderDrinkAsPickupItem(CookFinishItemViewModel itemViewModel);
-
         public double GetOrderDeliveredPerCent(string orderId);
 
         public SalesViewModel GetSalesDataForPeriod(DateTime startDate, DateTime endDate, string period);

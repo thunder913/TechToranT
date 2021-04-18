@@ -6,7 +6,7 @@
     using System.Linq;
     using System.Linq.Dynamic.Core;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Identity;
+
     using Microsoft.EntityFrameworkCore;
     using RestaurantMenuProject.Data.Common.Repositories;
     using RestaurantMenuProject.Data.Models;
@@ -322,26 +322,6 @@
             return toReturn;
         }
 
-        public async Task AddDeliveredCountToOrderDishAsync(int count, CookFinishItemViewModel itemViewModel)
-        {
-            await this.orderDishService.AddDeliveredCountToOrderDishAsync(itemViewModel.OrderId, itemViewModel.FoodId, count);
-        }
-
-        public async Task AddDeliveredCountToOrderDrinkAsync(int count, CookFinishItemViewModel itemViewModel)
-        {
-            await this.orderDrinkService.AddDeliveredCountToOrderDishAsync(itemViewModel.OrderId, itemViewModel.FoodId, count);
-        }
-
-        public PickupItem GetOrderDishAsPickupItem(CookFinishItemViewModel itemViewModel)
-        {
-            return this.orderDishService.GetOrderDishAsPickupItem(itemViewModel.FoodId, itemViewModel.OrderId);
-        }
-
-        public PickupItem GetOrderDrinkAsPickupItem(CookFinishItemViewModel itemViewModel)
-        {
-            return this.orderDrinkService.GetOrderDrinkAsPickupItem(itemViewModel.FoodId, itemViewModel.OrderId);
-        }
-
         public double GetOrderDeliveredPerCent(string orderId)
         {
             var foodItems = new List<OrderDeliveredItemDto>();
@@ -553,8 +533,6 @@
             order.PaidOn = DateTime.UtcNow;
 
             await this.orderRepository.SaveChangesAsync();
-
-
         }
 
         private SalesViewModel GetSales(List<string> dates, ICollection<SalesChartViewModel> dishIncome, ICollection<SalesChartViewModel> drinkIncome, string period)

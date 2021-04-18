@@ -15,13 +15,19 @@
     {
         private readonly IDeletableEntityRepository<PickupItem> pickupItemRepository;
         private readonly IOrderService orderService;
+        private readonly IOrderDishService orderDishService;
+        private readonly IOrderDrinkService orderDrinkService;
 
         public PickupItemService(
             IDeletableEntityRepository<PickupItem> pickupItemRepository,
-            IOrderService orderService)
+            IOrderService orderService,
+            IOrderDishService orderDishService,
+            IOrderDrinkService orderDrinkService)
         {
             this.pickupItemRepository = pickupItemRepository;
             this.orderService = orderService;
+            this.orderDishService = orderDishService;
+            this.orderDrinkService = orderDrinkService;
         }
 
         public ICollection<PickupItem> GetAllItemsToPickUp(string userId)
@@ -47,13 +53,13 @@
 
             if (viewModel.DishType == FoodType.Dish)
             {
-                await this.orderService.AddDeliveredCountToOrderDishAsync(1, viewModel);
-                oldPickupItem = this.orderService.GetOrderDishAsPickupItem(viewModel);
+                await this.orderDishService.AddDeliveredCountToOrderDishAsync(viewModel.OrderId, viewModel.FoodId, 1);
+                oldPickupItem = this.orderDishService.GetOrderDishAsPickupItem(viewModel.FoodId, viewModel.OrderId);
             }
             else if (viewModel.DishType == FoodType.Drink)
             {
-                await this.orderService.AddDeliveredCountToOrderDrinkAsync(1, viewModel);
-                oldPickupItem = this.orderService.GetOrderDrinkAsPickupItem(viewModel);
+                await this.orderDrinkService.AddDeliveredCountToOrderDrinkAsync(viewModel.OrderId, viewModel.FoodId, 1);
+                oldPickupItem = this.orderDrinkService.GetOrderDrinkAsPickupItem(viewModel.FoodId, viewModel.OrderId);
             }
 
             var pickupItem = this.pickupItemRepository
