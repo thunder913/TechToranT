@@ -214,6 +214,11 @@
                 throw new InvalidOperationException("The old status has changed!");
             }
 
+            if (newProcessType == ProcessType.Delivered)
+            {
+                order.DeliveredOn = DateTime.UtcNow;
+            }
+
             order.ProcessType = newProcessType;
 
             this.orderRepository.Update(order);

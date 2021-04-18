@@ -35,7 +35,7 @@
 
         public DbSet<Order> Orders { get; set; }
 
-        public DbSet<OrderDish> OrdersDishes { get; set; }
+        public DbSet<OrderDish> OrderDishes { get; set; }
 
         public DbSet<PromoCode> PromoCodes { get; set; }
 

@@ -188,7 +188,7 @@
                     .Where(x => x.OrderId == orderId)
                     .To<FoodItemViewModel>()
                     .ToList();
-            var orderDishes = this.DbContext.OrdersDishes
+            var orderDishes = this.DbContext.OrderDishes
                     .Where(x => x.OrderId == orderId)
                     .To<FoodItemViewModel>()
                     .ToList();
@@ -448,14 +448,14 @@
                 ItemsToCook = allDrinks,
             };
 
-            var dishTypes = this.DbContext.OrdersDishes
+            var dishTypes = this.DbContext.OrderDishes
                 .GroupBy(x => x.Dish.DishTypeId)
                 .Select(x => x.Key);
             var dishes = new HashSet<CookFoodCategoriesViewModel>();
 
             foreach (var type in dishTypes)
             {
-                var typeDishes = this.DbContext.OrdersDishes.Where(x => (x.Dish.DishTypeId == type && x.Order.ProcessType == ProcessType.Cooking && x.Count - x.DeliveredCount > 0) && (orderId == null || x.OrderId == orderId))
+                var typeDishes = this.DbContext.OrderDishes.Where(x => (x.Dish.DishTypeId == type && x.Order.ProcessType == ProcessType.Cooking && x.Count - x.DeliveredCount > 0) && (orderId == null || x.OrderId == orderId))
                     .OrderBy(x => x.Order.CreatedOn)
                     .Select(x => new CookItemViewModel()
                     {
@@ -502,7 +502,7 @@
             await this.DbContext.SaveChangesAsync();
             var startDate = DateTime.UtcNow.AddDays(-3);
             var endDate = DateTime.UtcNow.AddDays(3);
-            var dishIncome = this.DbContext.OrdersDishes
+            var dishIncome = this.DbContext.OrderDishes
                     .Where(x => x.Order.DeliveredOn.Value.Date >= startDate.Date && x.Order.DeliveredOn.Value.Date <= endDate.Date)
                     .GroupBy(x => new { x.Order.DeliveredOn.Value.Day, x.Order.DeliveredOn.Value.Month, x.Order.DeliveredOn.Value.Year })
                     .Select(x => new SalesChartViewModel()
@@ -576,7 +576,7 @@
             await this.DbContext.SaveChangesAsync();
             var startDate = DateTime.UtcNow.AddMonths(-3);
             var endDate = DateTime.UtcNow.AddMonths(3);
-            var dishIncome = this.DbContext.OrdersDishes
+            var dishIncome = this.DbContext.OrderDishes
                     .Where(x => (x.Order.DeliveredOn >= startDate && x.Order.DeliveredOn < endDate)
                     || (x.Order.DeliveredOn.Value.Month == startDate.Month && x.Order.DeliveredOn.Value.Year == startDate.Year)
                     || (x.Order.DeliveredOn.Value.Month == endDate.Month && x.Order.DeliveredOn.Value.Year == endDate.Year))
@@ -654,7 +654,7 @@
             await this.DbContext.SaveChangesAsync();
             var startDate = DateTime.UtcNow.AddMonths(-12);
             var endDate = DateTime.UtcNow.AddMonths(12);
-            var dishIncome = this.DbContext.OrdersDishes
+            var dishIncome = this.DbContext.OrderDishes
                     .Where(x => (x.Order.DeliveredOn >= startDate && x.Order.DeliveredOn < endDate)
                     || (x.Order.DeliveredOn.Value.Month == startDate.Month && x.Order.DeliveredOn.Value.Year == startDate.Year)
                     || (x.Order.DeliveredOn.Value.Month == endDate.Month && x.Order.DeliveredOn.Value.Year == endDate.Year))
@@ -732,7 +732,7 @@
             await this.DbContext.SaveChangesAsync();
             var startDate = DateTime.UtcNow.AddYears(-3);
             var endDate = DateTime.UtcNow.AddYears(3);
-            var dishIncome = this.DbContext.OrdersDishes
+            var dishIncome = this.DbContext.OrderDishes
                     .Where(x => x.Order.DeliveredOn.Value.Year >= startDate.Year && x.Order.DeliveredOn.Value.Year <= endDate.Year)
                     .GroupBy(x => new { x.Order.DeliveredOn.Value.Year })
                     .Select(x => new SalesChartViewModel()
@@ -857,7 +857,7 @@
                     })
                     .ToListAsync();
 
-                var dishesCount = await this.DbContext.OrdersDishes
+                var dishesCount = await this.DbContext.OrderDishes
                     .Where(x => x.Order.ProcessType == ProcessType.Completed && x.Order.WaiterId == id && ((x.Order.CreatedOn >= startDate)
                     || (x.Order.CreatedOn.Month == startDate.Month && x.Order.CreatedOn.Year == startDate.Year)))
                     .GroupBy(x => new { x.Order.CreatedOn.Year, x.Order.CreatedOn.Month })
@@ -1254,7 +1254,7 @@
                 WaiterId = "user2",
             });
 
-            await this.DbContext.OrdersDishes.AddAsync(new OrderDish()
+            await this.DbContext.OrderDishes.AddAsync(new OrderDish()
             {
                 OrderId = "order1",
                 Count = 3,
@@ -1263,7 +1263,7 @@
                 PriceForOne = 10,
             });
 
-            await this.DbContext.OrdersDishes.AddAsync(new OrderDish()
+            await this.DbContext.OrderDishes.AddAsync(new OrderDish()
             {
                 OrderId = "order2",
                 Count = 3,
@@ -1272,7 +1272,7 @@
                 PriceForOne = 10,
             });
 
-            await this.DbContext.OrdersDishes.AddAsync(new OrderDish()
+            await this.DbContext.OrderDishes.AddAsync(new OrderDish()
             {
                 OrderId = "order2",
                 Count = 5,

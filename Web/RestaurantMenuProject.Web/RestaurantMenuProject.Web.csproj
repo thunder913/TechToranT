@@ -53,6 +53,8 @@
   <ItemGroup>
     <Folder Include="Areas\Administration\Controllers\" />
     <Folder Include="Areas\Administration\Views\Dashboard\" />
+    <Folder Include="wwwroot\img\Dishes\" />
+    <Folder Include="wwwroot\img\Drinks\" />
   </ItemGroup>
 
   <ItemGroup>

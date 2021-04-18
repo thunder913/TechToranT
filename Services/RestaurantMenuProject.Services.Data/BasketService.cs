@@ -465,10 +465,17 @@
 
         private PromoCode GetPromoCodeInBasket(string id)
         {
-            return this.basketRepository.All()
+            var basket = this.basketRepository.All()
                 .Include(x => x.PromoCode.ValidDishCategories)
                 .Include(x => x.PromoCode.ValidDrinkCategories)
-                .FirstOrDefault(x => x.Id == id).PromoCode;
+                .FirstOrDefault(x => x.Id == id);
+
+            if (basket == null)
+            {
+                return null;
+            }
+
+            return basket.PromoCode;
         }
     }
 }

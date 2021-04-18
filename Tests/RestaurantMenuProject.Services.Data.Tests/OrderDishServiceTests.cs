@@ -25,10 +25,10 @@
             var foodId = "test1";
             var orderId = "order2";
             var toAdd = 2;
-            var expectedCount = this.DbContext.OrdersDishes.FirstOrDefault(x => x.OrderId == orderId && x.DishId == foodId).DeliveredCount + toAdd;
+            var expectedCount = this.DbContext.OrderDishes.FirstOrDefault(x => x.OrderId == orderId && x.DishId == foodId).DeliveredCount + toAdd;
 
             await this.DishService.AddDeliveredCountToOrderDishAsync(orderId, foodId, toAdd);
-            var actualCount = this.DbContext.OrdersDishes.FirstOrDefault(x => x.OrderId == orderId && x.DishId == foodId).DeliveredCount;
+            var actualCount = this.DbContext.OrderDishes.FirstOrDefault(x => x.OrderId == orderId && x.DishId == foodId).DeliveredCount;
 
             Assert.Equal(expectedCount, actualCount);
         }
@@ -38,7 +38,7 @@
         {
             await this.PopulateDB();
 
-            var orderDish = this.DbContext.OrdersDishes.FirstOrDefault();
+            var orderDish = this.DbContext.OrderDishes.FirstOrDefault();
             orderDish.DeliveredCount = orderDish.Count;
 
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await this.DishService.AddDeliveredCountToOrderDishAsync(orderDish.OrderId, orderDish.DishId, 1));
@@ -48,9 +48,9 @@
         public async Task GetOrderDishAsPickupItemWorksCorrectly()
         {
             await this.PopulateDB();
-            var orderDish = this.DbContext.OrdersDishes.FirstOrDefault();
+            var orderDish = this.DbContext.OrderDishes.FirstOrDefault();
 
-            var expected = this.DbContext.OrdersDishes
+            var expected = this.DbContext.OrderDishes
                 .Where(x => x.OrderId == orderDish.OrderId && x.DishId == orderDish.Dish.Id)
                 .Select(x => new PickupItem()
                 {
@@ -225,7 +225,7 @@
                 WaiterId = "user2",
             });
 
-            await this.DbContext.OrdersDishes.AddAsync(new OrderDish()
+            await this.DbContext.OrderDishes.AddAsync(new OrderDish()
             {
                 OrderId = "order1",
                 Count = 3,
@@ -234,7 +234,7 @@
                 PriceForOne = 10,
             });
 
-            await this.DbContext.OrdersDishes.AddAsync(new OrderDish()
+            await this.DbContext.OrderDishes.AddAsync(new OrderDish()
             {
                 OrderId = "order2",
                 Count = 3,
@@ -243,7 +243,7 @@
                 PriceForOne = 10,
             });
 
-            await this.DbContext.OrdersDishes.AddAsync(new OrderDish()
+            await this.DbContext.OrderDishes.AddAsync(new OrderDish()
             {
                 OrderId = "order2",
                 Count = 5,

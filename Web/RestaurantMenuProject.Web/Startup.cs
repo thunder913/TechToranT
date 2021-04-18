@@ -42,7 +42,7 @@
             // Make it to yes in production
             services.AddDefaultIdentity<ApplicationUser>(opts =>
             {
-                opts.SignIn.RequireConfirmedAccount = false;
+                opts.SignIn.RequireConfirmedAccount = true;
                 opts.Password.RequireNonAlphanumeric = false;
                 opts.Password.RequireDigit = false;
             }).AddRoles<ApplicationRole>()

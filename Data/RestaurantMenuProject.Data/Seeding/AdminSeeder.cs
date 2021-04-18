@@ -1,6 +1,7 @@
 ﻿namespace RestaurantMenuProject.Data.Seeding
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -26,8 +27,17 @@
                 };
 
                 var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                await userManager.CreateAsync(userToAdd, "123456");
-                await userManager.AddToRoleAsync(userToAdd, GlobalConstants.AdministratorRoleName);
+                var result = await userManager.CreateAsync(userToAdd, "Test1234");
+                if (!result.Succeeded)
+                {
+                    throw new Exception(string.Join(Environment.NewLine, result.Errors.Select(e => e.Description)));
+                }
+
+                var added = await userManager.AddToRoleAsync(userToAdd, GlobalConstants.AdministratorRoleName);
+                if (!added.Succeeded)
+                {
+                    throw new Exception(string.Join(Environment.NewLine, result.Errors.Select(e => e.Description)));
+                }
             }
         }
     }
