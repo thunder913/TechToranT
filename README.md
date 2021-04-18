@@ -63,7 +63,7 @@ Administrators can:
 - Web API and AJAX
 - SignalR
 - Auto Mapper
-- xUnit (> 98% code coverage)
+- xUnit **(> 98% code coverage)**
 - SendGrid
 - Javascript
 - Bootstrap
