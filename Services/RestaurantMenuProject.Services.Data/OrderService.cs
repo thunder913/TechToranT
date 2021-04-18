@@ -473,6 +473,7 @@
                     {
                         dates.Add(dt.ToString("dd/MM/yyyy"));
                     }
+
                     dishIncome = this.GetDailyDishIncomeByPeriod(startDate, endDate).ToList();
                     drinkIncome = this.GetDailyDrinkIncomeByPeriod(startDate, endDate).ToList();
                     break;
@@ -481,6 +482,7 @@
                     {
                         dates.Add(dt.ToString("MM/yyyy"));
                     }
+
                     dishIncome = this.GetMonthlyDishIncomeByPeriod(startDate, endDate).ToList();
                     drinkIncome = this.GetMonthlyDrinkIncomeByPeriod(startDate, endDate).ToList();
                     break;
@@ -489,6 +491,7 @@
                     {
                         dates.Add(dt.ToString("yyyy"));
                     }
+
                     dishIncome = this.GetYearlyDishIncomeByPeriod(startDate, endDate).ToList();
                     drinkIncome = this.GetYearlyDrinkIncomeByPeriod(startDate, endDate).ToList();
                     break;

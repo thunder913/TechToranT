@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Linq.Dynamic.Core;
     using System.Threading.Tasks;
@@ -553,6 +554,605 @@
             };
 
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await this.OrderService.AddDeliveredCountToOrderDrinkAsync(1, cookViewModel));
+        }
+
+        [Fact]
+        public async Task GetSalesDataForPeriodWorksCorrectlyWithDaily()
+        {
+            await this.PopulateDB();
+            var orders = this.DbContext.Orders.ToList();
+            orders[0].DeliveredOn = DateTime.UtcNow;
+            orders[1].DeliveredOn = DateTime.UtcNow.AddDays(-1);
+            orders[2].DeliveredOn = DateTime.UtcNow.AddDays(1);
+            await this.DbContext.SaveChangesAsync();
+            var startDate = DateTime.UtcNow.AddDays(-3);
+            var endDate = DateTime.UtcNow.AddDays(3);
+            var dishIncome = this.DbContext.OrdersDishes
+                    .Where(x => x.Order.DeliveredOn.Value.Date >= startDate.Date && x.Order.DeliveredOn.Value.Date <= endDate.Date)
+                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Day, x.Order.DeliveredOn.Value.Month, x.Order.DeliveredOn.Value.Year })
+                    .Select(x => new SalesChartViewModel()
+                    {
+                        Date = new DateTime(x.Key.Year, x.Key.Month, x.Key.Day).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                        Income = x.Sum(y => y.PriceForOne * y.Count),
+                    }).ToList();
+            var drinkIncome = this.DbContext.OrderDrinks
+                .Where(x => x.Order.DeliveredOn.Value.Date >= startDate.Date && x.Order.DeliveredOn.Value.Date <= endDate.Date)
+                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Day, x.Order.DeliveredOn.Value.Month, x.Order.DeliveredOn.Value.Year })
+                    .Select(x => new SalesChartViewModel()
+                    {
+                        Date = new DateTime(x.Key.Year, x.Key.Month, x.Key.Day).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                        Income = x.Sum(y => y.PriceForOne * y.Count),
+                    }).ToList();
+            var dates = new List<string>();
+            for (var dt = startDate; dt <= endDate; dt = dt.AddDays(1))
+            {
+                dates.Add(dt.ToString("dd/MM/yyyy"));
+            }
+
+            var expected = new SalesViewModel();
+            foreach (var date in dates)
+            {
+                var dishIncomeToday = dishIncome.FirstOrDefault(x => x.Date == date);
+                var drinkIncomeToday = drinkIncome.FirstOrDefault(x => x.Date == date);
+
+                expected.DishIncome.Add(new SalesChartViewModel()
+                {
+                    Date = date,
+                    Income = dishIncomeToday == null ? 0 : dishIncomeToday.Income,
+                });
+
+                expected.DrinkIncome.Add(new SalesChartViewModel()
+                {
+                    Date = date,
+                    Income = drinkIncomeToday == null ? 0 : drinkIncomeToday.Income,
+                });
+
+                decimal totalIncome = 0;
+                if (dishIncomeToday != null)
+                {
+                    totalIncome += dishIncomeToday.Income;
+                }
+
+                if (drinkIncomeToday != null)
+                {
+                    totalIncome += drinkIncomeToday.Income;
+                }
+
+                expected.TotalIncome.Add(new SalesChartViewModel()
+                {
+                    Date = date,
+                    Income = totalIncome,
+                });
+            }
+
+            var actual = this.OrderService.GetSalesDataForPeriod(startDate, endDate, "Daily");
+
+            actual.IsDeepEqual(expected);
+        }
+
+        [Fact]
+        public async Task GetSalesDataForPeriodWorksCorrectlyWithMonthly()
+        {
+            await this.PopulateDB();
+            var orders = this.DbContext.Orders.ToList();
+            orders[0].DeliveredOn = DateTime.UtcNow;
+            orders[1].DeliveredOn = DateTime.UtcNow.AddMonths(-1);
+            orders[2].DeliveredOn = DateTime.UtcNow.AddMonths(1);
+            await this.DbContext.SaveChangesAsync();
+            var startDate = DateTime.UtcNow.AddMonths(-3);
+            var endDate = DateTime.UtcNow.AddMonths(3);
+            var dishIncome = this.DbContext.OrdersDishes
+                    .Where(x => (x.Order.DeliveredOn >= startDate && x.Order.DeliveredOn < endDate)
+                    || (x.Order.DeliveredOn.Value.Month == startDate.Month && x.Order.DeliveredOn.Value.Year == startDate.Year)
+                    || (x.Order.DeliveredOn.Value.Month == endDate.Month && x.Order.DeliveredOn.Value.Year == endDate.Year))
+                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Month, x.Order.DeliveredOn.Value.Year })
+                    .Select(x => new SalesChartViewModel()
+                    {
+                        Date = new DateTime(x.Key.Year, x.Key.Month, 1).ToString("MM/yyyy", CultureInfo.InvariantCulture),
+                        Income = x.Sum(y => y.PriceForOne * y.Count),
+                    }).ToList();
+            var drinkIncome = this.DbContext.OrderDrinks
+                .Where(x => (x.Order.DeliveredOn >= startDate && x.Order.DeliveredOn < endDate)
+                    || (x.Order.DeliveredOn.Value.Month == startDate.Month && x.Order.DeliveredOn.Value.Year == startDate.Year)
+                    || (x.Order.DeliveredOn.Value.Month == endDate.Month && x.Order.DeliveredOn.Value.Year == endDate.Year))
+                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Month, x.Order.DeliveredOn.Value.Year })
+                    .Select(x => new SalesChartViewModel()
+                    {
+                        Date = new DateTime(x.Key.Year, x.Key.Month, 1).ToString("MM/yyyy", CultureInfo.InvariantCulture),
+                        Income = x.Sum(y => y.PriceForOne * y.Count),
+                    }).ToList();
+            var dates = new List<string>();
+            for (var dt = startDate; dt.Year < endDate.Year || (dt.Year <= endDate.Year && dt.Month <= endDate.Month); dt = dt.AddMonths(1))
+            {
+                dates.Add(dt.ToString("MM/yyyy"));
+            }
+
+            var expected = new SalesViewModel();
+            foreach (var date in dates)
+            {
+                var dishIncomeToday = dishIncome.FirstOrDefault(x => x.Date == date && x.Date == date);
+                var drinkIncomeToday = drinkIncome.FirstOrDefault(x => x.Date == date && x.Date == date);
+
+                expected.DishIncome.Add(new SalesChartViewModel()
+                {
+                    Date = date,
+                    Income = dishIncomeToday == null ? 0 : dishIncomeToday.Income,
+                });
+
+                expected.DrinkIncome.Add(new SalesChartViewModel()
+                {
+                    Date = date,
+                    Income = drinkIncomeToday == null ? 0 : drinkIncomeToday.Income,
+                });
+
+                decimal totalIncome = 0;
+                if (dishIncomeToday != null)
+                {
+                    totalIncome += dishIncomeToday.Income;
+                }
+
+                if (drinkIncomeToday != null)
+                {
+                    totalIncome += drinkIncomeToday.Income;
+                }
+
+                expected.TotalIncome.Add(new SalesChartViewModel()
+                {
+                    Date = date,
+                    Income = totalIncome,
+                });
+            }
+
+            var actual = this.OrderService.GetSalesDataForPeriod(startDate, endDate, "Monthly");
+
+            actual.IsDeepEqual(expected);
+        }
+
+        [Fact]
+        public async Task GetSalesDataForPeriodWorksCorrectlyWithHigherDateRange()
+        {
+            await this.PopulateDB();
+            var orders = this.DbContext.Orders.ToList();
+            orders[0].DeliveredOn = DateTime.UtcNow;
+            orders[1].DeliveredOn = DateTime.UtcNow.AddMonths(-1);
+            orders[2].DeliveredOn = DateTime.UtcNow.AddMonths(1);
+            await this.DbContext.SaveChangesAsync();
+            var startDate = DateTime.UtcNow.AddMonths(-12);
+            var endDate = DateTime.UtcNow.AddMonths(12);
+            var dishIncome = this.DbContext.OrdersDishes
+                    .Where(x => (x.Order.DeliveredOn >= startDate && x.Order.DeliveredOn < endDate)
+                    || (x.Order.DeliveredOn.Value.Month == startDate.Month && x.Order.DeliveredOn.Value.Year == startDate.Year)
+                    || (x.Order.DeliveredOn.Value.Month == endDate.Month && x.Order.DeliveredOn.Value.Year == endDate.Year))
+                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Month, x.Order.DeliveredOn.Value.Year })
+                    .Select(x => new SalesChartViewModel()
+                    {
+                        Date = new DateTime(x.Key.Year, x.Key.Month, 1).ToString("MM/yyyy", CultureInfo.InvariantCulture),
+                        Income = x.Sum(y => y.PriceForOne * y.Count),
+                    }).ToList();
+            var drinkIncome = this.DbContext.OrderDrinks
+                .Where(x => (x.Order.DeliveredOn >= startDate && x.Order.DeliveredOn < endDate)
+                    || (x.Order.DeliveredOn.Value.Month == startDate.Month && x.Order.DeliveredOn.Value.Year == startDate.Year)
+                    || (x.Order.DeliveredOn.Value.Month == endDate.Month && x.Order.DeliveredOn.Value.Year == endDate.Year))
+                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Month, x.Order.DeliveredOn.Value.Year })
+                    .Select(x => new SalesChartViewModel()
+                    {
+                        Date = new DateTime(x.Key.Year, x.Key.Month, 1).ToString("MM/yyyy", CultureInfo.InvariantCulture),
+                        Income = x.Sum(y => y.PriceForOne * y.Count),
+                    }).ToList();
+            var dates = new List<string>();
+            for (var dt = startDate; dt.Year < endDate.Year || (dt.Year <= endDate.Year && dt.Month <= endDate.Month); dt = dt.AddMonths(1))
+            {
+                dates.Add(dt.ToString("MM/yyyy"));
+            }
+
+            var expected = new SalesViewModel();
+            foreach (var date in dates)
+            {
+                var dishIncomeToday = dishIncome.FirstOrDefault(x => x.Date == date && x.Date == date);
+                var drinkIncomeToday = drinkIncome.FirstOrDefault(x => x.Date == date && x.Date == date);
+
+                expected.DishIncome.Add(new SalesChartViewModel()
+                {
+                    Date = date,
+                    Income = dishIncomeToday == null ? 0 : dishIncomeToday.Income,
+                });
+
+                expected.DrinkIncome.Add(new SalesChartViewModel()
+                {
+                    Date = date,
+                    Income = drinkIncomeToday == null ? 0 : drinkIncomeToday.Income,
+                });
+
+                decimal totalIncome = 0;
+                if (dishIncomeToday != null)
+                {
+                    totalIncome += dishIncomeToday.Income;
+                }
+
+                if (drinkIncomeToday != null)
+                {
+                    totalIncome += drinkIncomeToday.Income;
+                }
+
+                expected.TotalIncome.Add(new SalesChartViewModel()
+                {
+                    Date = date,
+                    Income = totalIncome,
+                });
+            }
+
+            var actual = this.OrderService.GetSalesDataForPeriod(startDate, endDate, "Monthly");
+
+            actual.IsDeepEqual(expected);
+        }
+
+        [Fact]
+        public async Task GetSalesDataForPeriodWorksCorrectlyWithYearly()
+        {
+            await this.PopulateDB();
+            var orders = this.DbContext.Orders.ToList();
+            orders[0].DeliveredOn = DateTime.UtcNow;
+            orders[1].DeliveredOn = DateTime.UtcNow.AddYears(-1);
+            orders[2].DeliveredOn = DateTime.UtcNow.AddYears(1);
+            await this.DbContext.SaveChangesAsync();
+            var startDate = DateTime.UtcNow.AddYears(-3);
+            var endDate = DateTime.UtcNow.AddYears(3);
+            var dishIncome = this.DbContext.OrdersDishes
+                    .Where(x => x.Order.DeliveredOn.Value.Year >= startDate.Year && x.Order.DeliveredOn.Value.Year <= endDate.Year)
+                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Year })
+                    .Select(x => new SalesChartViewModel()
+                    {
+                        Date = new DateTime(x.Key.Year, 1, 1).ToString("yyyy", CultureInfo.InvariantCulture),
+                        Income = x.Sum(y => y.PriceForOne * y.Count),
+                    }).ToList();
+            var drinkIncome = this.DbContext.OrderDrinks
+                .Where(x => x.Order.DeliveredOn.Value.Year >= startDate.Year && x.Order.DeliveredOn.Value.Year <= endDate.Year)
+                    .GroupBy(x => new { x.Order.DeliveredOn.Value.Year })
+                    .Select(x => new SalesChartViewModel()
+                    {
+                        Date = new DateTime(x.Key.Year, 1, 1).ToString("yyyy", CultureInfo.InvariantCulture),
+                        Income = x.Sum(y => y.PriceForOne * y.Count),
+                    }).ToList();
+            var dates = new List<string>();
+            for (var dt = startDate; dt.Year <= endDate.Year; dt = dt.AddYears(1))
+            {
+                dates.Add(dt.ToString("yyyy"));
+            }
+
+            var expected = new SalesViewModel();
+            foreach (var date in dates)
+            {
+                var dishIncomeToday = dishIncome.FirstOrDefault(x => x.Date == date);
+                var drinkIncomeToday = drinkIncome.FirstOrDefault(x => x.Date == date);
+
+                expected.DishIncome.Add(new SalesChartViewModel()
+                {
+                    Date = date,
+                    Income = dishIncomeToday == null ? 0 : dishIncomeToday.Income,
+                });
+
+                expected.DrinkIncome.Add(new SalesChartViewModel()
+                {
+                    Date = date,
+                    Income = drinkIncomeToday == null ? 0 : drinkIncomeToday.Income,
+                });
+
+                decimal totalIncome = 0;
+                if (dishIncomeToday != null)
+                {
+                    totalIncome += dishIncomeToday.Income;
+                }
+
+                if (drinkIncomeToday != null)
+                {
+                    totalIncome += drinkIncomeToday.Income;
+                }
+
+                expected.TotalIncome.Add(new SalesChartViewModel()
+                {
+                    Date = date,
+                    Income = totalIncome,
+                });
+            }
+
+            var actual = this.OrderService.GetSalesDataForPeriod(startDate, endDate, "Yearly");
+
+            actual.IsDeepEqual(expected);
+        }
+
+        [Fact]
+        public void GetSalesDataForPeriodThrowsWhenGivenInvalidPeriod()
+        {
+            Assert.Throws<InvalidOperationException>(() => this.OrderService.GetSalesDataForPeriod(DateTime.UtcNow.AddDays(-1), DateTime.UtcNow, "invalid"));
+        }
+
+        [Fact]
+        public async Task GetOrderDishAsPickupItemWorksCorrectly()
+        {
+            await this.PopulateDB();
+            var orderDish = this.DbContext.OrdersDishes.FirstOrDefault();
+
+            var expected = this.DbContext.OrdersDishes
+                .Where(x => x.OrderId == orderDish.OrderId && x.DishId == orderDish.Dish.Id)
+                .Select(x => new PickupItem()
+                {
+                    ClientName = x.Order.Client.FirstName + " " + x.Order.Client.LastName,
+                    Name = x.Dish.Name,
+                    TableNumber = x.Order.Table.Number,
+                    WaiterId = x.Order.WaiterId,
+                    Count = 1,
+                    OrderId = orderDish.OrderId,
+                })
+                .FirstOrDefault();
+            var actual = this.OrderService.GetOrderDishAsPickupItem(new CookFinishItemViewModel()
+            {
+                OrderId = orderDish.OrderId,
+                FoodId = orderDish.DishId,
+            });
+
+            actual.IsDeepEqual(expected);
+        }
+
+        [Fact]
+        public async Task GetOrderDrinkAsPickupItemWorksCorrectly()
+        {
+            await this.PopulateDB();
+            var orderDrink = this.DbContext.OrderDrinks.FirstOrDefault();
+
+            var expected = this.DbContext.OrderDrinks
+                .Where(x => x.OrderId == orderDrink.OrderId && x.DrinkId == orderDrink.DrinkId)
+                .Select(x => new PickupItem()
+                {
+                    ClientName = x.Order.Client.FirstName + " " + x.Order.Client.LastName,
+                    Name = x.Drink.Name,
+                    TableNumber = x.Order.Table.Number,
+                    WaiterId = x.Order.WaiterId,
+                    Count = 1,
+                    OrderId = orderDrink.OrderId,
+                })
+                .FirstOrDefault();
+            var actual = this.OrderService.GetOrderDrinkAsPickupItem(new CookFinishItemViewModel()
+            {
+                OrderId = orderDrink.OrderId,
+                FoodId = orderDrink.DrinkId,
+            });
+
+            actual.IsDeepEqual(expected);
+        }
+
+        [Fact]
+        public async Task GetOrderDeliveredPerCentWorksCorrectly()
+        {
+            await this.PopulateDB();
+            var orderId = "order2";
+
+            var expected = 38.1;
+            var actual = this.OrderService.GetOrderDeliveredPerCent(orderId);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public async Task GetAllStaffForAnalyseAsyncWorksCorrectly()
+        {
+            await this.PopulateDB();
+            var startDate = DateTime.UtcNow.AddYears(-1);
+            var dates = new List<string>();
+            var expected = new List<StaffAnalyseViewModel>();
+            var allOrders = this.DbContext.Orders.ToList();
+            allOrders[0].DeliveredOn = DateTime.UtcNow;
+            allOrders[1].DeliveredOn = DateTime.UtcNow.AddMonths(-1);
+            allOrders[2].DeliveredOn = DateTime.UtcNow.AddMonths(1);
+            allOrders[0].ProcessType = ProcessType.Completed;
+            allOrders[1].ProcessType = ProcessType.Completed;
+            allOrders[2].ProcessType = ProcessType.Completed;
+            await this.DbContext.SaveChangesAsync();
+            for (var dt = startDate; dt.Year < startDate.Year || (dt.Year <= startDate.Year && dt.Month <= startDate.Month); dt = dt.AddMonths(1))
+            {
+                dates.Add(dt.ToString("MM/yyyy"));
+            }
+
+            var waiterIds =
+                this.DbContext.Orders
+                    .Where(x => x.CreatedOn >= startDate && x.ProcessType == ProcessType.Completed)
+                    .GroupBy(x => x.WaiterId)
+                    .Select(x => x.Key)
+                    .ToList();
+
+            foreach (var id in waiterIds)
+            {
+                var waiterOrderCount = await this.DbContext.Orders
+                    .Where(x => x.ProcessType == ProcessType.Completed && x.WaiterId == id && ((x.CreatedOn >= startDate)
+                    || (x.CreatedOn.Month == startDate.Month && x.CreatedOn.Year == startDate.Year)))
+                    .GroupBy(x => new { x.CreatedOn.Year, x.CreatedOn.Month })
+                    .Select(x => new
+                    {
+                        Date = new DateTime(x.Key.Year, x.Key.Month, 1).ToString("MM/yyyy", CultureInfo.InvariantCulture),
+                        OrdersCount = x.Count(),
+                    })
+                    .ToListAsync();
+
+                var dishesCount = await this.DbContext.OrdersDishes
+                    .Where(x => x.Order.ProcessType == ProcessType.Completed && x.Order.WaiterId == id && ((x.Order.CreatedOn >= startDate)
+                    || (x.Order.CreatedOn.Month == startDate.Month && x.Order.CreatedOn.Year == startDate.Year)))
+                    .GroupBy(x => new { x.Order.CreatedOn.Year, x.Order.CreatedOn.Month })
+                    .Select(x => new
+                    {
+                        Date = new DateTime(x.Key.Year, x.Key.Month, 1).ToString("MM/yyyy", CultureInfo.InvariantCulture),
+                        DishesCount = x.Sum(y => y.DeliveredCount),
+                    })
+                    .ToListAsync();
+
+                var drinksCount = await this.DbContext.OrderDrinks
+                    .Where(x => x.Order.ProcessType == ProcessType.Completed && x.Order.WaiterId == id && ((x.Order.CreatedOn >= startDate)
+                    || (x.Order.CreatedOn.Month == startDate.Month && x.Order.CreatedOn.Year == startDate.Year)))
+                    .GroupBy(x => new { x.Order.CreatedOn.Year, x.Order.CreatedOn.Month })
+                    .Select(x => new
+                    {
+                        Date = new DateTime(x.Key.Year, x.Key.Month, 1).ToString("MM/yyyy", CultureInfo.InvariantCulture),
+                        DrinksCount = x.Sum(y => y.DeliveredCount),
+                    })
+                    .ToListAsync();
+
+                var waiterName = this.DbContext.Orders
+                    .Where(x => x.WaiterId == id)
+                    .Select(x => x.Waiter.FirstName + " " + x.Waiter.LastName)
+                    .FirstOrDefault();
+
+                var staffToAdd = new StaffAnalyseViewModel()
+                {
+                    FullName = waiterName,
+                };
+
+                foreach (var date in dates)
+                {
+                    var ordersThisMonth = waiterOrderCount.FirstOrDefault(x => x.Date == date);
+
+                    var dishesThisMonth = dishesCount.FirstOrDefault(x => x.Date == date);
+
+                    var drinksThisMonth = drinksCount.FirstOrDefault(x => x.Date == date);
+
+                    var orders = 0;
+                    var totalItemsDelivered = 0;
+
+                    if (dishesThisMonth != null)
+                    {
+                        totalItemsDelivered += dishesThisMonth.DishesCount;
+                    }
+
+                    if (drinksThisMonth != null)
+                    {
+                        totalItemsDelivered += drinksThisMonth.DrinksCount;
+                    }
+
+                    if (ordersThisMonth != null)
+                    {
+                        orders += ordersThisMonth.OrdersCount;
+                    }
+
+                    var orderInfo = new StaffAnalyseOrdersViewModel()
+                    {
+                        Date = date,
+                        ItemsDeliveredCount = totalItemsDelivered,
+                        OrdersCount = orders,
+                    };
+                    staffToAdd.OrdersData.Add(orderInfo);
+                }
+
+                expected.Add(staffToAdd);
+            }
+
+            var actual = await this.OrderService.GetAllStaffForAnalyseAsync(startDate);
+
+            actual.IsDeepEqual(expected);
+        }
+
+        [Fact]
+        public async Task GetOrderInListByIdWorksCorrectly()
+        {
+            await this.PopulateDB();
+            var orderId = this.DbContext.Orders.Skip(1).FirstOrDefault().Id;
+
+            var expected = this.DbContext.Orders
+                .To<OrderInListViewModel>()
+                .FirstOrDefault(x => x.Id == orderId);
+            expected.StatusName = Enum.GetName(typeof(ProcessType), expected.Status);
+            var actual = this.OrderService.GetOrderInListById(orderId);
+
+            actual.IsDeepEqual(expected);
+        }
+
+        [Fact]
+        public async Task GetWaiterIdWorksCorrectly()
+        {
+            await this.PopulateDB();
+            var orderId = "order2";
+
+            var expected = "user2";
+            var actual = this.OrderService.GetWaiterId(orderId);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public async Task GetActiveOrderByIdWorksCorrectly()
+        {
+            await this.PopulateDB();
+            var orderId = "order2";
+            this.DbContext.Orders.FirstOrDefault(x => x.Id == orderId).ProcessType = ProcessType.Cooking;
+            await this.DbContext.SaveChangesAsync();
+            var expected = this.DbContext.Orders.To<ActiveOrderViewModel>().FirstOrDefault(x => x.Id == orderId);
+
+            expected.ReadyPercent = 38.1;
+            var actual = this.OrderService.GetActiveOrderById(orderId);
+
+            actual.IsDeepEqual(expected);
+        }
+
+        [Fact]
+        public async Task IsOrderCookedWorksCorrectlyWithFalse()
+        {
+            await this.PopulateDB();
+            var orderId = "order2";
+
+            var actual = this.OrderService.IsOrderCooked(orderId);
+
+            Assert.False(actual);
+        }
+
+        [Fact]
+        public async Task IsOrderCookedWorksCorrectlyWithTrue()
+        {
+            await this.PopulateDB();
+            var orderId = "order3";
+
+            var actual = this.OrderService.IsOrderCooked(orderId);
+
+            Assert.True(actual);
+        }
+
+        [Fact]
+        public async Task IsOrderPaidWorksCorrectly()
+        {
+            await this.PopulateDB();
+            var notPaidOrder = this.DbContext.Orders.FirstOrDefault();
+            var paidOrder = this.DbContext.Orders.Skip(1).FirstOrDefault();
+            paidOrder.PaidOn = DateTime.UtcNow;
+            await this.DbContext.SaveChangesAsync();
+
+            var notPaidActual = this.OrderService.IsOrderPaid(notPaidOrder.Id);
+            var paidActual = this.OrderService.IsOrderPaid(paidOrder.Id);
+
+            Assert.False(notPaidActual);
+            Assert.True(paidActual);
+        }
+
+        [Fact]
+        public async Task PayOrderByIdAsyncWorksCorrectly()
+        {
+            await this.PopulateDB();
+            var order = this.DbContext.Orders.FirstOrDefault();
+
+            await this.OrderService.PayOrderByIdAsync(order.Id);
+
+            Assert.NotNull(order.PaidOn);
+        }
+
+        [Fact]
+        public async Task PayOrderByIdAsyncThrowsWhenGivenInvalidId()
+        {
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await this.OrderService.PayOrderByIdAsync("Invalid"));
+        }
+
+        [Fact]
+        public async Task PayOrderByIdAsyncThrowsWhenGivenPaidOrder()
+        {
+            await this.PopulateDB();
+            var order = this.DbContext.Orders.FirstOrDefault();
+            order.PaidOn = DateTime.UtcNow;
+            await this.DbContext.SaveChangesAsync();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await this.OrderService.PayOrderByIdAsync(order.Id));
         }
 
         private async Task PopulateDB()
