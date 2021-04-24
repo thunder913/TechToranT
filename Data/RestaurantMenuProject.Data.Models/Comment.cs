@@ -15,5 +15,13 @@
         public virtual ICollection<UserLike> Likes { get; set; } = new HashSet<UserLike>();
 
         public virtual ICollection<UserDislike> Dislikes { get; set; } = new HashSet<UserDislike>();
+
+        public string DishId { get; set; }
+
+        public virtual Dish Dish { get; set; }
+
+        public string DrinkId { get; set; }
+
+        public virtual Drink Drink { get; set; }
     }
 }

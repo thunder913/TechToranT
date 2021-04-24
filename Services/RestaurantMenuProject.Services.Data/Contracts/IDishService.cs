@@ -23,5 +23,7 @@
         public Task EditDishAsync(EditDishViewModel editDish, string wwwroot);
 
         public Task DeleteDishByIdAsync(string id);
+
+        public ICollection<DishViewModel> GetDishViewModelBySearchTerm(string searchTerm);
     }
 }

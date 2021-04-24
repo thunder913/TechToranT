@@ -23,5 +23,7 @@
         public Task DeleteDrinkByIdAsync(string id);
 
         public Drink GetDrinkWithDeletedById(string id);
+
+        public ICollection<DrinkItemViewModel> GetAllDrinksBySearchTerm(string searchTerm);
     }
 }

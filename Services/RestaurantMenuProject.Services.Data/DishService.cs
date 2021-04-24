@@ -146,5 +146,14 @@
             this.dishRepository.Delete(dishToDelete);
             await this.dishRepository.SaveChangesAsync();
         }
+
+        public ICollection<DishViewModel> GetDishViewModelBySearchTerm(string searchTerm)
+        {
+            return this.dishRepository
+                .AllAsNoTracking()
+                .Where(x => searchTerm == null || x.Name.ToLower().Contains(searchTerm.ToLower()))
+                .To<DishViewModel>()
+                .ToList();
+        }
     }
 }

@@ -94,6 +94,7 @@
             services.AddTransient<IPickupItemService, PickupItemService>();
             services.AddTransient<IOrderDrinkService, OrderDrinkService>();
             services.AddTransient<IOrderDishService, OrderDishService>();
+            services.AddTransient<ICommentService, CommentService>();
 
             services.Configure<AuthMessageSenderOptions>(this.configuration);
             services.AddSignalR();

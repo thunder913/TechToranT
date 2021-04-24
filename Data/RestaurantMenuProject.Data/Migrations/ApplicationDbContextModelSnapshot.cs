@@ -466,6 +466,12 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.Property<DateTime?>("DeletedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("DishId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("DrinkId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -478,6 +484,10 @@ namespace RestaurantMenuProject.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CommentedById");
+
+                    b.HasIndex("DishId");
+
+                    b.HasIndex("DrinkId");
 
                     b.HasIndex("IsDeleted");
 
@@ -1233,7 +1243,19 @@ namespace RestaurantMenuProject.Data.Migrations
                         .WithMany("Comments")
                         .HasForeignKey("CommentedById");
 
+                    b.HasOne("RestaurantMenuProject.Data.Models.Dish", "Dish")
+                        .WithMany("Comments")
+                        .HasForeignKey("DishId");
+
+                    b.HasOne("RestaurantMenuProject.Data.Models.Drink", "Drink")
+                        .WithMany("Comments")
+                        .HasForeignKey("DrinkId");
+
                     b.Navigation("CommentedBy");
+
+                    b.Navigation("Dish");
+
+                    b.Navigation("Drink");
                 });
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.Dish", b =>
@@ -1449,6 +1471,8 @@ namespace RestaurantMenuProject.Data.Migrations
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.Dish", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("OrderDishes");
                 });
 
@@ -1459,6 +1483,8 @@ namespace RestaurantMenuProject.Data.Migrations
 
             modelBuilder.Entity("RestaurantMenuProject.Data.Models.Drink", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("OrderDrinks");
                 });
 

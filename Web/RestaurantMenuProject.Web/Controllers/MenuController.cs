@@ -2,6 +2,8 @@
 {
     using Microsoft.AspNetCore.Mvc;
     using RestaurantMenuProject.Services.Data.Contracts;
+    using RestaurantMenuProject.Web.Controllers.Api;
+    using RestaurantMenuProject.Web.ViewModels;
 
     public class MenuController : Controller
     {
@@ -9,17 +11,20 @@
         private readonly IDishTypeService dishTypeService;
         private readonly IDishService dishService;
         private readonly IDrinkService drinkService;
+        private readonly ICommentService commentService;
 
         public MenuController(
             IDrinkTypeService drinkTypeService,
             IDishTypeService dishTypeService,
             IDishService dishService,
-            IDrinkService drinkService)
+            IDrinkService drinkService,
+            ICommentService commentService)
         {
             this.drinkTypeService = drinkTypeService;
             this.dishTypeService = dishTypeService;
             this.dishService = dishService;
             this.drinkService = drinkService;
+            this.commentService = commentService;
         }
 
         public IActionResult DisplayFood(string type, string id)
@@ -58,6 +63,25 @@
         public IActionResult Drinks()
         {
             return this.View(this.drinkTypeService.GetAllDrinkTypes());
+        }
+
+        public IActionResult Search(string searchTerm)
+        {
+            if (searchTerm == null)
+            {
+                return this.RedirectToAction("Index");
+            }
+            var dishes = this.dishService.GetDishViewModelBySearchTerm(searchTerm);
+            var drinks = this.drinkService.GetAllDrinksBySearchTerm(searchTerm);
+
+            var viewModel = new SearchViewModel()
+            {
+                SearchTerm = searchTerm,
+                Dishes = dishes,
+                Drinks = drinks,
+            };
+
+            return this.View(viewModel);
         }
     }
 }

@@ -71,3 +71,45 @@
     border: 1px solid black;
 }
 
+.comment {
+    background-color: rgba(211, 171, 171, 0.5);
+    border-radius: 10px;
+    border: 1px solid brown;
+    display: inline-block;
+    margin: 30px;
+    position: center;
+    line-height: 1.1;
+    height: 4.4em;
+    position: relative;
+}
+
+.comment-content{
+    position: absolute;
+    margin-top: 3px;
+    font-size: 17px;
+}
+
+.comment-right {
+    position: absolute;
+    bottom: 8px;
+    right: 16px;
+    font-style: italic;
+}
+
+.comment-likes{
+    position:absolute;
+    top: -40px;
+    right: 10px;
+}
+
+.like, .dislike {
+    cursor: pointer;
+    user-select: none;
+}
+
+.like-count, .dislike-count{
+    padding: 5px;
+    font-size: 25px;
+    position: relative;
+    top: -5px;
+}

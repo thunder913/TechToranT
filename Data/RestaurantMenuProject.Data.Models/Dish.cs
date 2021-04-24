@@ -44,5 +44,7 @@
         public virtual ICollection<Ingredient> Ingredients { get; set; } = new HashSet<Ingredient>();
 
         public virtual ICollection<OrderDish> OrderDishes { get; set; } = new HashSet<OrderDish>();
+
+        public virtual ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
     }
 }

@@ -1,5 +1,6 @@
 ﻿@model DrinkItemViewModel
 <link href="~/css/displayFood.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <div id="@Model.Id" class="bg" style="background-image: url(/img/Drinks/@(Model.Image.Id).@(Model.Image.Extension))">
     <h1 class="foodName title">@Model.Name</h1>
@@ -9,23 +10,23 @@
     <span class="right gray-bg price">@Model.Price$</span>
     @if (this.User.Identity.IsAuthenticated)
     {
-<form class="right" method="post">
-    <input type="hidden" name="Id" value="@Model.Id" />
-    <input type="hidden" name="Type" value="Drink" />
-    <input id="count" name="Count" type="text" style="width: 50px" placeholder="Count" />
-    <button type="button" class="btn btn-success add">Add</button>
-</form>}
+        <form class="right" method="post">
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <input type="hidden" name="Type" value="Drink" />
+            <input id="count" name="Count" type="text" style="width: 50px" placeholder="Count" />
+            <button type="button" class="btn btn-success add">Add</button>
+        </form>}
 </div>
 <h1>@Model.AdditionalInfo</h1>
 <span>
     Ingredients: @{ if (Model.Ingredients.Any())
-                    {
-                        @string.Join(", ", Model.Ingredients.Select(x => x.Name));
-                    }
-                    else
-                    {
-                        <text>None</text>
-                    } }
+        {
+            @string.Join(", ", Model.Ingredients.Select(x => x.Name));
+        }
+        else
+        {
+            <text>None</text>
+        } }
 </span>
 <br />
 <span>
@@ -36,18 +37,71 @@
         }
         if (allergens.Any())
         {
-@string.Join(", ", allergens.Select(x => x.Name));
-}
-else
-{
-<text>None</text>
-}
+            @string.Join(", ", allergens.Select(x => x.Name));
+        }
+        else
+        {
+            <text>None</text>
+        }
     }
 </span>
 
+<h2>Comments:</h2>
+<div class="col-md-5 comment">
+    <div class="comment-likes">
+        <i style="font-size:36px;" class="fa like">&#xf087;</i>
+        <span class="like-count">5</span>
+        <i style="font-size:36px" class="fa dislike">&#xf165;</i>
+        <span class="dislike-count">2</span>
+    </div>
+    <span class="comment-content">I am a commentI am a commentI am a commentI am a commentI am a commentI am a commentI am a commentI am a commentI am a commentI am a comment</span>
+    <div class="comment-right">by Ivan Petrov</div>
+</div>
+<div class="col-md-5 comment">
+    <div class="comment-likes">
+        <i style="font-size:36px;" class="fa like">&#xf087;</i>
+        <span class="like-count">5</span>
+        <i style="font-size:36px" class="fa dislike">&#xf165;</i>
+        <span class="dislike-count">2</span>
+    </div>
+    <span class="comment-content">I am a comment</span>
+    <span class="comment-right">by Ivan Petrov</span>
+</div>
+<div class="col-md-5 comment">
+    <div class="comment-likes">
+        <i style="font-size:36px;" class="fa like">&#xf087;</i>
+        <span class="like-count">5</span>
+        <i style="font-size:36px" class="fa dislike">&#xf165;</i>
+        <span class="dislike-count">2</span>
+    </div>
+    <span class="comment-content">I am a comment</span>
+    <span class="comment-right">by Ivan Petrov</span>
+</div>
+<nav aria-label="...">
+    <ul class="pagination">
+        <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1">Previous</a>
+        </li>
+        <li class="page-item"><a class="page-link" href="#">1</a></li>
+        <li class="page-item active">
+            <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item">
+            <a class="page-link" href="#">Next</a>
+        </li>
+    </ul>
+</nav>
+
+<div>
+    <form method="get">
+        <label>Comment</label>
+        <textarea name="comment" placeholder="Comment here..."></textarea>
+        <button class="btn btn-success">Add</button>
+    </form>
+</div>
 
 @section Scripts
 {
     <script src="~/js/addToBasket.js"></script>
-
 }

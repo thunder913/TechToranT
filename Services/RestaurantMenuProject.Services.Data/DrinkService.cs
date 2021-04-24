@@ -150,5 +150,14 @@
                 .Include(x => x.Image)
                 .FirstOrDefault(x => x.Id == id);
         }
+
+        public ICollection<DrinkItemViewModel> GetAllDrinksBySearchTerm(string searchTerm)
+        {
+            return this.drinkRepository
+                    .AllAsNoTracking()
+                    .Where(x => searchTerm == null || x.Name.ToLower().Contains(searchTerm.ToLower()))
+                    .To<DrinkItemViewModel>()
+                    .ToList();
+        }
     }
 }
