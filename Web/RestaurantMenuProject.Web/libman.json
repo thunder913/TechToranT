@@ -69,7 +69,12 @@
     {
         "library": "@microsoft/signalr@5.0.4",
         "destination": "wwwroot/lib/signalR",
-        "files": ["dist/browser/signalr.js", "dist/browser/signalr.min.js"]
+        "files": [ "dist/browser/signalr.js", "dist/browser/signalr.min.js" ]
+    },
+    {
+        "library": "star-rating.js@4.1.3",
+        "destination": "wwwroot/lib/star-rating",
+        "files": [ "dist/star-rating.js", "dist/star-rating.css", "img/star-empty.svg", "img/star-full.svg", "img/star-half.svg" ]
     }
   ]
 }

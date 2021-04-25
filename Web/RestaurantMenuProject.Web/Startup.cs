@@ -95,6 +95,8 @@
             services.AddTransient<IOrderDrinkService, OrderDrinkService>();
             services.AddTransient<IOrderDishService, OrderDishService>();
             services.AddTransient<ICommentService, CommentService>();
+            services.AddTransient<IUserLikeService, UserLikeService>();
+            services.AddTransient<IUserDislikeService, UserDislikeService>();
 
             services.Configure<AuthMessageSenderOptions>(this.configuration);
             services.AddSignalR();

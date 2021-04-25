@@ -1,6 +1,5 @@
 ﻿@model DrinkItemViewModel
 <link href="~/css/displayFood.css" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <div id="@Model.Id" class="bg" style="background-image: url(/img/Drinks/@(Model.Image.Id).@(Model.Image.Extension))">
     <h1 class="foodName title">@Model.Name</h1>
@@ -46,62 +45,42 @@
     }
 </span>
 
-<h2>Comments:</h2>
-<div class="col-md-5 comment">
-    <div class="comment-likes">
-        <i style="font-size:36px;" class="fa like">&#xf087;</i>
-        <span class="like-count">5</span>
-        <i style="font-size:36px" class="fa dislike">&#xf165;</i>
-        <span class="dislike-count">2</span>
+<section class="all-comments">
+    <h2>Comments:</h2>
+    <div class="comments">
     </div>
-    <span class="comment-content">I am a commentI am a commentI am a commentI am a commentI am a commentI am a commentI am a commentI am a commentI am a commentI am a comment</span>
-    <div class="comment-right">by Ivan Petrov</div>
-</div>
-<div class="col-md-5 comment">
-    <div class="comment-likes">
-        <i style="font-size:36px;" class="fa like">&#xf087;</i>
-        <span class="like-count">5</span>
-        <i style="font-size:36px" class="fa dislike">&#xf165;</i>
-        <span class="dislike-count">2</span>
-    </div>
-    <span class="comment-content">I am a comment</span>
-    <span class="comment-right">by Ivan Petrov</span>
-</div>
-<div class="col-md-5 comment">
-    <div class="comment-likes">
-        <i style="font-size:36px;" class="fa like">&#xf087;</i>
-        <span class="like-count">5</span>
-        <i style="font-size:36px" class="fa dislike">&#xf165;</i>
-        <span class="dislike-count">2</span>
-    </div>
-    <span class="comment-content">I am a comment</span>
-    <span class="comment-right">by Ivan Petrov</span>
-</div>
-<nav aria-label="...">
-    <ul class="pagination">
-        <li class="page-item disabled">
-            <a class="page-link" href="#" tabindex="-1">Previous</a>
-        </li>
-        <li class="page-item"><a class="page-link" href="#">1</a></li>
-        <li class="page-item active">
-            <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
-        </li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item">
-            <a class="page-link" href="#">Next</a>
-        </li>
-    </ul>
-</nav>
 
-<div>
-    <form method="get">
-        <label>Comment</label>
-        <textarea name="comment" placeholder="Comment here..."></textarea>
-        <button class="btn btn-success">Add</button>
-    </form>
-</div>
+
+    <nav aria-label="...">
+        <ul class="pagination">
+        </ul>
+    </nav>
+
+    <div>
+        <form method="post">
+            <input hidden name="id" value="@Model.Id" />
+            <input hidden name="foodType" value="1" />
+            <label>Comment:</label>
+            <br />
+            <textarea name="comment" placeholder="Comment here..."></textarea>
+            <select class="star-rating">
+                <option value="">Select a rating</option>
+                <option value="5">Excellent</option>
+                <option value="4">Very Good</option>
+                <option value="3">Average</option>
+                <option value="2">Poor</option>
+                <option value="1">Terrible</option>
+            </select>
+            <button class="btn btn-success addComment">Add</button>
+        </form>
+    </div>
+</section>
+
+<form method="post" class="antiforgery">
+</form>
 
 @section Scripts
 {
     <script src="~/js/addToBasket.js"></script>
+    <script src="~/js/comment.js"></script>
 }

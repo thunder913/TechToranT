@@ -113,3 +113,7 @@
     position: relative;
     top: -5px;
 }
+
+.pagination .page-link{
+    cursor: pointer;
+}

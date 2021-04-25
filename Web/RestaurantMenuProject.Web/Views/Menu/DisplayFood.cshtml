@@ -22,13 +22,12 @@
 <h1>Description: @Model.AdditionalInfo</h1>}
 <span>
     Ingredients: @{ if (Model.Ingredients.Any())
-                    {
-                        @string.Join(", ", Model.Ingredients.Select(x => x.Name));
-                    }
-                    else
-                    {
-                        <text>None</text>
-                    } }
+        {
+@string.Join(", ", Model.Ingredients.Select(x => x.Name));
+}
+else
+{
+<text>None</text> } }
 </span>
 <br />
 <span>
@@ -43,9 +42,7 @@
 }
 else
 {
-<text>None</text>
-}
-    }
+<text>None</text> } }
 </span>
 <br />
 <span>
@@ -63,7 +60,42 @@ else if (Model.PrepareTime < 60)
 
 </span>
 
+<section class="all-comments">
+    <h2>Comments:</h2>
+    <div class="comments">
+    </div>
+
+
+    <nav aria-label="...">
+        <ul class="pagination">
+        </ul>
+    </nav>
+
+    <div>
+        <form method="post">
+            <input hidden name="id" value="@Model.Id" />
+            <input hidden name="foodType" value="0" />
+            <label>Comment:</label>
+            <br />
+            <textarea name="comment" placeholder="Comment here..."></textarea>
+            <select class="star-rating">
+                <option value="">Select a rating</option>
+                <option value="5">Excellent</option>
+                <option value="4">Very Good</option>
+                <option value="3">Average</option>
+                <option value="2">Poor</option>
+                <option value="1">Terrible</option>
+            </select>
+            <button class="btn btn-success addComment">Add</button>
+        </form>
+    </div>
+</section>
+
+<form method="post" class="antiforgery">
+</form>
+
 @section Scripts
 {
     <script src="~/js/addToBasket.js"></script>
+    <script src="~/js/comment.js"></script>
 }

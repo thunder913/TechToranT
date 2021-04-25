@@ -8,9 +8,11 @@
     {
         public string CommentText { get; set; }
 
-        public decimal Rating { get; set; }
+        public int Rating { get; set; }
 
         public virtual ApplicationUser CommentedBy { get; set; }
+
+        public string CommentedById { get; set; }
 
         public virtual ICollection<UserLike> Likes { get; set; } = new HashSet<UserLike>();
 

@@ -1,0 +1,8 @@
+﻿@model string
+
+<div class="search">
+    <form method="get" asp-controller="Menu" asp-action="Search">
+        <input type="search" placeholder="Search" name="searchTerm" value="@Model" />
+        <button class="btn-dark">Search</button>
+    </form>
+</div>
