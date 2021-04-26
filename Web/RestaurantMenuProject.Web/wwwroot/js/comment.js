@@ -51,8 +51,6 @@ function getComments(page, itemId) {
         dataType: 'json',
         contentType: 'application/json',
         success: function (res) {
-            // Add the new comments to the comments (reload the comments)
-            // clear the inputs
             setComments(res);
             setPagination(res);
         },
@@ -75,8 +73,11 @@ function setComments(commentsObj) {
             <span class="dislike-count">${curr.dislikesCount}</span>
         </div>
         <span class="comment-content">${curr.commentText}</span>
-        <span class="comment-right">by ${curr.authorName}</span>
-    </div>`;
+        <span class="comment-right">by ${curr.authorName}</span>`;
+        if (curr.isCommenter) {
+            html += `<button type="button" class="btn delete">&#10060;</button>`;
+        }
+    html += `</div>`;
         return acc + html;
     }, "");
 
@@ -149,13 +150,12 @@ $('.pagination').on('click', '.page-link', function (e) {
         getComments(pageNumber, id);
     } else if (pageNumber === "Previous") {
         let number = document.querySelector('.pagination .active a').innerHTML;
-        getComments(Number(number) - 1);
+        getComments(Number(number) - 1, id);
     } else if (pageNumber === "Next") {
         let number = document.querySelector('.pagination .active a').innerHTML;
-        getComments(Number(number) + 1);
+        getComments(Number(number) + 1, id);
     }
 })
-
 
 $('.comments').on('click', '.comment .like', function (e) {
     e.preventDefault()
@@ -184,7 +184,7 @@ $('.comments').on('click', '.comment .like', function (e) {
             }
         },
         error: function (res) {
-            dangerNotification(res);
+            dangerNotification("An error occured, try again and make sure you are logged in!");
         }
     });
 })
@@ -216,7 +216,31 @@ $('.comments').on('click', '.comment .dislike', function (e) {
             }
         },
         error: function (res) {
-            dangerNotification(res);
+            dangerNotification("An error occured, try again and make sure you are logged in!");
+        }
+    });
+})
+
+$('.comments').on('click', '.comment .delete', function (e) {
+    e.preventDefault()
+    let commentId = Number(e.target.parentElement.id);
+    let antiForgeryToken = document.querySelector('.antiforgery input[name="__RequestVerificationToken"]').value;
+    $.ajax({
+        type: 'POST',
+        url: '/api/Comment/DeleteComment',
+        data: JSON.stringify(commentId),
+        headers: {
+            'X-CSRF-TOKEN': antiForgeryToken
+        },
+        contentType: 'application/json',
+        success: function (res) {
+            successNotification("You successfully deleted the comment!");
+            let currentPage = document.querySelector('.pagination .active').innerText;
+            getComments(currentPage, id);
+        },
+        error: function (res) {
+            dangerNotification("Something went wrong, try again!");
+            console.log(res);
         }
     });
 })

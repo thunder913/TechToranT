@@ -4,6 +4,7 @@
     using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Services.Mapping;
     using System;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     public class CommentViewModel : IMapFrom<Comment>, IHaveCustomMappings
     {
@@ -18,6 +19,11 @@
         public int DislikesCount { get; set; }
 
         public DateTime CreatedOn { get; set; }
+
+        public string CommentedById { get; set; }
+
+        [NotMapped]
+        public bool IsCommenter { get; set; }
 
         public void CreateMappings(IProfileExpression configuration)
         {

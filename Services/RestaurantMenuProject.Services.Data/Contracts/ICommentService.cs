@@ -7,10 +7,12 @@ namespace RestaurantMenuProject.Services.Data.Contracts
 {
     public interface ICommentService
     {
-        public ICollection<CommentViewModel> GetCommentsForItem(int itemsPerPage, int page, string itemId);
+        public Task<ICollection<CommentViewModel>> GetCommentsForItemAsync(int itemsPerPage, int page, string itemId, string userId);
 
         public int GetCommentsCountForItem(string itemId);
 
         public Task AddCommentAsync(string commentText, int rating, string userId, FoodType foodtype, string foodId);
+
+        public Task DeleteCommentByIdAsync(int commentId, string userId);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RestaurantMenuProject.Common;
 using RestaurantMenuProject.Data.Common.Repositories;
 using RestaurantMenuProject.Data.Models;
 using RestaurantMenuProject.Data.Models.Enums;
@@ -14,15 +15,19 @@ namespace RestaurantMenuProject.Services.Data
     public class CommentService : ICommentService
     {
         private readonly IDeletableEntityRepository<Comment> commentRepository;
+        private readonly IUserService userService;
 
-        public CommentService(IDeletableEntityRepository<Comment> commentRepository)
+        public CommentService(
+            IDeletableEntityRepository<Comment> commentRepository,
+            IUserService userService)
         {
             this.commentRepository = commentRepository;
+            this.userService = userService;
         }
 
-        public ICollection<CommentViewModel> GetCommentsForItem(int itemsPerPage, int page, string itemId)
+        public async Task<ICollection<CommentViewModel>> GetCommentsForItemAsync(int itemsPerPage, int page, string itemId, string userId)
         {
-            return this.commentRepository
+            var comments = this.commentRepository
                     .AllAsNoTracking()
                     .Where(x => x.DishId == itemId || x.DrinkId == itemId)
                     .OrderByDescending(x => x.CreatedOn)
@@ -30,6 +35,15 @@ namespace RestaurantMenuProject.Services.Data
                     .Take(itemsPerPage)
                     .To<CommentViewModel>()
                     .ToList();
+            foreach (var comment in comments)
+            {
+                if (comment.CommentedById == userId || await this.userService.IsUserInTheRole(userId, GlobalConstants.AdministratorRoleName))
+                {
+                    comment.IsCommenter = true;
+                }
+            }
+
+            return comments;
         }
 
         public int GetCommentsCountForItem(string itemId)
@@ -60,6 +74,22 @@ namespace RestaurantMenuProject.Services.Data
 
             await this.commentRepository.AddAsync(comment);
             await this.commentRepository.SaveChangesAsync();
+        }
+
+        public async Task DeleteCommentByIdAsync(int commentId, string userId)
+        {
+            var comment = this.commentRepository.All().FirstOrDefault(x => x.Id == commentId);
+            if (comment.CommentedById == userId || await this.userService.IsUserInTheRole(userId, GlobalConstants.AdministratorRoleName))
+            {
+                this.commentRepository.Delete(comment);
+                await this.commentRepository.SaveChangesAsync();
+            }
+            else
+            {
+                throw new System.Exception("User is not permitted to delete the comment!");
+            }
+
+
         }
     }
 }

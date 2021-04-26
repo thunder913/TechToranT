@@ -14,11 +14,13 @@
     [ApiController]
     public class CommentController : ControllerBase
     {
+        private const int CommentsPerPage = 10;
         private readonly ICommentService commentService;
         private readonly IUserLikeService userLikeService;
         private readonly IUserDislikeService userDislikeService;
 
-        public CommentController(ICommentService commentService,
+        public CommentController(
+            ICommentService commentService,
             IUserLikeService userLikeService,
             IUserDislikeService userDislikeService)
         {
@@ -30,16 +32,21 @@
         [AllowAnonymous]
         [IgnoreAntiforgeryToken]
         [HttpGet("GetComments")]
-        public AllCommentsViewModel GetComments([FromQuery] GetCommentsViewModel viewModel)
+        public async Task<AllCommentsViewModel> GetComments([FromQuery] GetCommentsViewModel viewModel)
         {
-            var commentsPerPage = 10;
+            var user = this.User.FindFirst(ClaimTypes.NameIdentifier);
+            string userId = null;
+            if (user != null)
+            {
+                userId = user.Value;
+            }
 
             var comments = new AllCommentsViewModel()
             {
                 Page = viewModel.Page,
                 CommentCount = this.commentService.GetCommentsCountForItem(viewModel.ItemId),
-                CommentPerPage = commentsPerPage,
-                Comments = this.commentService.GetCommentsForItem(commentsPerPage, viewModel.Page, viewModel.ItemId),
+                CommentPerPage = CommentsPerPage,
+                Comments = await this.commentService.GetCommentsForItemAsync(CommentsPerPage, viewModel.Page, viewModel.ItemId, userId),
             };
             return comments;
         }
@@ -90,6 +97,13 @@
 
             await this.userDislikeService.AddDislikeToCommentAsync(userId, id);
             return "Successfully disliked the comment!";
+        }
+
+        [HttpPost("DeleteComment")]
+        public async Task DeleteComment([FromBody] int commentId)
+        {
+            var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            await this.commentService.DeleteCommentByIdAsync(commentId, userId);
         }
     }
 }

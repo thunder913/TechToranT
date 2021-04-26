@@ -117,3 +117,10 @@
 .pagination .page-link{
     cursor: pointer;
 }
+
+.delete{
+    position: absolute;
+    top:-50px;
+    left: -10px;
+    font-size: 30px;
+}

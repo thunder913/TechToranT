@@ -1,4 +1,4 @@
-﻿@model BasketViewModel
+﻿z@model BasketViewModel
 
 <link href="~/css/basketIndex.css" rel="stylesheet" />
 
@@ -16,25 +16,25 @@
     <tbody>
         @foreach (var item in Model.Foods)
         {
-            <tr data-id="@item.Id" data-type="@item.FoodType.ToString()">
-                <td>
-                    @{
-                        var foodFolder = item.FoodType.ToString().ToLower() == "drink" ? "Drinks" : "Dishes";
-                        <img src="~/img/@(foodFolder)/@(item.Image.Id).@(item.Image.Extension) " class="img-fluid" />
-                    }
-                </td>
-                <td class="name" style="vertical-align: middle;" >@item.Name</td>
-                <td class="quantity"style="vertical-align: middle;">@item.Quantity</td>
-                <td class="price"style="vertical-align: middle;">@(item.Price.ToString("0.00"))$</td>
-                <td class="totalPrice"style="vertical-align: middle;">@((item.Price*item.Quantity).ToString("0.00"))$</td>
-                <td style="width: 17%" >
-                    <form method="post" class="hide">
-                    </form>
-                    <button type="button" class="btn btn-success add">➕</button>
-                    <button type="button" class="btn btn-primary remove">➖</button>
-                    <button type="button" class="btn btn-danger removeAll">&#10060;</button>
-                </td>
-            </tr>
+        <tr data-id="@item.Id" data-type="@item.FoodType.ToString()">
+            <td>
+                @{
+                    var foodFolder = item.FoodType.ToString().ToLower() == "drink" ? "Drinks" : "Dishes";
+                    <img src="~/img/@(foodFolder)/@(item.Image.Id).@(item.Image.Extension) " class="img-fluid" />
+                }
+            </td>
+            <td class="name" style="vertical-align: middle;">@item.Name</td>
+            <td class="quantity" style="vertical-align: middle;">@item.Quantity</td>
+            <td class="price" style="vertical-align: middle;">@(item.Price.ToString("0.00"))$</td>
+            <td class="totalPrice" style="vertical-align: middle;">@((item.Price*item.Quantity).ToString("0.00"))$</td>
+            <td style="width: 17%">
+                <form method="post" class="hide">
+                </form>
+                <button type="button" class="btn btn-success add">➕</button>
+                <button type="button" class="btn btn-primary remove">➖</button>
+                <button type="button" class="btn btn-danger removeAll">&#10060;</button>
+            </td>
+        </tr>
         }
 
         @if (Model.Foods.Any())

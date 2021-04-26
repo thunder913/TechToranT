@@ -138,5 +138,16 @@
             await this.userRepository.SaveChangesAsync();
             return true;
         }
+
+        public async Task<bool> IsUserInTheRole(string userId, string roleName)
+        {
+            var role = await this.roleManager.FindByNameAsync(roleName);
+
+            return this.userRepository.AllAsNoTracking()
+                .Include(x => x.Roles)
+                .FirstOrDefault(x => x.Id == userId)
+                .Roles
+                .Any(x => x.RoleId == role.Id);
+        }
     }
 }

@@ -23,5 +23,7 @@
         public Task SetUserNamesAsync(string userId, string firstName, string lastName);
 
         public Task<bool> DeleteUserAsync(ApplicationUser user);
+
+        public Task<bool> IsUserInTheRole(string userId, string roleName);
     }
 }
