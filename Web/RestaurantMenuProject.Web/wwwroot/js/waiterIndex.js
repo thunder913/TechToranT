@@ -142,7 +142,6 @@ connection.on('NewActiveTable', function (item) {
     trElement.appendChild(th3);
     trElement.appendChild(th4);
     trElement.appendChild(th5);
-    // TODO make the paid with some sort of checkmark
     tbodyElement.appendChild(trElement);
 })
 connection.start().catch(function (err) {

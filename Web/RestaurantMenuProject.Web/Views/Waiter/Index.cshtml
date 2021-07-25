@@ -47,6 +47,7 @@
                     </th>
                     <th class="th-sm">
                         <form method="post" style="display: inline-block;" data-orderId="@item.Id">
+                            <input name="id" value="@item.Id" hidden />
                             <button class="btn btn-success accept">Accept</button>
                         </form>
                         <form method="get" asp-controller="Order" asp-action="Index" asp-route-id="@item.Id" style='display:inline-block;'>
