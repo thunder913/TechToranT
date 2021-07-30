@@ -18,6 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Hangfire" Version="1.7.24" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.24" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.7.24" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="5.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.4" />

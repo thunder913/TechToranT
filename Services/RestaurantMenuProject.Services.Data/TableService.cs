@@ -93,6 +93,7 @@ namespace RestaurantMenuProject.Services.Data
             {
                 table.Code = this.RandomString(6);
             }
+
             await this.tableRepository.SaveChangesAsync();
         }
 

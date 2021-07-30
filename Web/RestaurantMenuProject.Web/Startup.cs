@@ -1,7 +1,7 @@
 ﻿namespace RestaurantMenuProject.Web
 {
     using System.Reflection;
-
+    using Hangfire;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -42,7 +42,7 @@
             // Make it to yes in production
             services.AddDefaultIdentity<ApplicationUser>(opts =>
             {
-                opts.SignIn.RequireConfirmedAccount = true;
+                opts.SignIn.RequireConfirmedAccount = false;
                 opts.Password.RequireNonAlphanumeric = false;
                 opts.Password.RequireDigit = false;
             }).AddRoles<ApplicationRole>()
@@ -114,11 +114,22 @@
                 options.ClientSecret = googleAuthNSection["ClientSecret"];
             });
 
+            services.AddHangfire(config =>
+                config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseDefaultTypeSerializer()
+                .UseSqlServerStorage(this.configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddHangfireServer();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(
+            IApplicationBuilder app, 
+            IWebHostEnvironment env,
+            IBackgroundJobClient backgroundJobClient,
+            IRecurringJobManager recurringJobManager,
+            ITableService tableService)
         {
             AutoMapperConfig.RegisterMappings(typeof(ErrorViewModel).GetTypeInfo().Assembly);
 
@@ -160,6 +171,10 @@
                         endpoints.MapHub<OrderHub>("/orderHub");
                         endpoints.MapRazorPages();
                     });
+
+            // Hangfire options and execution
+            app.UseHangfireDashboard();
+            recurringJobManager.AddOrUpdate("Reset table codes every 24 hours", () => tableService.RefreshTableCodesAsync(), Cron.Daily);
         }
     }
 }

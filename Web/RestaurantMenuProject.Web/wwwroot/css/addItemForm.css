@@ -6,3 +6,12 @@
     margin-left: 300px;
     margin-top: 10px;
 }
+
+input#Image{
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.dropdown.bootstrap-select.form-control {
+    background-color: transparent;
+}
