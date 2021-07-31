@@ -65,6 +65,7 @@ Administrators can:
 - Auto Mapper
 - xUnit **(> 98% code coverage)**
 - SendGrid
+- Hangfire
 - Javascript
 - Bootstrap
 - jQuery
