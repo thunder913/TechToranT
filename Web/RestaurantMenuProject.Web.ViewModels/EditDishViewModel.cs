@@ -24,7 +24,7 @@
         public new void CreateMappings(IProfileExpression configuration)
         {
             configuration.CreateMap<Dish, EditDishViewModel>()
-                .ForMember(x => x.IngredientsId, y => y.MapFrom(x => x.Ingredients.Select(y => y.Id)));
+                .ForMember(x => x.IngredientsId, y => y.MapFrom(x => x.Ingredients.Select(z => z.Id).ToList()));
         }
     }
 }

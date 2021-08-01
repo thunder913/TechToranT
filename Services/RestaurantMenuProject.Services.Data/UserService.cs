@@ -147,7 +147,7 @@
                 .Include(x => x.Roles)
                 .FirstOrDefault(x => x.Id == userId)
                 .Roles
-                .Any(x => x.RoleId == role.Id);
+                .Any(x => role != null && x.RoleId == role.Id);
         }
     }
 }

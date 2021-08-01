@@ -64,7 +64,9 @@
                 .FirstOrDefault();
             var actual = this.DishService.GetOrderDishAsPickupItem(orderDish.DishId, orderDish.OrderId);
 
-            actual.IsDeepEqual(expected);
+            actual.WithDeepEqual(expected)
+                .IgnoreSourceProperty(x => x.Id)
+                .Assert();
         }
 
         private async Task PopulateDB()

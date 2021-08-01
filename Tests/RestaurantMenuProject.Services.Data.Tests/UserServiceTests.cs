@@ -27,7 +27,7 @@ namespace RestaurantMenuProject.Services.Data.Tests
             var expected = this.DbContext.Users.FirstOrDefault(x => x.Id == id);
             var actual = this.UserService.GetUserById(id);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Theory]
@@ -76,7 +76,7 @@ namespace RestaurantMenuProject.Services.Data.Tests
 
             var actual = this.UserService.GetUserDataAsQueryable(sortColumn, sortDirection, searchValue);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -103,7 +103,7 @@ namespace RestaurantMenuProject.Services.Data.Tests
             Assert.Equal(edituser.LastName, actual.LastName);
             Assert.Equal(edituser.PhoneNumber, actual.PhoneNumber);
             Assert.Equal(1, actual.Roles.Count);
-            actual.Roles.FirstOrDefault().IsDeepEqual(newRole);
+            actual.Roles.FirstOrDefault().ShouldDeepEqual(new IdentityUserRole<string>() { RoleId = "role1", UserId = "user1" });
         }
 
         [Fact]
@@ -165,7 +165,7 @@ namespace RestaurantMenuProject.Services.Data.Tests
             var expectedRoles = this.DbContext.Roles;
             var actualRoles = this.UserService.GetUserRoles();
 
-            actualRoles.IsDeepEqual(expectedRoles);
+            actualRoles.ShouldDeepEqual(expectedRoles);
         }
 
         private async Task PopulateDB()

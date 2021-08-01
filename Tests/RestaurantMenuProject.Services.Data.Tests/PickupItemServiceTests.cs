@@ -24,7 +24,7 @@ namespace RestaurantMenuProject.Services.Data.Tests
             var actual = this.PickupItemService.GetAllItemsToPickUp(waiterId);
             var expected = this.DbContext.PickupItems.Where(x => x.WaiterId == waiterId).ToList();
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace RestaurantMenuProject.Services.Data.Tests
             var expected = this.DbContext.PickupItems.Skip(2).FirstOrDefault();
             var actual = this.PickupItemService.GetPickupItemById(expected.Id);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]

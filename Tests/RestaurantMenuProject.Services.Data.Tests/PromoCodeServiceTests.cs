@@ -52,7 +52,7 @@ namespace RestaurantMenuProject.Services.Data.Tests
             var actual = this.PromoCodeService.GetAllPromoCodes("", "", "");
             var expected = this.DbContext.PromoCodes.To<PromoCodeViewModel>();
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace RestaurantMenuProject.Services.Data.Tests
             var actual = this.PromoCodeService.GetAllPromoCodes("code", "desc", string.Empty);
             var expected = this.DbContext.PromoCodes.OrderByDescending(x => x.Code).To<PromoCodeViewModel>().ToList();
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
 
         }
 
@@ -89,7 +89,7 @@ namespace RestaurantMenuProject.Services.Data.Tests
 
             var actual = this.PromoCodeService.GetAllPromoCodes("id", "desc", searchValue);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -114,7 +114,7 @@ namespace RestaurantMenuProject.Services.Data.Tests
                 Code = promoCode.Code,
             };
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -132,7 +132,7 @@ namespace RestaurantMenuProject.Services.Data.Tests
             var expected = this.DbContext.PromoCodes.FirstOrDefault(x => x.Code == code);
             var actual =  await this.PromoCodeService.GetPromoCodeByCodeAsync(code);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]

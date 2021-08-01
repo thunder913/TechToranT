@@ -21,10 +21,9 @@
             await this.AddDrinkTypesToDB();
 
             var expected = this.DbContext.DrinkTypes.To<MenuItemViewModel>();
-
             var actual = this.DrinkTypeService.GetAllDrinkTypes();
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -36,7 +35,7 @@
 
             var actual = this.DrinkTypeService.GetAllDrinkTypesWithId();
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -47,7 +46,7 @@
             var expected = this.DbContext.DrinkTypes.FirstOrDefault();
             var actual = this.DrinkTypeService.GetDrinkTypeById(expected.Id);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -100,7 +99,7 @@
             var ids = expected.Select(x => x.Id).ToArray();
 
             var actual = this.DrinkTypeService.GetAllDrinkTypesWithIds(ids);
-            expected.IsDeepEqual(actual);
+            expected.ShouldDeepEqual(actual);
         }
 
         [Fact]

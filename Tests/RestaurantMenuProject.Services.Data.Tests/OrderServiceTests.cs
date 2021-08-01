@@ -42,7 +42,7 @@
                     .ToList();
             var actual = this.OrderService.GetOrderViewModelsByUserId(page, itemsPerPage, userId);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -197,7 +197,7 @@
             expected.AddRange(orderDrinks);
             var actual = this.OrderService.GetAllFoodItemsById(orderId);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Theory]
@@ -242,7 +242,7 @@
             }
             var actual = this.OrderService.GetAllOrders(sortColumn, sortDirection, searchValue);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
 
         }
 
@@ -259,7 +259,7 @@
                 .ToList();
             var actual = this.OrderService.GetOrdersWithStatus(processType);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -345,7 +345,7 @@
                 .To<ActiveOrderViewModel>()
                 .ToList();
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
             Assert.Equal(38.1, actual.FirstOrDefault().ReadyPercent);
         }
 
@@ -363,7 +363,21 @@
             expected.ActiveOrders = this.OrderService.GetActiveOrders(waiterId);
             var actual = this.OrderService.GetWaiterViewModel(waiterId);
 
-            actual.IsDeepEqual(expected);
+            actual.WithDeepEqual(expected)
+                .IgnoreSourceProperty(x => x.ActiveOrders)
+                .Assert();
+
+            var actualActiveOrders = actual.ActiveOrders.ToList();
+            var expectedActiveOrders = expected.ActiveOrders.ToList();
+
+            for (int i = 0; i < expectedActiveOrders.Count; i++)
+            {
+                expectedActiveOrders[i].WithDeepEqual(actualActiveOrders[i])
+                    .IgnoreSourceProperty(x => x.ReadyPercent)
+                    .Assert();
+
+                Assert.Equal(expectedActiveOrders[i].ReadyPercent.ToString(), actualActiveOrders[i].ReadyPercent.ToString());
+            }
         }
 
         [Fact]
@@ -415,7 +429,7 @@
             expected.FoodTypes = this.OrderService.GetCookFoodTypes(null);
             var actual = this.OrderService.GetChefViewModel();
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Theory]
@@ -481,7 +495,7 @@
             var actual = this.OrderService.GetCookFoodTypes(null);
 
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
 
@@ -562,7 +576,7 @@
 
             var actual = this.OrderService.GetSalesDataForPeriod(startDate, endDate, "Daily");
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -640,7 +654,7 @@
 
             var actual = this.OrderService.GetSalesDataForPeriod(startDate, endDate, "Monthly");
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -718,7 +732,7 @@
 
             var actual = this.OrderService.GetSalesDataForPeriod(startDate, endDate, "Monthly");
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -792,7 +806,7 @@
 
             var actual = this.OrderService.GetSalesDataForPeriod(startDate, endDate, "Yearly");
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -929,7 +943,7 @@
 
             var actual = await this.OrderService.GetAllStaffForAnalyseAsync(startDate);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -944,7 +958,7 @@
             expected.StatusName = Enum.GetName(typeof(ProcessType), expected.Status);
             var actual = this.OrderService.GetOrderInListById(orderId);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -971,7 +985,7 @@
             expected.ReadyPercent = 38.1;
             var actual = this.OrderService.GetActiveOrderById(orderId);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]

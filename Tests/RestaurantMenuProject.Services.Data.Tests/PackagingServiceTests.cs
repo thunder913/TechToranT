@@ -26,7 +26,7 @@ namespace RestaurantMenuProject.Services.Data.Tests
                 Description = x.Description,
             }).ToList();
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         private async Task PopulateDB()

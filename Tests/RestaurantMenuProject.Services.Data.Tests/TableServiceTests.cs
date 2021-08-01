@@ -53,7 +53,57 @@ namespace RestaurantMenuProject.Services.Data.Tests
                     .ToList();
             var actual = this.TableService.GetAllTables();
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
+        }
+
+        [Fact]
+        public async Task GetTablesForPageWorksCorrectly()
+        {
+            await this.PopulateDB();
+
+            var expected = this.DbContext.Tables
+                    .Select(x => new TableDisplayViewModel()
+                    {
+                        Capacity = x.Capacity,
+                        Code = x.Code,
+                        DateCreated = x.CreatedOn,
+                        Id = x.Id,
+                        Number = x.Number,
+                        DateGenerated = x.ModifiedOn,
+                    })
+                    .Take(2)
+                    .ToList();
+
+            var expectedMiddle = this.DbContext.Tables
+            .Select(x => new TableDisplayViewModel()
+            {
+                Capacity = x.Capacity,
+                Code = x.Code,
+                DateCreated = x.CreatedOn,
+                Id = x.Id,
+                Number = x.Number,
+                DateGenerated = x.ModifiedOn,
+            })
+            .Skip(2)
+            .Take(2)
+            .ToList();
+
+            var actual = this.TableService.GetTablesForPage(2, 1);
+            var actualMiddle = this.TableService.GetTablesForPage(2, 2);
+
+            actual.ShouldDeepEqual(expected);
+            actualMiddle.ShouldDeepEqual(expectedMiddle);
+        }
+
+        [Fact]
+        public async Task GetTablesCountWorksCorrectly()
+        {
+            await this.PopulateDB();
+            
+            var expected = this.DbContext.Tables.Count();
+            var actual = this.TableService.GetTablesCount();
+
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -91,7 +141,7 @@ namespace RestaurantMenuProject.Services.Data.Tests
             var expected = this.DbContext.Tables.To<AddTableViewModel>().FirstOrDefault(x => x.Id == id);
             var actual = this.TableService.GetTableById(id);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]

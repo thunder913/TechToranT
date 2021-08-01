@@ -28,7 +28,7 @@
 
             var actual = this.DishTypeService.GetAllDishTypes();
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -40,7 +40,7 @@
 
             var actual = this.DishTypeService.GetAllDishTypesWithId();
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -51,7 +51,7 @@
             var expected = this.DbContext.DishTypes.FirstOrDefault();
             var actual = this.DishTypeService.GetDishTypeById(expected.Id);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -104,7 +104,7 @@
             var ids = expected.Select(x => x.Id).ToArray();
 
             var actual = this.DishTypeService.GetAllDishTypesWithIds(ids);
-            expected.IsDeepEqual(actual);
+            expected.ShouldDeepEqual(actual);
         }
 
         [Fact]

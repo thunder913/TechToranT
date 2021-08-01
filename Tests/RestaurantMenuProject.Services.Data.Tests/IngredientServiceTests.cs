@@ -43,7 +43,7 @@
             var expected = this.DbContext.Ingredients.To<DishIngredientViewModel>().ToList();
             var actual = this.IngredientService.GetAllAsDishIngredientViewModel();
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -55,7 +55,7 @@
             var expected = this.DbContext.Ingredients.Where(x => ids.Contains(x.Id)).ToList();
             var actual = this.IngredientService.GetAllIngredientsByIds(ids);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -66,7 +66,7 @@
             var expected = this.DbContext.Ingredients.Skip(1).FirstOrDefault();
             var actual = this.IngredientService.GetIngredientById(expected.Id);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         private async Task PopulateDB()

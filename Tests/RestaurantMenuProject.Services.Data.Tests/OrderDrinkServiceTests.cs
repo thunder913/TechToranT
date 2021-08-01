@@ -62,7 +62,9 @@ namespace RestaurantMenuProject.Services.Data.Tests
                 .FirstOrDefault();
             var actual = this.DrinkService.GetOrderDrinkAsPickupItem(orderDrink.DrinkId, orderDrink.OrderId);
 
-            actual.IsDeepEqual(expected);
+            actual.WithDeepEqual(expected)
+                .IgnoreSourceProperty(x => x.Id)
+                .Assert();
         }
 
         private async Task PopulateDB()

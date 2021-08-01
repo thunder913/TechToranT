@@ -240,7 +240,7 @@
 
             var expected = this.BasketService.GetBasketDishItemById("test", UserId);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -265,7 +265,7 @@
 
             var expected = this.BasketService.GetBasketDishItemById("test", UserId);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -289,7 +289,7 @@
 
             var expected = this.BasketService.GetBasketDrinkItemById("test", UserId);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -314,7 +314,7 @@
 
             var expected = this.BasketService.GetBasketDrinkItemById("test", UserId);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -538,7 +538,7 @@
 
             var actual = this.BasketService.GetBasket(UserId);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -592,7 +592,7 @@
             var expected = this.DbContext.PromoCodes.FirstOrDefault(x => x.Id == 1);
             var actual = this.DbContext.Baskets.FirstOrDefault(x => x.User.Id == UserId).PromoCode;
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -686,7 +686,9 @@
 
             var actual = this.BasketService.GetBasketPromoCodeById(UserId);
 
-            actual.IsDeepEqual(expected);
+            actual.WithDeepEqual(expected)
+                .IgnoreSourceProperty(x => x.ExpirationDate)
+                .Assert();
         }
 
         [Fact]

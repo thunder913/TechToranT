@@ -1,4 +1,5 @@
 ﻿using DeepEqual.Syntax;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using RestaurantMenuProject.Data.Models;
 using RestaurantMenuProject.Data.Models.Enums;
@@ -23,7 +24,8 @@ namespace RestaurantMenuProject.Services.Data.Tests
             await this.PopulateDB();
             await this.AddDrinksToDB();
 
-            var ingredientsId = this.DbContext.Ingredients.Take(2).Select(x => x.Id).ToList();
+            var ingredients = this.DbContext.Ingredients.Take(2).ToList();
+            var ingredientsId = ingredients.Select(x => x.Id).ToList();
 
             var addDrinkViewModel = new AddDrinkViewModel()
             {
@@ -38,16 +40,16 @@ namespace RestaurantMenuProject.Services.Data.Tests
                 PackagingTypeId = 1,
             };
             await this.DrinkService.AddDrinkAsync(addDrinkViewModel, AppDomain.CurrentDomain.BaseDirectory);
-            var newDrink = this.DbContext.Drinks.FirstOrDefault(x => x.Name == "newItem");
+            var newDrink = this.DbContext.Drinks.Include(x => x.Ingredients).FirstOrDefault(x => x.Name == "newItem");
             var expected = AutoMapperConfig.MapperInstance.Map<Drink>(addDrinkViewModel);
-
+            expected.Ingredients = ingredients;
             Assert.Equal(expected.Name, newDrink.Name);
             Assert.Equal(expected.AdditionalInfo, newDrink.AdditionalInfo);
             Assert.Equal(expected.Weight, newDrink.Weight);
             Assert.Equal(expected.Price, newDrink.Price);
             Assert.Equal(ImageExtension.jpeg, newDrink.Image.Extension);
             Assert.Equal(expected.DrinkTypeId, newDrink.DrinkTypeId);
-            expected.Ingredients.IsDeepEqual(newDrink.Ingredients);
+            expected.Ingredients.ShouldDeepEqual(newDrink.Ingredients);
             Assert.Equal(expected.AlchoholByVolume, newDrink.AlchoholByVolume);
             Assert.Equal(expected.PackagingTypeId, newDrink.PackagingTypeId);
         }
@@ -61,7 +63,13 @@ namespace RestaurantMenuProject.Services.Data.Tests
             var expected = AutoMapperConfig.MapperInstance.Map<DrinkItemViewModel>(this.DbContext.Drinks.FirstOrDefault());
             var actual = this.DrinkService.GetDrinkItemViewModelById(expected.Id);
 
-            actual.IsDeepEqual(expected);
+            actual.WithDeepEqual(expected)
+                .IgnoreSourceProperty(x => x.DrinkType)
+                .Assert();
+
+            actual.DrinkType.WithDeepEqual(expected.DrinkType)
+                .IgnoreSourceProperty(x => x.Drinks)
+                .Assert();
         }
 
         [Fact]
@@ -80,7 +88,7 @@ namespace RestaurantMenuProject.Services.Data.Tests
             var expected = this.DbContext.Drinks.FirstOrDefault(x => x.Id == drinkId);
             var actual = this.DrinkService.GetDrinkById(drinkId);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -105,10 +113,18 @@ namespace RestaurantMenuProject.Services.Data.Tests
                 .To<DrinkItemViewModel>()
                 .ToList();
 
-            var actual = this.DrinkService.GetAllDrinksByType(drinkTypeName);
+            var actual = this.DrinkService.GetAllDrinksByType(drinkTypeName).ToArray();
 
-            actual.IsDeepEqual(expected);
+            for (int i = 0; i < actual.Count(); i++)
+            {
+                actual[i].WithDeepEqual(expected[i])
+                    .IgnoreSourceProperty(x => x.DrinkType)
+                    .Assert();
 
+                actual[i].DrinkType.WithDeepEqual(expected[i].DrinkType)
+                    .IgnoreSourceProperty(x => x.Drinks)
+                    .Assert();
+            }
         }
 
         [Fact]
@@ -125,7 +141,7 @@ namespace RestaurantMenuProject.Services.Data.Tests
                 .FirstOrDefault();
             var actual = this.DrinkService.GetEditDrinkViewModelById(drinkId);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -167,7 +183,11 @@ namespace RestaurantMenuProject.Services.Data.Tests
             await this.DbContext.SaveChangesAsync();
 
             var actual = this.DrinkService.GetDrinkWithDeletedById(drink.Id);
-            actual.IsDeepEqual(drink);
+            actual.WithDeepEqual(drink)
+                .IgnoreSourceProperty(x => x.Ingredients)
+                .IgnoreSourceProperty(x => x.DrinkType)
+                .IgnoreSourceProperty(x => x.PackagingType)
+                .Assert();
         }
 
         [Fact]

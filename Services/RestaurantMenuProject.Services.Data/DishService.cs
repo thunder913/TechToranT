@@ -81,6 +81,7 @@
 
         public EditDishViewModel GetEditDishViewModelById(string id)
         {
+            var dish = this.dishRepository.AllAsNoTracking().Include(x => x.Ingredients).Where(x => x.Id == id).FirstOrDefault();
             return this.dishRepository
                         .AllAsNoTracking()
                         .Where(x => x.Id == id)

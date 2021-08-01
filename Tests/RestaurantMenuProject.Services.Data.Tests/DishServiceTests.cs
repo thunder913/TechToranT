@@ -55,7 +55,7 @@
             var actual = this.DbContext.Dishes.FirstOrDefault(x => x.Id == dishId);
             var expected = this.DishService.GetDishById(dishId);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -78,8 +78,12 @@
             dish.DeletedOn = DateTime.UtcNow;
 
             var expected = this.DishService.GetDishWithDeletedById(dishId);
-
-            dish.IsDeepEqual(expected);
+            expected.IsDeleted = true;
+            dish.WithDeepEqual(expected)
+                .IgnoreSourceProperty(x => x.DeletedOn)
+                .IgnoreSourceProperty(x => x.Ingredients)
+                .IgnoreSourceProperty(x => x.DishType)
+                .Assert();
         }
 
         [Fact]
@@ -93,7 +97,10 @@
 
             var expected = this.DishService.GetDishWithDeletedById(dishId);
 
-            dish.IsDeepEqual(expected);
+            dish.WithDeepEqual(expected)
+                .IgnoreSourceProperty(x => x.DishType)
+                .IgnoreSourceProperty(x => x.Ingredients)
+                .Assert();
         }
 
         [Fact]
@@ -120,7 +127,16 @@
             var actual = autoMapper.Map<DishViewModel>(dish);
             var expected = this.DishService.GetDishAsFoodItemById(dishId);
 
-            actual.IsDeepEqual(expected);
+            actual.Ingredients = actual.Ingredients.OrderBy(x => x.Name).ToList();
+            expected.Ingredients = expected.Ingredients.OrderBy(x => x.Name).ToList();
+
+            actual.WithDeepEqual(expected)
+                .IgnoreSourceProperty(x => x.DishType)
+                .Assert();
+
+            actual.DishType.WithDeepEqual(expected.DishType)
+                .IgnoreSourceProperty(x => x.Dishes)
+                .Assert();
         }
 
         [Fact]
@@ -142,9 +158,21 @@
 
             var autoMapper = AutoMapperConfig.MapperInstance;
             var expected = autoMapper.Map<List<DishViewModel>>(dish);
-            var actual = this.DishService.GetAllDisheshWithDishTypeAsFoodItem(dishType);
+            var actual = this.DishService.GetAllDisheshWithDishTypeAsFoodItem(dishType).ToList();
 
-            actual.IsDeepEqual(expected);
+            for (int i = 0; i < expected.Count(); i++)
+            {
+                actual[i].Ingredients = actual[i].Ingredients.OrderBy(x => x.Name).ToList();
+                expected[i].Ingredients = expected[i].Ingredients.OrderBy(x => x.Name).ToList();
+
+                actual[i].WithDeepEqual(expected[i])
+                    .IgnoreSourceProperty(x => x.DishType)
+                    .Assert();
+
+                actual[i].DishType.WithDeepEqual(expected[i].DishType)
+                    .IgnoreSourceProperty(x => x.Dishes)
+                    .Assert();
+            }
         }
 
         [Fact]
@@ -160,7 +188,7 @@
             var expected = autoMapper.Map<List<DishViewModel>>(dish);
             var actual = this.DishService.GetAllDisheshWithDishTypeAsFoodItem(dishType);
 
-            actual.IsDeepEqual(expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
@@ -176,7 +204,10 @@
             var expected = autoMapper.Map<EditDishViewModel>(dish);
             var actual = this.DishService.GetEditDishViewModelById(dishId);
 
-            actual.IsDeepEqual(expected);
+            actual.IngredientsId = actual.IngredientsId.OrderBy(x => x).ToList();
+            expected.IngredientsId = expected.IngredientsId.OrderBy(x => x).ToList();
+
+            actual.ShouldDeepEqual(expected);
         }
 
         [Fact]
