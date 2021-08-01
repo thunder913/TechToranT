@@ -8,7 +8,7 @@
         <label asp-for="Number"></label>
         <input asp-for="Number" class="form-control" />
         <span asp-validation-for="Number" class="text-danger"></span>
-        <button>Get next number</button>
+        <button class="getNumber">Get next number</button>
     </div>
 
     <div class="form-group col-md-6">
@@ -18,6 +18,10 @@
     </div>
 
     <button type="submit" class="btn btn-success col-md-2">Edit</button>
-        <input name="id" value="@Model.Id" hidden/>
-        <button asp-controller="Manage" asp-action="RemoveTable" type="submit" class="btn btn-danger">Remove</button>
+    <input name="id" value="@Model.Id" hidden />
+    <button asp-controller="Manage" asp-action="RemoveTable" type="submit" class="btn btn-danger">Remove</button>
 </form>
+
+@section Scripts{
+    <script src="~/js/addTable.js"></script>
+}

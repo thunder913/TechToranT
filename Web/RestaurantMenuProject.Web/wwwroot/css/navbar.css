@@ -20,3 +20,9 @@
     margin-right: 5px;
     font-size: 18px;
 }
+
+a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: normal;
+}

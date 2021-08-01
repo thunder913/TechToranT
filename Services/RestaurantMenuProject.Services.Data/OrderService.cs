@@ -432,6 +432,7 @@
                 var staffToAdd = new StaffAnalyseViewModel()
                 {
                     FullName = waiterName,
+                    Id = id,
                 };
 
                 foreach (var date in dates)

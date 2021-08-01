@@ -343,6 +343,7 @@
             {
                 return this.BadRequest(ex.Message);
             }
+
             return this.RedirectToAction("Tables");
         }
 
@@ -355,7 +356,14 @@
         [HttpPost]
         public async Task<IActionResult> EditTable(AddTableViewModel tableViewModel)
         {
-            await this.tableService.EditTableAsync(tableViewModel);
+            try
+            {
+                await this.tableService.EditTableAsync(tableViewModel);
+            }
+            catch (Exception ex)
+            {
+                return this.BadRequest(ex.Message);
+            }
             return this.RedirectToAction("Tables");
         }
 

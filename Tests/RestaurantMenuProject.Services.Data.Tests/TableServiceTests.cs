@@ -139,6 +139,14 @@ namespace RestaurantMenuProject.Services.Data.Tests
         }
 
         [Fact]
+        public async Task EditTableAsyncThrowsExceptionWhenGivenExistingTableNumber()
+        {
+            await this.PopulateDB();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await this.TableService.EditTableAsync(new AddTableViewModel() { Number = 1 }));
+        }
+
+        [Fact]
         public async Task EditTableAsyncThrowsWhenGivenInvalidId()
         {
             await Assert.ThrowsAsync<NullReferenceException>(async () => await this.TableService.EditTableAsync(new AddTableViewModel() { Id = 9123 }));

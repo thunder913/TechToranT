@@ -7,5 +7,7 @@ namespace RestaurantMenuProject.Web.ViewModels
         public ICollection<StaffAnalyseOrdersViewModel> OrdersData { get; set; } = new HashSet<StaffAnalyseOrdersViewModel>();
 
         public string FullName { get; set; }
+
+        public string Id { get; set; }
     }
 }

@@ -47,6 +47,7 @@ namespace RestaurantMenuProject.Services.Data
                     Number = x.Number,
                     DateGenerated = x.ModifiedOn,
                 })
+                .OrderBy(x => x.Number)
                 .ToList();
         }
 
@@ -78,6 +79,11 @@ namespace RestaurantMenuProject.Services.Data
 
         public async Task EditTableAsync(AddTableViewModel tableViewModel)
         {
+            if (this.tableRepository.All().Any(x => x.Number == tableViewModel.Number))
+            {
+                throw new InvalidOperationException("The table number already exists!");
+            }
+
             var table = this.tableRepository.All().FirstOrDefault(x => x.Id == tableViewModel.Id);
 
             table.Number = tableViewModel.Number;

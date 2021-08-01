@@ -35,7 +35,7 @@
                         @:{
                         @:label: '@item.FullName',
                         @:data: [@string.Join(",", item.OrdersData.Select(x => x.OrdersCount))],
-                        @:borderColor: getRGBColor('@item.FullName'),
+                        @:borderColor: getRGBColor('@item.Id'),
                         @:fill: false,
                         @:},
                     }
@@ -85,7 +85,7 @@
                         @:label: '@item.FullName',
                         @:data:[@string.Join(",", item.OrdersData.Select(x => x.ItemsDeliveredCount))],
                         @:fill: false,
-                        @:    borderColor: getRGBColor('@item.FullName'),
+                        @:    borderColor: getRGBColor('@item.Id'),
                         @:},
                     }
                 ],
