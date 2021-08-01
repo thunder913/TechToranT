@@ -321,10 +321,18 @@
             return this.View();
         }
 
-        public IActionResult Tables()
+        [Route("Manage/Tables/{page?}")]
+        public IActionResult Tables(int id = 1)
         {
-            var tables = this.tableService.GetAllTables();
-            return this.View(tables);
+            const int itemsPerPage = 10;
+            var viewModel = new TablePaginationViewModel()
+            {
+                Page = id,
+                Tables = this.tableService.GetTablesForPage(itemsPerPage, id),
+                OrdersPerPage = itemsPerPage,
+                OrdersCount = this.tableService.GetTablesCount(),
+            };
+            return this.View(viewModel);
         }
 
         public IActionResult AddTable()

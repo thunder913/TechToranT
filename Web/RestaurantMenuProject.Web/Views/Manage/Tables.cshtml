@@ -1,4 +1,4 @@
-﻿@model ICollection<TableDisplayViewModel>
+﻿@model TablePaginationViewModel
 @using RestaurantMenuProject.Common
 <link href="~/css/manageTables.css" rel="stylesheet" />
 
@@ -34,7 +34,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.Tables)
         {
             <tr>
                 <th>
@@ -62,4 +62,30 @@
         }
     </tbody>
 </table>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @if (!Model.HasPreviousPage) { <text>disabled</text> }">
+            <a class="page-link" asp-action="Tables" asp-route-id="@(Model.PreviousPageNumber)">Previous</a>
+        </li>
+        @for (int i = Model.Page - 3; i < Model.Page; i++)
+        {
+            if (i > 0)
+            {
+                <li class="page-item"><a class="page-link" asp-action="Tables" asp-route-id="@i">@i</a></li>
+            }
+        }
+        <li class="page-item active"><a class="page-link" href="#">@Model.Page</a></li>
+
+        @for (int i = Model.Page + 1; i <= Model.Page + 3; i++)
+        {
+            if (i <= Model.PagesCount)
+            {
+                <li class="page-item"><a class="page-link" asp-action="Tables" asp-route-id="@i">@i</a></li>
+            }
+        }
+
+        <li class="page-item @if (!Model.HasNextPage) { <text>disabled</text> }"><a class="page-link" asp-action="Tables" asp-route-id="@(Model.NextPageNumber)">Next</a></li>
+    </ul>
+</nav>
 

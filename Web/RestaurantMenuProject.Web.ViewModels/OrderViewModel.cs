@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     public class OrderViewModel
     {
@@ -14,7 +13,7 @@
 
         public int OrdersCount { get; set; }
 
-        public int PagesCount => (int)Math.Ceiling((double)OrdersCount / this.OrdersPerPage);
+        public int PagesCount => (int)Math.Ceiling((double)this.OrdersCount / this.OrdersPerPage);
 
         public bool HasPreviousPage => this.Page > 1;
 

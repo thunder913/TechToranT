@@ -51,6 +51,25 @@ namespace RestaurantMenuProject.Services.Data
                 .ToList();
         }
 
+        public ICollection<TableDisplayViewModel> GetTablesForPage(int itemsPerPage, int page)
+        {
+            return this.tableRepository
+            .All()
+            .Select(x => new TableDisplayViewModel()
+            {
+                Capacity = x.Capacity,
+                Code = x.Code,
+                DateCreated = x.CreatedOn,
+                Id = x.Id,
+                Number = x.Number,
+                DateGenerated = x.ModifiedOn,
+            })
+            .OrderBy(x => x.Number)
+            .Skip((page - 1) * itemsPerPage)
+            .Take(itemsPerPage)
+            .ToList();
+        }
+
         public async Task AddTableAsync(AddTableViewModel tableViewModel)
         {
             var mapper = AutoMapperConfig.MapperInstance;
@@ -125,6 +144,13 @@ namespace RestaurantMenuProject.Services.Data
             }
 
             return tables[0].Number + 1;
+        }
+
+        public int GetTablesCount()
+        {
+            return this.tableRepository
+                .AllAsNoTracking()
+                .Count();
         }
 
         private string RandomString(int length)

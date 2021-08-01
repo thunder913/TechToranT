@@ -24,5 +24,9 @@ namespace RestaurantMenuProject.Services.Data.Contracts
         public bool IsTableCodeFree(string code);
 
         public int GetFreeTable();
+
+        public ICollection<TableDisplayViewModel> GetTablesForPage(int itemsPerPage, int page);
+
+        public int GetTablesCount();
     }
 }
