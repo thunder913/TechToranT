@@ -12,6 +12,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using RestaurantMenuProject.Data.Models;
+    using RestaurantMenuProject.Data.Models.Dtos;
     using RestaurantMenuProject.Data.Models.Enums;
     using RestaurantMenuProject.Services.Data.Contracts;
     using RestaurantMenuProject.Services.Mapping;
@@ -40,7 +41,7 @@
                     .Take(itemsPerPage)
                     .To<OrderInListViewModel>()
                     .ToList();
-            var actual = this.OrderService.GetOrderViewModelsByUserId(page, itemsPerPage, userId);
+            var actual = this.OrderService.GetOrderViewModelsByUserId(itemsPerPage, page, userId);
 
             actual.ShouldDeepEqual(expected);
         }
@@ -193,8 +194,8 @@
                     .To<FoodItemViewModel>()
                     .ToList();
 
-            var expected = orderDishes;
-            expected.AddRange(orderDrinks);
+            var expected = orderDrinks;
+            expected.AddRange(orderDishes);
             var actual = this.OrderService.GetAllFoodItemsById(orderId);
 
             actual.ShouldDeepEqual(expected);
@@ -228,11 +229,11 @@
                 orders = orders.OrderBy(sortColumn + " " + sortDirection);
             }
 
-            var expected = orders.ToList();
+            var expected = orders.To<ManageOrderViewModel>().ToList();
 
             if (!string.IsNullOrWhiteSpace(searchValue))
             {
-                expected = orders.Where(m =>
+                expected = expected.Where(m =>
                       m.Price.ToString().Contains(searchValue)
                       || m.Email.ToLower().Contains(searchValue.ToLower())
                       || m.Status.ToString().ToLower().Contains(searchValue.ToLower())
@@ -240,6 +241,7 @@
                       || m.FullName.ToLower().Contains(searchValue))
                       .ToList();
             }
+
             var actual = this.OrderService.GetAllOrders(sortColumn, sortDirection, searchValue);
 
             actual.ShouldDeepEqual(expected);
@@ -345,6 +347,23 @@
                 .To<ActiveOrderViewModel>()
                 .ToList();
 
+            foreach (var order in expected)
+            {
+                var foodItems = new List<OrderDeliveredItemDto>();
+
+                var orderDishService = this.ServiceProvider.GetRequiredService<IOrderDishService>();
+                var orderDrinkService = this.ServiceProvider.GetRequiredService<IOrderDrinkService>();
+
+                foodItems.AddRange(orderDishService.GetDishesAsOrderDeliveredItemById(order.Id));
+                foodItems.AddRange(orderDrinkService.GetDrinksAsOrderDeliveredItemById(order.Id));
+
+                var totalItemsOrdered = foodItems.Sum(x => x.Count);
+                var totalItemsDelivered = foodItems.Sum(x => x.DeliveredCount);
+
+                var percent = Math.Round((double)totalItemsDelivered / totalItemsOrdered * 100, 2);
+                order.ReadyPercent = percent;
+            }
+
             actual.ShouldDeepEqual(expected);
             Assert.Equal(38.1, actual.FirstOrDefault().ReadyPercent);
         }
@@ -443,6 +462,7 @@
             {
                 order.ProcessType = ProcessType.Cooking;
             }
+
             await this.DbContext.SaveChangesAsync();
 
             var allDrinks = this.DbContext.OrderDrinks
@@ -492,18 +512,11 @@
             {
                 expected.Add(dish);
             }
-            var actual = this.OrderService.GetCookFoodTypes(null);
 
+            var actual = this.OrderService.GetCookFoodTypes(orderId);
 
             actual.ShouldDeepEqual(expected);
         }
-
-
-
-
-
-
-
 
         [Fact]
         public async Task GetSalesDataForPeriodWorksCorrectlyWithDaily()
@@ -835,6 +848,7 @@
         public async Task GetAllStaffForAnalyseAsyncWorksCorrectly()
         {
             await this.PopulateDB();
+            var currentDate = DateTime.UtcNow;
             var startDate = DateTime.UtcNow.AddYears(-1);
             var dates = new List<string>();
             var expected = new List<StaffAnalyseViewModel>();
@@ -846,7 +860,7 @@
             allOrders[1].ProcessType = ProcessType.Completed;
             allOrders[2].ProcessType = ProcessType.Completed;
             await this.DbContext.SaveChangesAsync();
-            for (var dt = startDate; dt.Year < startDate.Year || (dt.Year <= startDate.Year && dt.Month <= startDate.Month); dt = dt.AddMonths(1))
+            for (var dt = startDate; dt.Year < currentDate.Year || (dt.Year <= currentDate.Year && dt.Month <= currentDate.Month); dt = dt.AddMonths(1))
             {
                 dates.Add(dt.ToString("MM/yyyy"));
             }
@@ -893,14 +907,19 @@
                     })
                     .ToListAsync();
 
-                var waiterName = this.DbContext.Orders
+                var waiter = this.DbContext.Orders
                     .Where(x => x.WaiterId == id)
-                    .Select(x => x.Waiter.FirstName + " " + x.Waiter.LastName)
+                    .Select(x => new
+                    {
+                        WaiterName = x.Waiter.FirstName + " " + x.Waiter.LastName,
+                        Id = x.WaiterId,
+                    })
                     .FirstOrDefault();
 
                 var staffToAdd = new StaffAnalyseViewModel()
                 {
-                    FullName = waiterName,
+                    Id = waiter.Id,
+                    FullName = waiter.WaiterName,
                 };
 
                 foreach (var date in dates)

@@ -1,10 +1,13 @@
 ﻿namespace RestaurantMenuProject.Web.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using RestaurantMenuProject.Common;
     using RestaurantMenuProject.Data.Models.Enums;
     using RestaurantMenuProject.Services.Data.Contracts;
     using System.Security.Claims;
 
+    [Authorize(Roles = GlobalConstants.AdministratorRoleName + "," + GlobalConstants.WaiterRoleName)]
     public class WaiterController : Controller
     {
         private readonly IOrderService orderService;

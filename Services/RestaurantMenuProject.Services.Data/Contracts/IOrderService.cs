@@ -9,7 +9,7 @@
 
     public interface IOrderService
     {
-        public ICollection<OrderInListViewModel> GetOrderViewModelsByUserId(int page, int itemsPerPage, string userId = null);
+        public ICollection<OrderInListViewModel> GetOrderViewModelsByUserId(int itemsPerPage, int page, string userId = null);
         
         public Task<string> MakeOrderAsync(string userId, string tableCode);
 

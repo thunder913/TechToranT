@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RestaurantMenuProject.Common;
 using RestaurantMenuProject.Services.Data.Contracts;
 using System.Security.Claims;
 
 namespace RestaurantMenuProject.Web.Controllers
 {
+    [Authorize(Roles = GlobalConstants.AdministratorRoleName + "," + GlobalConstants.ChefRoleName)]
     public class ChefController : Controller
     {
         private readonly IOrderService orderService;
