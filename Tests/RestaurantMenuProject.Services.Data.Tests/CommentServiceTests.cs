@@ -121,17 +121,22 @@
         public async Task DeleteCommentByIdAsyncWorksCorrectlyWhenGivenAnAdmin()
         {
             await this.PopulateDB();
-            var userId = "user1";
 
-            this.DbContext.Roles.Add(new ApplicationRole()
+            var rolemanager = this.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+
+            var adminRole = new ApplicationRole()
             {
                 Name = GlobalConstants.AdministratorRoleName,
-            });
+            };
+
+            await rolemanager.CreateAsync(adminRole);
+
+            var userId = "user1";
 
             this.DbContext.UserRoles.Add(new IdentityUserRole<string>()
             {
                 UserId = userId,
-                RoleId = GlobalConstants.AdministratorRoleName,
+                RoleId = adminRole.Id,
             });
 
             await this.DbContext.SaveChangesAsync();

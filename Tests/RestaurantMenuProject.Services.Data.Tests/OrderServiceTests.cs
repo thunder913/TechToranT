@@ -265,6 +265,21 @@
         }
 
         [Fact]
+        public async Task ChangeOrderStatusAsyncWorksCorrectlyWhenGivenDelivered()
+        {
+            await this.PopulateDB();
+
+            var oldProcessType = ProcessType.Pending;
+            var newProcessType = ProcessType.Delivered;
+
+            var order = this.DbContext.Orders.FirstOrDefault();
+            await this.OrderService.ChangeOrderStatusAsync(oldProcessType, newProcessType, order.Id);
+
+            Assert.Equal(order.ProcessType, newProcessType);
+            Assert.NotNull(order.DeliveredOn);
+        }
+
+        [Fact]
         public async Task ChangeOrderStatusAsyncWorksCorrectly()
         {
             await this.PopulateDB();
@@ -1071,6 +1086,21 @@
             await this.DbContext.SaveChangesAsync();
 
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await this.OrderService.PayOrderByIdAsync(order.Id));
+        }
+
+        [Fact]
+        public async Task GetFullInformationForOrderWorksCorrectly()
+        {
+            await this.PopulateDB();
+
+            var expected = this.DbContext.Orders
+                .To<OrderInfoViewModel>()
+                .FirstOrDefault();
+
+            expected.FoodItems = this.OrderService.GetAllFoodItemsById(expected.Id);
+            var actual = this.OrderService.GetFullInformationForOrder(expected.Id);
+
+            actual.ShouldDeepEqual(expected);
         }
 
         private async Task PopulateDB()

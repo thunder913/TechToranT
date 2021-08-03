@@ -7,7 +7,7 @@
     {
         public Task<Image> AddImageAsync(string extension);
 
-        public void DeleteImage(string id);
+        //public void DeleteImage(string id);
 
         public Image GetImage(string id);
     }

@@ -28,11 +28,11 @@ namespace RestaurantMenuProject.Services.Data
             return image;
         }
 
-        public void DeleteImage(string id)
-        {
-            var image = this.imageRepository.All().First(x => x.Id == id);
-            this.imageRepository.Delete(image);
-        }
+        //public void DeleteImage(string id)
+        //{
+        //    var image = this.imageRepository.All().First(x => x.Id == id);
+        //    this.imageRepository.Delete(image);
+        //}
 
         public Image GetImage(string id)
         {

@@ -254,6 +254,23 @@ namespace RestaurantMenuProject.Services.Data.Tests
             await Assert.ThrowsAsync<NullReferenceException>(async () => await this.DrinkService.EditDrinkAsync(null, AppDomain.CurrentDomain.BaseDirectory));
         }
 
+        [InlineData("test")]
+        [InlineData("test2")]
+        [InlineData("invalid")]
+        [Theory]
+        public async Task GetDishViewModelBySearchTermWorksCorrectly(string searchTerm)
+        {
+            await this.PopulateDB();
+
+            var expected = this.DbContext.Drinks
+                .Where(x => searchTerm == null || x.Name.ToLower().Contains(searchTerm.ToLower()))
+                .To<DrinkItemViewModel>()
+                .ToList();
+            var actual = this.DrinkService.GetAllDrinksBySearchTerm(searchTerm);
+
+            actual.ShouldDeepEqual(expected);
+        }
+
         private async Task PopulateDB()
         {
             this.DbContext.Ingredients.Add(new Ingredient()

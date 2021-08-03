@@ -44,7 +44,7 @@
             {
                 opts.SignIn.RequireConfirmedAccount = false;
                 opts.Password.RequireNonAlphanumeric = false;
-                opts.Password.RequireDigit = false;
+                opts.Password.RequireDigit = true;
             }).AddRoles<ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 

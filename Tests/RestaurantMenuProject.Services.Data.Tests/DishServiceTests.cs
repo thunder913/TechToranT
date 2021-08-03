@@ -295,6 +295,23 @@
             await Assert.ThrowsAsync<NullReferenceException>(async () => await this.DishService.DeleteDishByIdAsync("INVALID"));
         }
 
+        [InlineData("test")]
+        [InlineData("test2")]
+        [InlineData("invalid")]
+        [Theory]
+        public async Task GetDishViewModelBySearchTermWorksCorrectly(string searchTerm)
+        {
+            await this.PopulateDB();
+
+            var expected = this.DbContext.Dishes
+                .Where(x => searchTerm == null || x.Name.ToLower().Contains(searchTerm.ToLower()))
+                .To<DishViewModel>()
+                .ToList();
+            var actual = this.DishService.GetDishViewModelBySearchTerm(searchTerm);
+
+            actual.ShouldDeepEqual(expected);
+        }
+
         private async Task PopulateDB()
         {
             this.DbContext.Ingredients.Add(new Ingredient()

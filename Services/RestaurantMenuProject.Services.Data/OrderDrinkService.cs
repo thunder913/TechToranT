@@ -1,19 +1,20 @@
-﻿using RestaurantMenuProject.Data.Common.Repositories;
-using RestaurantMenuProject.Data.Models;
-using RestaurantMenuProject.Data.Models.Dtos;
-using RestaurantMenuProject.Data.Models.Enums;
-using RestaurantMenuProject.Services.Data.Contracts;
-using RestaurantMenuProject.Services.Mapping;
-using RestaurantMenuProject.Web.ViewModels;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace RestaurantMenuProject.Services.Data
+﻿namespace RestaurantMenuProject.Services.Data
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using RestaurantMenuProject.Data.Common.Repositories;
+    using RestaurantMenuProject.Data.Models;
+    using RestaurantMenuProject.Data.Models.Dtos;
+    using RestaurantMenuProject.Data.Models.Enums;
+    using RestaurantMenuProject.Services.Data.Contracts;
+    using RestaurantMenuProject.Services.Mapping;
+    using RestaurantMenuProject.Web.ViewModels;
+
     public class OrderDrinkService : IOrderDrinkService
     {
         private readonly IRepository<OrderDrink> orderDrinkRepository;
