@@ -42,7 +42,7 @@
             // Make it to yes in production
             services.AddDefaultIdentity<ApplicationUser>(opts =>
             {
-                opts.SignIn.RequireConfirmedAccount = false;
+                opts.SignIn.RequireConfirmedAccount = true;
                 opts.Password.RequireNonAlphanumeric = false;
                 opts.Password.RequireDigit = true;
             }).AddRoles<ApplicationRole>()
@@ -75,7 +75,7 @@
             services.AddScoped<IDbQueryRunner, DbQueryRunner>();
 
             // Application services
-            services.AddTransient<IEmailSender>(serviceProvider => new SendGridEmailSender(this.configuration["SendGrid:ApiKey"]));
+            services.AddTransient<IEmailSender>(serviceProvider => new SendGridEmailSender(this.configuration["SendGrid-ApiKey"]));
             services.AddTransient<ISettingsService, SettingsService>();
             services.AddTransient<IDishTypeService, DishTypeService>();
             services.AddTransient<IDrinkTypeService, DrinkTypeService>();
@@ -102,16 +102,13 @@
             services.AddSignalR();
             services.AddAuthentication().AddFacebook(facebookOptions =>
             {
-                facebookOptions.AppId = this.configuration["Authentication:Facebook:AppId"];
-                facebookOptions.AppSecret = this.configuration["Authentication:Facebook:AppSecret"];
+                facebookOptions.AppId = this.configuration["Authentication-Facebook-AppId"];
+                facebookOptions.AppSecret = this.configuration["Authentication-Facebook-AppSecret"];
             })
             .AddGoogle(options =>
             {
-                IConfigurationSection googleAuthNSection =
-                    this.configuration.GetSection("Authentication:Google");
-
-                options.ClientId = googleAuthNSection["ClientId"];
-                options.ClientSecret = googleAuthNSection["ClientSecret"];
+                options.ClientId = this.configuration["Authentication-Google-ClientId"];
+                options.ClientSecret = this.configuration["Authentication-Google-ClientSecret"];
             });
 
             services.AddHangfire(config =>
