@@ -21,6 +21,7 @@
     using RestaurantMenuProject.Services.Mapping;
     using RestaurantMenuProject.Services.Messaging;
     using RestaurantMenuProject.Web.Hubs;
+    using RestaurantMenuProject.Web.Properties.Filters;
     using RestaurantMenuProject.Web.ViewModels;
 
     public class Startup
@@ -170,7 +171,10 @@
                     });
 
             // Hangfire options and execution
-            app.UseHangfireDashboard();
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                Authorization = new[] { new HangfireAuthorizationFilter(), },
+            });
             recurringJobManager.AddOrUpdate("Reset table codes every 24 hours", () => tableService.RefreshTableCodesAsync(), Cron.Daily);
         }
     }
