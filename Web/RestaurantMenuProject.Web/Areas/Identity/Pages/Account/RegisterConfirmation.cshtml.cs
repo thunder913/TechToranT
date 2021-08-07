@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using RestaurantMenuProject.Data.Models;
 using RestaurantMenuProject.Services.Messaging;
+using RestaurantMenuProject.Common;
+using System.Text.Encodings.Web;
 
 namespace RestaurantMenuProject.Web.Areas.Identity.Pages.Account
 {
@@ -15,16 +17,16 @@ namespace RestaurantMenuProject.Web.Areas.Identity.Pages.Account
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _sender;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public RegisterConfirmationModel(UserManager<ApplicationUser> userManager, IEmailSender sender)
+        public RegisterConfirmationModel(UserManager<ApplicationUser> userManager, IEmailSender sender, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _sender = sender;
+            this._signInManager = signInManager;
         }
 
         public string Email { get; set; }
-
-        public bool DisplayConfirmAccountLink { get; set; }
 
         public string EmailConfirmationUrl { get; set; }
 
@@ -42,19 +44,18 @@ namespace RestaurantMenuProject.Web.Areas.Identity.Pages.Account
             }
 
             Email = email;
-            // Once you add a real email sender, you should remove this code that lets you confirm the account
-            DisplayConfirmAccountLink = false;
-            if (DisplayConfirmAccountLink)
-            {
-                var userId = await _userManager.GetUserIdAsync(user);
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                EmailConfirmationUrl = Url.Page(
-                    "/Account/ConfirmEmail",
-                    pageHandler: null,
-                    values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                    protocol: Request.Scheme);
-            }
+            var userId = await _userManager.GetUserIdAsync(user);
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+            var callbackUrl = Url.Page(
+            "/Account/ConfirmEmail",
+            pageHandler: null,
+            values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
+            protocol: Request.Scheme);
+
+            await _sender.SendEmailAsync(GlobalConstants.Email, GlobalConstants.SystemName, email, "Confirm your email",
+            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
             return Page();
         }
