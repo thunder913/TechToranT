@@ -113,7 +113,7 @@ namespace RestaurantMenuProject.Services.Data
 
         public async Task RefreshTableCodesAsync()
         {
-            var tables = this.tableRepository.All();
+            var tables = this.tableRepository.All().ToList();
             foreach (var table in tables)
             {
                 table.Code = this.RandomString(6);

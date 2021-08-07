@@ -175,6 +175,7 @@
             {
                 Authorization = new[] { new HangfireAuthorizationFilter(), },
             });
+
             recurringJobManager.AddOrUpdate("Reset table codes every 24 hours", () => tableService.RefreshTableCodesAsync(), Cron.Daily);
         }
     }
