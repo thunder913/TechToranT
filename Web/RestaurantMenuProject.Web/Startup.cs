@@ -99,6 +99,7 @@
             services.AddTransient<IUserLikeService, UserLikeService>();
             services.AddTransient<IUserDislikeService, UserDislikeService>();
 
+            services.AddResponseCaching();
             services.Configure<AuthMessageSenderOptions>(this.configuration);
             services.AddSignalR();
             services.AddAuthentication().AddFacebook(facebookOptions =>
@@ -154,6 +155,7 @@
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            app.UseResponseCaching();
             app.UseRouting();
 
             app.UseAuthentication();

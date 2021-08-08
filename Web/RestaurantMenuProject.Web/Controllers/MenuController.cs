@@ -55,11 +55,13 @@
             }
         }
 
+        [ResponseCache(Duration = 24 * 60 * 60)]
         public IActionResult Index()
         {
             return this.View(this.dishTypeService.GetAllDishTypes());
         }
 
+        [ResponseCache(Duration = 24 * 60 * 60)]
         public IActionResult Drinks()
         {
             return this.View(this.drinkTypeService.GetAllDrinkTypes());

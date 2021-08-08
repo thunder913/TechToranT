@@ -2,13 +2,15 @@
 {
     using System;
     using System.Threading.Tasks;
-
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using RestaurantMenuProject.Common;
     using RestaurantMenuProject.Data.Common.Repositories;
     using RestaurantMenuProject.Data.Models;
     using RestaurantMenuProject.Services.Data;
     using RestaurantMenuProject.Web.ViewModels.Settings;
 
+    [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
     public class SettingsController : BaseController
     {
         private readonly ISettingsService settingsService;

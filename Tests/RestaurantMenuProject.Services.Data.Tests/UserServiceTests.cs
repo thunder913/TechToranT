@@ -168,6 +168,17 @@ namespace RestaurantMenuProject.Services.Data.Tests
             actualRoles.ShouldDeepEqual(expectedRoles);
         }
 
+        [Fact]
+        public async Task IsUserInTheRoleReturnsFalseWhenUserIsNotInRole()
+        {
+            await this.PopulateDB();
+
+            var expected = false;
+            var actual = await this.UserService.IsUserInTheRole("invalid", "role1");
+
+            Assert.Equal(expected, actual);
+        }
+
         private async Task PopulateDB()
         {
             var role1 = new ApplicationRole()

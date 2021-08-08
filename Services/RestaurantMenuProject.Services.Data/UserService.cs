@@ -143,9 +143,16 @@
         {
             var role = await this.roleManager.FindByNameAsync(roleName);
 
-            return this.userRepository.AllAsNoTracking()
+            var user = this.userRepository.AllAsNoTracking()
                 .Include(x => x.Roles)
-                .FirstOrDefault(x => x.Id == userId)
+                .FirstOrDefault(x => x.Id == userId);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            return user
                 .Roles
                 .Any(x => role != null && x.RoleId == role.Id);
         }

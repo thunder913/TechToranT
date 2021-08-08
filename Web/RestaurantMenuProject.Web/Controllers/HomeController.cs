@@ -21,31 +21,19 @@
             this.drinkTypeService = drinkTypeService;
         }
 
+        [ResponseCache(Duration = 30 * 24 * 60 * 60)]
         public IActionResult Index()
         {
             return this.View();
         }
 
+        [ResponseCache(Duration = 30 * 24 * 60 * 60)]
         public IActionResult Privacy()
         {
             return this.View();
         }
 
-        public IActionResult Add()
-        {
-            return this.View();
-        }
-
-        public IActionResult Remove()
-        {
-            return this.View();
-        }
-
-        public IActionResult Menu()
-        {
-            return this.View(this.dishTypeService.GetAllDishTypes());
-        }
-
+        [ResponseCache(Duration = 30 * 24 * 60 * 60)]
         public IActionResult Manage()
         {
             return this.View();
