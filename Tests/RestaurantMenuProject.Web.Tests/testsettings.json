@@ -1,0 +1,26 @@
+{
+    "ConnectionStrings": {
+        "DefaultConnection": "Server=.;Database=RestaurantMenuProject;Trusted_Connection=True;MultipleActiveResultSets=true",
+        "RestaurantMenuProjectWebContextConnection": "Server=(localdb)\\mssqllocaldb;Database=RestaurantMenuProject.Web;Trusted_Connection=True;MultipleActiveResultSets=true"
+    },
+    "Logging": {
+        "LogLevel": {
+            "Default": "Information",
+            "Microsoft": "Warning",
+            "Microsoft.Hosting.Lifetime": "Information"
+        }
+    },
+    "AllowedHosts": "*",
+    "Azure": {
+        "SignalR": {
+            "Enabled": "true"
+        }
+    },
+
+    "KeyVaultConfig": {
+        "KVUrl": "https://techtorant.vault.azure.net/",
+        "TenantId": "4a06d40c-e447-42be-baef-dd0421ed10bd",
+        "ClientId": "b6ec78d9-6d44-4875-b92a-d8983c220fc9",
+        "ClientSecretId": "NyNuNGu~m05923_Wf3-4.k2G5faJ_P-hYc"
+    }
+}

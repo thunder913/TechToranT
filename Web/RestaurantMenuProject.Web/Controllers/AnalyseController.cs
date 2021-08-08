@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RestaurantMenuProject.Services.Data.Contracts;
 using System;
 using System.Threading.Tasks;
 
 namespace RestaurantMenuProject.Web.Controllers
 {
+    [Authorize]
     public class AnalyseController : Controller
     {
         private readonly IOrderService orderService;
@@ -14,6 +16,7 @@ namespace RestaurantMenuProject.Web.Controllers
             this.orderService = orderService;
         }
 
+        [Authorize]
         public IActionResult Sales()
         {
             var oneYearAgo = DateTime.UtcNow;
@@ -23,6 +26,7 @@ namespace RestaurantMenuProject.Web.Controllers
             return this.View(sales);
         }
 
+        [Authorize]
         public async Task<IActionResult> Staff()
         {
             var date = DateTime.UtcNow;

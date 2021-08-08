@@ -349,3 +349,4 @@ f
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 /Web/RestaurantMenuProject.Web/appsettings.json
+/Web/RestaurantMenuProject.Web.Tests/testsettings.json
