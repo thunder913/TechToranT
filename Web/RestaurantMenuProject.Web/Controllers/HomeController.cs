@@ -21,19 +21,16 @@
             this.drinkTypeService = drinkTypeService;
         }
 
-        [ResponseCache(Duration = 30 * 24 * 60 * 60)]
         public IActionResult Index()
         {
             return this.View();
         }
 
-        [ResponseCache(Duration = 30 * 24 * 60 * 60)]
         public IActionResult Privacy()
         {
             return this.View();
         }
 
-        [ResponseCache(Duration = 30 * 24 * 60 * 60)]
         public IActionResult Manage()
         {
             return this.View();

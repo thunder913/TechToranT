@@ -15,7 +15,6 @@ namespace RestaurantMenuProject.Web.Controllers
             this.emailSender = emailSender;
         }
 
-        [ResponseCache(Duration = 30 * 24 * 60 * 60)]
         public IActionResult Index()
         {
             return this.View();

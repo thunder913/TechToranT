@@ -1,139 +1,141 @@
 ﻿@using RestaurantMenuProject.Common
 @{ this.ViewData["Title"] = "Home Page"; }
-<link href="~/css/w3.css" rel="stylesheet" />
-<style>
-    .w3-display-container img {
-        width: 800px;
-        height: 500px;
-        border-radius: calc(1 * var(--borderWidth));
-    }
 
-    .w3-content {
-        width: 800px;
-        height: 500px;
-    }
-
-    .gradient-border {
-        --borderWidth: 8px;
-        background: #1D1F20;
-        position: relative;
-        border-radius: var(--borderWidth);
-    }
-
-        .gradient-border:after {
-            content: '';
-            position: absolute;
-            top: calc(-1 * var(--borderWidth));
-            left: calc(-1 * var(--borderWidth));
-            height: calc(100% + var(--borderWidth) * 2);
-            width: calc(100% + var(--borderWidth) * 2);
-            background: linear-gradient(60deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82);
-            border-radius: calc(2 * var(--borderWidth));
-            z-index: -1;
-            animation: animatedgradient 3s ease alternate infinite;
-            background-size: 300% 300%;
+    <link href="~/css/w3.css" rel="stylesheet" />
+    <style>
+        .w3-display-container img {
+            width: 800px;
+            height: 500px;
+            border-radius: calc(1 * var(--borderWidth));
         }
 
-
-    @@keyframes animatedgradient {
-        0% {
-            background-position: 0% 50%;
+        .w3-content {
+            width: 800px;
+            height: 500px;
         }
 
-        50% {
-            background-position: 100% 50%;
+        .gradient-border {
+            --borderWidth: 8px;
+            background: #1D1F20;
+            position: relative;
+            border-radius: var(--borderWidth);
         }
 
-        100% {
-            background-position: 0% 50%;
-        }
-    }
-
-    .w3-container {
-        border-radius: var(--borderWidth);
-    }
-
-    .underTitle {
-        float: left;
-        text-align: left;
-        margin-top: 15px;
-        margin-bottom: 15px;
-        background-image: linear-gradient(to left, blue, red);
-        -webkit-background-clip: text;
-        color: transparent;
-    }
-
-    .textOverImage {
-        margin-bottom: 20px;
-    }
-
-    .title {
-        font-family: 'aria';
-    }
-</style>
-
-<div class="text-center">
-    <h1 class="display-4 title">Welcome to @GlobalConstants.SystemName!</h1>
-    <h4 class="underTitle">We are here to make you the best food you will ever eat! This is the first ever online restaurant, where you can just make an account, sit on a table, make an order and just wait for the food to arrive. <br /> While you are waiting, you can explore our menu, because every week we add a new delicious dish!</h4>
-    <h4 class="textOverImage"> Check it out ↓ </h4>
-
-    <div class="w3-content w3-display-container gradient-border">
-        <div class="w3-display-container mySlides">
-            <img src="~/img/Home/picture0.jpg">
-            <div class="w3-display-bottomleft w3-large w3-container w3-padding-16 w3-black">
-                Chef salad
-            </div>
-        </div>
-
-        <div class="w3-display-container mySlides">
-            <img src="~/img/Home/picture1.jpg">
-            <div class="w3-display-bottomright w3-large w3-container w3-padding-16 w3-black">
-                Pizza versatini
-            </div>
-        </div>
-
-        <div class="w3-display-container mySlides">
-            <img src="~/img/Home/picture3.jpg">
-            <div class="w3-display-topright w3-large w3-container w3-padding-16 w3-black">
-                Grilled trout
-            </div>
-        </div>
-
-        <div class="w3-display-container mySlides">
-            <img src="~/img/Home/picture4.jpg">
-            <div class="w3-display-bottomright w3-large w3-container w3-padding-16 w3-black">
-                Steak
-            </div>
-        </div>
-        <div class="w3-display-container mySlides">
-            <img src="~/img/Home/picture2.jpg">
-            <div class="w3-display-topleft w3-large w3-container w3-padding-16 w3-black">
-                Chocolate cake
-            </div>
-        </div>
-
-        <button class="w3-button w3-display-left w3-black" onclick="plusDivs(-1)">&#10094;</button>
-        <button class="w3-button w3-display-right w3-black" onclick="plusDivs(1)">&#10095;</button>
-
-    </div>
-
-    <script>
-        var slideIndex = 1;
-        showDivs(slideIndex);
-
-        function plusDivs(n) {
-            showDivs(slideIndex += n);
-        }
-
-        function showDivs(n) {
-            var i;
-            var x = document.getElementsByClassName("mySlides");
-            if (n > x.length) { slideIndex = 1 }
-            if (n < 1) { slideIndex = x.length }
-            for (i = 0; i < x.length; i++) {
-                x[i].style.display = "none";
+            .gradient-border:after {
+                content: '';
+                position: absolute;
+                top: calc(-1 * var(--borderWidth));
+                left: calc(-1 * var(--borderWidth));
+                height: calc(100% + var(--borderWidth) * 2);
+                width: calc(100% + var(--borderWidth) * 2);
+                background: linear-gradient(60deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82);
+                border-radius: calc(2 * var(--borderWidth));
+                z-index: -1;
+                animation: animatedgradient 3s ease alternate infinite;
+                background-size: 300% 300%;
             }
-            x[slideIndex - 1].style.display = "block";
+
+
+        @@keyframes animatedgradient {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
-    </script>
-</div>
+
+        .w3-container {
+            border-radius: var(--borderWidth);
+        }
+
+        .underTitle {
+            float: left;
+            text-align: left;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            background-image: linear-gradient(to left, blue, red);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .textOverImage {
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-family: 'aria';
+        }
+    </style>
+    <cache expires-after="TimeSpan.FromDays(30)">
+
+        <div class="text-center">
+            <h1 class="display-4 title">Welcome to @GlobalConstants.SystemName!</h1>
+            <h4 class="underTitle">We are here to make you the best food you will ever eat! This is the first ever online restaurant, where you can just make an account, sit on a table, make an order and just wait for the food to arrive. <br /> While you are waiting, you can explore our menu, because every week we add a new delicious dish!</h4>
+            <h4 class="textOverImage"> Check it out ↓ </h4>
+            <div class="w3-content w3-display-container gradient-border">
+                <div class="w3-display-container mySlides">
+                    <img src="~/img/Home/picture0.jpg">
+                    <div class="w3-display-bottomleft w3-large w3-container w3-padding-16 w3-black">
+                        Chef salad
+                    </div>
+                </div>
+
+                <div class="w3-display-container mySlides">
+                    <img src="~/img/Home/picture1.jpg">
+                    <div class="w3-display-bottomright w3-large w3-container w3-padding-16 w3-black">
+                        Pizza versatini
+                    </div>
+                </div>
+
+                <div class="w3-display-container mySlides">
+                    <img src="~/img/Home/picture3.jpg">
+                    <div class="w3-display-topright w3-large w3-container w3-padding-16 w3-black">
+                        Grilled trout
+                    </div>
+                </div>
+
+                <div class="w3-display-container mySlides">
+                    <img src="~/img/Home/picture4.jpg">
+                    <div class="w3-display-bottomright w3-large w3-container w3-padding-16 w3-black">
+                        Steak
+                    </div>
+                </div>
+                <div class="w3-display-container mySlides">
+                    <img src="~/img/Home/picture2.jpg">
+                    <div class="w3-display-topleft w3-large w3-container w3-padding-16 w3-black">
+                        Chocolate cake
+                    </div>
+                </div>
+
+                <button class="w3-button w3-display-left w3-black" onclick="plusDivs(-1)">&#10094;</button>
+                <button class="w3-button w3-display-right w3-black" onclick="plusDivs(1)">&#10095;</button>
+
+            </div>
+        </div>
+
+        </cache>
+        <script>
+            var slideIndex = 1;
+            showDivs(slideIndex);
+
+            function plusDivs(n) {
+                showDivs(slideIndex += n);
+            }
+
+            function showDivs(n) {
+                var i;
+                var x = document.getElementsByClassName("mySlides");
+                if (n > x.length) { slideIndex = 1 }
+                if (n < 1) { slideIndex = x.length }
+                for (i = 0; i < x.length; i++) {
+                    x[i].style.display = "none";
+                }
+                x[slideIndex - 1].style.display = "block";
+            }
+        </script>
