@@ -159,6 +159,11 @@
                 .To<OrderInfoViewModel>()
                 .FirstOrDefault(x => x.Id == orderId);
 
+            if (order == null)
+            {
+                return order;
+            }
+
             order.FoodItems = this.GetAllFoodItemsById(orderId);
 
             return order;

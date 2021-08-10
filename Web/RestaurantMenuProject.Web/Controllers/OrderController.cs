@@ -20,24 +20,12 @@
     {
 
         private readonly IOrderService orderService;
-        private readonly UserManager<ApplicationUser> userManager;
-        private readonly IUserService userService;
-        private readonly IEmailSender emailSender;
-        private readonly IHubContext<OrderHub> orderHub;
 
         public OrderController(
-            IOrderService orderService,
-            UserManager<ApplicationUser> userManager,
-            IUserService userService,
-            IEmailSender emailSender,
-            IHubContext<OrderHub> orderHub
+            IOrderService orderService
             )
         {
             this.orderService = orderService;
-            this.userManager = userManager;
-            this.userService = userService;
-            this.emailSender = emailSender;
-            this.orderHub = orderHub;
         }
 
         [Route("Order/All/{userId}/{id?}")]
